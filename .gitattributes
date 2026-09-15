@@ -1,0 +1,9 @@
+# Tekst uvijek LF u repozitoriju — build i .htaccess idu na Linux server.
+* text=auto eol=lf
+
+# Binarni assetovi se ne diraju.
+*.png binary
+*.ico binary
+*.woff2 binary
+*.ttf binary
+*.zip binary

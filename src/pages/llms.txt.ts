@@ -2,19 +2,19 @@ import type { APIRoute } from 'astro';
 import { SITE, absolute } from '../data/site';
 
 /**
- * llms.txt — markdown sažetak stranice namijenjen jezičnim modelima
+ * llms.txt - markdown sažetak stranice namijenjen jezičnim modelima
  * (prijedlog llmstxt.org). Za razliku od meta description-a, ovdje stane
  * cijela činjenična slika proizvoda, pa model koji citira T'quilo ima što
  * citirati umjesto da nagađa iz jedne rečenice.
  *
- * Činjenice su iz design system readmea §1 — ništa izmišljeno.
+ * Činjenice su iz design system readmea §1 - ništa izmišljeno.
  */
 export const GET: APIRoute = () => {
   const body = `# ${SITE.name}
 
 > ${SITE.description}
 
-${SITE.name} (written with a capital T, an apostrophe, then lowercase — never "Tquilo") is a
+${SITE.name} (written with a capital T, an apostrophe, then lowercase - never "Tquilo") is a
 floating luxury platform: a private sunbed for two on the sea or a lake.
 
 ## Status
@@ -26,7 +26,7 @@ pricing page or product catalogue yet.
 
 - Format: floating platform, 2.5 × 2.5 m, for two people.
 - No boating licence and no vessel registration are required to use it.
-- It is not a boat and not an inflatable — the brand describes it as a room on the water.
+- It is not a boat and not an inflatable - the brand describes it as a room on the water.
 - Equipment: two large sunbeds, fridge, Bluetooth speakers, shower, awning with curtains,
   small electric motor, boarding steps, synthetic teak deck.
 - Modular: hull sections, cushions, awning, curtains and decking ship as units and can be
@@ -35,7 +35,7 @@ pricing page or product catalogue yet.
 
 ## Audiences
 
-- B2B: hotel groups, resorts, marinas and rental operators — additional revenue per hour
+- B2B: hotel groups, resorts, marinas and rental operators - additional revenue per hour
   without additional crew.
 - End guests: hotel guests and tourists renting the platform for a few hours.
 

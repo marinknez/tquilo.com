@@ -1,4 +1,4 @@
-# Tekst uvijek LF u repozitoriju — build i .htaccess idu na Linux server.
+# Tekst uvijek LF u repozitoriju - build i .htaccess idu na Linux server.
 * text=auto eol=lf
 
 # Binarni assetovi se ne diraju.

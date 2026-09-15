@@ -12,7 +12,7 @@ export default defineConfig({
   compressHTML: true,
 
   build: {
-    // CSP na produkciji je `style-src 'self'` — inlineani <style> bi zahtijevao
+    // CSP na produkciji je `style-src 'self'` - inlineani <style> bi zahtijevao
     // 'unsafe-inline'. Stylesheet zato uvijek ostaje zasebna datoteka.
     inlineStylesheets: 'never',
     assets: '_assets',

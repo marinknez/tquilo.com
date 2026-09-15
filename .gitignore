@@ -20,7 +20,7 @@ pnpm-debug.log*
 Thumbs.db
 .idea/
 
-# Izvorni design paketi — 34 MB zipova i raspakiranog design systema.
+# Izvorni design paketi - 34 MB zipova i raspakiranog design systema.
 # Sve što build stvarno treba iz njih je kopirano u brand/ i commitano.
 _design/
 *.zip

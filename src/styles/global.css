@@ -1,7 +1,7 @@
 @import 'tailwindcss';
 
 /* ==========================================================================
-   T'quilo — design tokeni
+   T'quilo - design tokeni
    Preslikano iz design systema (tokens/*.css). Imena tokena su engleska,
    kako sustav propisuje. Dark je brand default; light postoji za buduće
    dokumentacijske/B2B sekcije i prebacuje se s [data-theme="light"].
@@ -9,7 +9,7 @@
 
 /* ---------------------------------------------------------------- fontovi */
 /* Self-hostano i subsetirano (scripts/prepare-assets.mjs). Ništa se ne
-   učitava s Google Fontsa — vidi readme §3 design systema. */
+   učitava s Google Fontsa - vidi readme §3 design systema. */
 @font-face {
   font-family: 'Marcellus';
   font-style: normal;
@@ -94,7 +94,7 @@
   --radius-4xl: 0;
 }
 
-/* Light tema — prebacuje samo semantičke aliase, bazna skala se ne dira. */
+/* Light tema - prebacuje samo semantičke aliase, bazna skala se ne dira. */
 [data-theme='light'] {
   --color-surface: var(--color-salt);
   --color-surface-elevated: var(--color-sand);
@@ -130,7 +130,7 @@
     color: var(--color-abyss);
   }
 
-  /* Focus je 2 px offset + 2 px Champagne prsten — nikad outline:none bez zamjene. */
+  /* Focus je 2 px offset + 2 px Champagne prsten - nikad outline:none bez zamjene. */
   :focus-visible {
     outline: none;
     box-shadow:
@@ -147,7 +147,7 @@
 
 @layer components {
   /* Ulaz sekcije: 700 ms fade + 8 px pomak (readme §3).
-     Bez JS-a — animacija starta odmah, sadržaj je above the fold. */
+     Bez JS-a - animacija starta odmah, sadržaj je above the fold. */
   .reveal {
     animation: reveal 700ms var(--ease-out-calm) both;
   }

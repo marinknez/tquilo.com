@@ -6,7 +6,7 @@ import { SITE, absolute } from '../../data/site';
  *
  * Generira se, a ne piše ručno, zbog `Expires`: RFC traži datum isteka, a
  * statična datoteka s ručno upisanim datumom nečujno zastari. Ovako se rok
- * pomiče na svaki build — godinu dana od zadnjeg deploya.
+ * pomiče na svaki build - godinu dana od zadnjeg deploya.
  */
 export const GET: APIRoute = () => {
   const expires = new Date();

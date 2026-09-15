@@ -1,14 +1,14 @@
 /**
- * Brand asset pipeline — brand/ (izvor) → public/ (ono što ide u build).
+ * Brand asset pipeline - brand/ (izvor) → public/ (ono što ide u build).
  *
  * Radi tri stvari:
  *   1. Fontovi: Marcellus + Archivo TTF → subsetirani WOFF2 (latinica + hrvatska
  *      dijakritika + tipografski znakovi koje brand koristi). 1,4 MB → ~30 kB.
  *   2. Logotipi: SVG-ovi iz design systema nose ugrađeni C2PA manifest (base64,
- *      ~8 kB po datoteci) koji browseru ne znači ništa — skida se.
+ *      ~8 kB po datoteci) koji browseru ne znači ništa - skida se.
  *   3. Rasterski derivati: favicon PNG-ovi, apple-touch-icon, OG/Twitter slika.
  *
- * Pokreće se ručno (`npm run assets`), ne pri svakom buildu — izlaz je commitan
+ * Pokreće se ručno (`npm run assets`), ne pri svakom buildu - izlaz je commitan
  * u public/ da deploy ne ovisi o sharp/harfbuzz binarijima.
  */
 import { readFile, writeFile, mkdir, readdir } from 'node:fs/promises';
@@ -22,7 +22,7 @@ const src = (...p) => path.join(root, 'brand', ...p);
 const out = (...p) => path.join(root, 'public', ...p);
 
 /** Znakovi koje subset mora sadržavati.
- *  Namjerno širi od trenutnog copyja — stranica smije dobiti novi tekst bez
+ *  Namjerno širi od trenutnog copyja - stranica smije dobiti novi tekst bez
  *  ponovnog generiranja fontova, uključujući hrvatsku dijakritiku. */
 const CHARSET = [
   'abcdefghijklmnopqrstuvwxyz',
@@ -31,7 +31,9 @@ const CHARSET = [
   ' !"#$%&\'()*+,-./:;<=>?@[\\]^_`{|}~',
   'čćđšžČĆĐŠŽ', // hrvatska dijakritika
   'áàäâãéèëêíìïîóòöôõúùüûñçÁÀÄÂÃÉÈËÊÍÌÏÎÓÒÖÔÕÚÙÜÛÑÇ', // ostatak latin-1
-  '‘’“”–—… ­×·©®™→€',
+  // Crtice su namjerno sve tri: brand copy koristi '-', ali en/em dash u
+  // subsetu znaci da tekst koji ih ipak dobije ne padne na fallback font.
+  '‘’“”–—-… ­×·©®™→€',
 ].join('');
 
 const brandColors = {
@@ -66,13 +68,13 @@ async function buildFont(file, target, variationAxes) {
 async function buildFonts() {
   console.log('Fontovi (subset → woff2):');
   await buildFont('Marcellus-Regular.ttf', 'marcellus-400.woff2');
-  // Brand koristi wght 300–600 @ wdth 100 (readme §3) — ostatak varijacijskog
+  // Brand koristi wght 300–600 @ wdth 100 (readme §3) - ostatak varijacijskog
   // prostora je mrtva težina, pa se wdth pinna, a wght suzi na brand raspon.
   await buildFont('Archivo-Variable.ttf', 'archivo-var.woff2', {
     wght: { min: 300, max: 600 },
     wdth: 100,
   });
-  // Licence idu uz binarije — SIL OFL to traži.
+  // Licence idu uz binarije - SIL OFL to traži.
   for (const ofl of ['Marcellus-OFL.txt', 'Archivo-OFL.txt']) {
     await writeFile(out('fonts', ofl), await readFile(src('fonts', ofl)));
   }
@@ -107,7 +109,7 @@ async function buildLogos() {
     await writeFile(out('logo', file), clean);
     console.log(`  logo  ${file}  ${raw.length} → ${clean.length} B`);
   }
-  // favicon.svg ide u root — browseri ga traže i tamo
+  // favicon.svg ide u root - browseri ga traže i tamo
   const favicon = cleanSvg(await readFile(src('logo', 'favicon.svg'), 'utf8'));
   await writeFile(out('favicon.svg'), favicon);
   return favicon;
@@ -117,7 +119,7 @@ async function buildLogos() {
 
 /**
  * Monogram (Abyss ploča, Salt „T", Champagne kap) kao PNG.
- * `padRatio` > 0 uvlači znak unutar ploče — treba samo za Androidov maskable
+ * `padRatio` > 0 uvlači znak unutar ploče - treba samo za Androidov maskable
  * safe zone; sve ostalo je full-bleed, kako je monogram i nacrtan.
  */
 async function iconPng(size, padRatio = 0) {
@@ -142,7 +144,7 @@ async function buildIcons() {
     ['apple-touch-icon.png', 180, 0],
     ['icon-192.png', 192, 0],
     ['icon-512.png', 512, 0],
-    // Android maskable: znak mora stati u središnjih 80 % — inače ga launcher odreže.
+    // Android maskable: znak mora stati u središnjih 80 % - inače ga launcher odreže.
     ['icon-512-maskable.png', 512, 0.14],
   ];
   for (const [name, size, pad] of icons) {
@@ -159,7 +161,7 @@ async function buildIcons() {
 /**
  * 1200 × 630 social card. Sastavljena iz istih tokena kao stranica: Abyss
  * podloga, 2 px Champagne linija gore, wordmark, Marcellus naslov.
- * Tekst je renderiran kroz sharp/pango iz self-hostanog Marcellusa — nema
+ * Tekst je renderiran kroz sharp/pango iz self-hostanog Marcellusa - nema
  * ovisnosti o fontovima na stroju koji radi build.
  */
 async function buildOgImage() {
@@ -185,7 +187,7 @@ async function buildOgImage() {
   <rect width="${W}" height="4" fill="${brandColors.champagne}"/>
   <rect x="80" y="150" width="2" height="330" fill="${brandColors.trench}"/>
   <g transform="translate(80,66) scale(0.34)">${wordmark.replace(/^<svg[^>]*>/, '<g>').replace(/<\/svg>$/, '</g>')}</g>
-  <text class="label" x="124" y="196" fill="${brandColors.champagne}">Soft launch — October 2026</text>
+  <text class="label" x="124" y="196" fill="${brandColors.champagne}">Soft launch - October 2026</text>
   <text class="display" x="124" y="300" fill="${brandColors.champagne}">Coming soon.</text>
   <text class="display" x="124" y="386" fill="${brandColors.salt}">Your tranquilo place</text>
   <text class="display" x="124" y="462" fill="${brandColors.salt}">on water.</text>
@@ -205,4 +207,4 @@ await buildFonts();
 await buildLogos();
 await buildIcons();
 await buildOgImage();
-console.log('\nGotovo — public/ je osvježen.');
+console.log('\nGotovo - public/ je osvježen.');

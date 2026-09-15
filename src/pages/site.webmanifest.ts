@@ -1,7 +1,7 @@
 import type { APIRoute } from 'astro';
 import { SITE } from '../data/site';
 
-/** Web app manifest — generiran da ime, boje i opis ostanu na jednom mjestu. */
+/** Web app manifest - generiran da ime, boje i opis ostanu na jednom mjestu. */
 export const GET: APIRoute = () => {
   const manifest = {
     name: SITE.name,

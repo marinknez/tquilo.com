@@ -61,7 +61,7 @@ const year = new Date().getFullYear();
       <div
         class="mx-auto flex min-h-[76px] w-full max-w-page flex-wrap items-center gap-6 px-5 md:px-10"
       >
-        <a href="/" aria-label={`${SITE.name} — home`} class="inline-flex">
+        <a href="/" aria-label={`${SITE.name} - home`} class="inline-flex">
           <Wordmark class="h-6 w-auto" />
         </a>
       </div>
@@ -76,11 +76,6 @@ const year = new Date().getFullYear();
         class="mx-auto flex w-full max-w-page flex-wrap items-center justify-between gap-6 px-5 py-8 text-caption text-ink-muted md:px-10"
       >
         <span>© {year} {SITE.name}</span>
-        <a
-          href={`mailto:${SITE.email}`}
-          class="border-b border-accent/45 text-accent transition-colors duration-200 ease-[var(--ease-standard)] hover:border-accent hover:text-ink"
-          >{SITE.email}</a
-        >
         <span>Sun. Silence. T’quilo.</span>
       </div>
     </footer>

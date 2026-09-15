@@ -1,0 +1,7 @@
+# Sigurnosni kontakt za https://tquilo.com
+# https://securitytxt.org / RFC 9116
+
+Contact: mailto:security@tquilo.com
+Expires: 2027-09-15T07:37:39Z
+Preferred-Languages: hr, en
+Canonical: https://tquilo.com/.well-known/security.txt

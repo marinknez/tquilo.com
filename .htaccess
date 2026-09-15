@@ -1,0 +1,167 @@
+# ============================================================================
+#  T'quilo — tquilo.com
+#  Apache/LiteSpeed konfiguracija za statični Astro build (Hostinger).
+#
+#  Ova datoteka je dio repozitorija (public/.htaccess) i završi u dist/ pri
+#  svakom buildu; _deploy.bat provjerava da je tamo prije nego išta pushne.
+#  Ne uređivati na serveru — promjena bi nestala sljedećim deployem.
+# ============================================================================
+
+Options -Indexes -MultiViews
+ServerSignature Off
+DirectoryIndex index.html
+
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+
+  # --- Kanonski host: https://tquilo.com -----------------------------------
+  # Dva odvojena pravila, namjerno. Spojena u jedno uz [OR] daju kraći lanac,
+  # ali se na hostingu gdje TLS terminira proxy znaju zavrtjeti u petlju.
+  # Ovako je najgori slučaj jedan redirect viška, a nikad 310.
+  RewriteCond %{HTTPS} !=on
+  RewriteCond %{HTTP:X-Forwarded-Proto} !=https
+  RewriteRule ^ https://%{HTTP_HOST}%{REQUEST_URI} [R=301,L]
+
+  RewriteCond %{HTTP_HOST} ^www\.(.+)$ [NC]
+  RewriteRule ^ https://%1%{REQUEST_URI} [R=301,L]
+
+  # --- Bez trailing slasha (astro trailingSlash: 'never') ------------------
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteRule ^(.+)/$ /$1 [R=301,L]
+
+  # --- Čisti URL-ovi -------------------------------------------------------
+  # /nesto → /nesto/index.html, bez promjene adrese u pregledniku.
+  RewriteCond %{REQUEST_FILENAME} !-f
+  RewriteCond %{REQUEST_FILENAME} !-d
+  RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
+  RewriteRule ^(.+?)/?$ /$1/index.html [L]
+</IfModule>
+
+ErrorDocument 404 /404.html
+
+# ============================================================================
+#  SIGURNOSNI HEADERI
+# ============================================================================
+<IfModule mod_headers.c>
+
+  # --- CSP -----------------------------------------------------------------
+  # Stranica je statična: nema inline skripti, nema inline stilova, nema
+  # vanjskih domena. Zato 'none' kao default i eksplicitna dopuštenja.
+  # Ako se jednom doda analitika ili forma, mijenja se OVDJE — ne dodavati
+  # 'unsafe-inline' ni 'unsafe-eval'.
+  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
+
+  # --- Transport -----------------------------------------------------------
+  # HSTS: 2 godine + subdomene + preload. Uključiti tek kad je HTTPS siguran
+  # na SVIM subdomenama — preload lista se teško poništava.
+  Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" "expr=%{HTTPS} == 'on'"
+
+  # --- Klasika -------------------------------------------------------------
+  Header always set X-Content-Type-Options "nosniff"
+  Header always set X-Frame-Options "DENY"
+  Header always set Referrer-Policy "strict-origin-when-cross-origin"
+  Header always set X-Permitted-Cross-Domain-Policies "none"
+
+  # --- Izolacija konteksta -------------------------------------------------
+  Header always set Cross-Origin-Opener-Policy "same-origin"
+  Header always set Cross-Origin-Embedder-Policy "credentialless"
+  Header always set Cross-Origin-Resource-Policy "same-origin"
+
+  # --- Permissions-Policy --------------------------------------------------
+  # Stranica ne traži nijedan uređaj ni senzor; sve se gasi eksplicitno.
+  Header always set Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=(), interest-cohort=()"
+
+  # --- Higijena ------------------------------------------------------------
+  Header always unset X-Powered-By
+  Header always unset Server
+  Header unset X-Pingback
+
+  # OG slika i logotipi smiju se dohvaćati s drugih origina — inače je
+  # Cross-Origin-Resource-Policy: same-origin blokira Facebooku i sličnima.
+  <FilesMatch "\.(png|jpg|jpeg|webp|svg|ico)$">
+    Header always set Cross-Origin-Resource-Policy "cross-origin"
+  </FilesMatch>
+</IfModule>
+
+# ============================================================================
+#  CACHE
+# ============================================================================
+<IfModule mod_headers.c>
+  # HTML i generirani tekstualni resursi: uvijek revalidirati.
+  # Bez ovoga Hostingerov deploy ne bi bio vidljiv dok cache ne istekne.
+  <FilesMatch "\.(html|xml|json|txt|webmanifest)$">
+    Header set Cache-Control "public, max-age=0, must-revalidate"
+  </FilesMatch>
+
+  # Astro assetovi nose hash u nazivu (index.BSJgnQNG.css) — sadržaj se pod
+  # tim imenom više nikad ne mijenja, pa smiju u cache zauvijek.
+  <FilesMatch "\.[A-Za-z0-9_-]{8,}\.(css|js|mjs)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+
+  # Fontovi, logotipi i ikone nemaju hash u nazivu, ali se mijenjaju rijetko.
+  <FilesMatch "\.(woff2|woff|ttf)$">
+    Header set Cache-Control "public, max-age=31536000, immutable"
+  </FilesMatch>
+  <FilesMatch "\.(png|jpg|jpeg|webp|avif|svg|ico)$">
+    Header set Cache-Control "public, max-age=604800"
+  </FilesMatch>
+</IfModule>
+
+<IfModule mod_expires.c>
+  ExpiresActive On
+  ExpiresDefault "access plus 1 week"
+  ExpiresByType text/html "access plus 0 seconds"
+</IfModule>
+
+# ============================================================================
+#  KOMPRESIJA
+# ============================================================================
+<IfModule mod_deflate.c>
+  AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
+  AddOutputFilterByType DEFLATE application/javascript application/json
+  AddOutputFilterByType DEFLATE application/xml application/rss+xml
+  AddOutputFilterByType DEFLATE application/manifest+json image/svg+xml
+  # WOFF2 je već komprimiran — ponovno pakiranje samo troši CPU.
+</IfModule>
+
+<IfModule mod_brotli.c>
+  AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml
+  AddOutputFilterByType BROTLI_COMPRESS application/javascript application/json
+  AddOutputFilterByType BROTLI_COMPRESS application/xml image/svg+xml
+  AddOutputFilterByType BROTLI_COMPRESS application/manifest+json
+</IfModule>
+
+# ============================================================================
+#  MIME
+# ============================================================================
+<IfModule mod_mime.c>
+  AddType application/manifest+json .webmanifest
+  AddType image/svg+xml .svg
+  AddType font/woff2 .woff2
+  AddType text/plain .txt
+
+  AddDefaultCharset UTF-8
+  AddCharset UTF-8 .html .css .js .json .webmanifest .svg .txt .xml
+</IfModule>
+
+# ============================================================================
+#  PRISTUP
+# ============================================================================
+
+# Skrivene datoteke nisu javne — uz iznimku /.well-known/ (security.txt,
+# ACME challenge za obnovu certifikata).
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule "^\.well-known/" - [L]
+  RewriteRule "(^|/)\." - [F]
+</IfModule>
+
+# Izvorni i konfiguracijski otpad koji nikad ne smije biti serviran — i u
+# slučaju da zaluta u deploy granu.
+<FilesMatch "(^|\.)(env|git|gitignore|gitattributes|htaccess|htpasswd|bak|config|ini|log|sh|sql|ts|yml|yaml|lock)$">
+  Require all denied
+</FilesMatch>
+<FilesMatch "^(package(-lock)?\.json|astro\.config\..*|tsconfig\.json|README\.md)$">
+  Require all denied
+</FilesMatch>

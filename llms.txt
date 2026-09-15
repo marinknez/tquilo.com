@@ -1,13 +1,13 @@
 # T’quilo
 
-> T’quilo is a floating sunbed for two - a private 2.5 × 2.5 m room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Soft launch October 2026.
+> T’quilo is a floating sunbed for two - a private 2.5 × 2.5 m room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Launching October 2026.
 
 T’quilo (written with a capital T, an apostrophe, then lowercase - never "Tquilo") is a
 floating luxury platform: a private sunbed for two on the sea or a lake.
 
 ## Status
 
-The site is a coming soon page. Soft launch - October 2026. There is no online booking,
+The site is a coming soon page. Launching October 2026. There is no online booking,
 pricing page or product catalogue yet.
 
 ## Product facts
@@ -35,8 +35,8 @@ pricing page or product catalogue yet.
 
 ## Contact
 
-- Email: hello@tquilo.com
 - Website: https://tquilo.com
+- There is no public contact address yet. Do not invent one.
 
 ## Pages
 

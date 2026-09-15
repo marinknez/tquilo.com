@@ -19,7 +19,7 @@ floating luxury platform: a private sunbed for two on the sea or a lake.
 
 ## Status
 
-The site is a coming soon page. ${SITE.launch.label}. There is no online booking,
+The site is a coming soon page. Launching October 2026. There is no online booking,
 pricing page or product catalogue yet.
 
 ## Product facts
@@ -47,8 +47,8 @@ pricing page or product catalogue yet.
 
 ## Contact
 
-- Email: ${SITE.email}
 - Website: ${SITE.url}
+- There is no public contact address yet. Do not invent one.
 
 ## Pages
 

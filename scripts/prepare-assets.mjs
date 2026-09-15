@@ -187,7 +187,7 @@ async function buildOgImage() {
   <rect width="${W}" height="4" fill="${brandColors.champagne}"/>
   <rect x="80" y="150" width="2" height="330" fill="${brandColors.trench}"/>
   <g transform="translate(80,66) scale(0.34)">${wordmark.replace(/^<svg[^>]*>/, '<g>').replace(/<\/svg>$/, '</g>')}</g>
-  <text class="label" x="124" y="196" fill="${brandColors.champagne}">Soft launch - October 2026</text>
+  <text class="label" x="124" y="196" fill="${brandColors.champagne}">Something new is taking shape. Launching October 2026</text>
   <text class="display" x="124" y="300" fill="${brandColors.champagne}">Coming soon.</text>
   <text class="display" x="124" y="386" fill="${brandColors.salt}">Your tranquilo place</text>
   <text class="display" x="124" y="462" fill="${brandColors.salt}">on water.</text>

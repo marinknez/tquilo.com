@@ -113,11 +113,11 @@ web root = korijen grane.
 
 ## Prije lansiranja - provjeriti
 
-- [ ] `SITE.email` (`hello@tquilo.com`) i `SITE.securityEmail`
-      (`security@tquilo.com`) u `src/data/site.ts` - aliasi moraju postojati.
-      E-mail **nije** vidljiv u footeru, ali `SITE.email` i dalje ide u
-      JSON-LD (`Organization.email`) i u `llms.txt`. Ako alias ne postoji,
-      obrisati ga i tamo: `src/components/Seo.astro` i `src/pages/llms.txt.ts`.
+- [ ] `SITE.securityEmail` (`security@tquilo.com`) u `src/data/site.ts` -
+      alias mora postojati. Jedino je mjesto gdje stranica uopće navodi
+      e-mail, i to samo u `/.well-known/security.txt`; RFC 9116 traži kontakt,
+      bez njega je datoteka nevažeća. Kontakt e-mail je uklonjen odasvud -
+      footer, JSON-LD i `llms.txt`.
 - [ ] `SITE.social` - dodati profile kad postoje; `sameAs` se tada pojavi u
       JSON-LD-u.
 - [ ] Datum lansiranja (`SITE.launch`) - trenutno *October 2026*.

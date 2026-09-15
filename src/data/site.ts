@@ -2,9 +2,13 @@
  * Jedini izvor istine za sve što se ponavlja po stranici, meta tagovima,
  * structured dataju, manifestu, robots.txt i llms.txt.
  *
- * ⚠ PROVJERITI PRIJE LANSIRANJA: `email`, `securityEmail` i `social` su
- * pretpostavljene vrijednosti - zamijeniti stvarnima (ili obrisati ako alias
- * još ne postoji; prazan niz se nigdje ne renderira).
+ * ⚠ PROVJERITI PRIJE LANSIRANJA: `securityEmail` i `social` su pretpostavljene
+ * vrijednosti - zamijeniti stvarnima (ili obrisati ako alias još ne postoji;
+ * prazan niz se nigdje ne renderira).
+ *
+ * Kontakt e-mail je namjerno uklonjen: stranica ga ne prikazuje, ne spominje
+ * ga u structured dataju ni u llms.txt. Ako se jednom vrati, dodaje se ovdje
+ * i referencira iz `Seo.astro` (`Organization.email`) i `llms.txt.ts`.
  */
 
 export const SITE = {
@@ -20,9 +24,9 @@ export const SITE = {
   titleTemplate: '%s - T’quilo',
   tagline: 'Your tranquilo place on water.',
   description:
-    'T’quilo is a floating sunbed for two - a private 2.5 × 2.5 m room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Soft launch October 2026.',
+    'T’quilo is a floating sunbed for two - a private 2.5 × 2.5 m room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Launching October 2026.',
   /** Kratki opis za manifest i Twitter card (≤ 120 znakova). */
-  descriptionShort: 'A floating sunbed for two. No crew, no schedule. Soft launch October 2026.',
+  descriptionShort: 'A floating sunbed for two. No crew, no schedule. Launching October 2026.',
 
   keywords: [
     'floating sunbed',
@@ -33,7 +37,8 @@ export const SITE = {
     'T’quilo',
   ],
 
-  email: 'hello@tquilo.com',
+  /** Samo za /.well-known/security.txt - RFC 9116 traži kontakt, inače je
+   *  datoteka nevažeća. Nigdje se ne prikazuje na stranici. */
   securityEmail: 'security@tquilo.com',
 
   /** Prazno dok profili ne postoje - `sameAs` se tada izostavlja iz JSON-LD-a. */
@@ -48,7 +53,7 @@ export const SITE = {
   },
 
   launch: {
-    label: 'Soft launch - October 2026',
+    label: 'Something new is taking shape. Launching October 2026',
     /** ISO datum za structured data; dan je namjerno prvi u mjesecu. */
     date: '2026-10-01',
   },

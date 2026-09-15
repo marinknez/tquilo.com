@@ -1,0 +1,32 @@
+---
+import Base from '../layouts/Base.astro';
+import Tag from '../components/Tag.astro';
+---
+
+<Base
+  title="Page not found — T’quilo"
+  description="This page does not exist. T’quilo launches October 2026."
+  path="/404"
+  noindex
+>
+  <div
+    class="mx-auto grid w-full max-w-page content-center justify-items-start gap-7 px-5 py-[clamp(56px,10vw,120px)] md:px-10"
+  >
+    <Tag tone="muted">Error 404</Tag>
+
+    <h1
+      class="max-w-[20ch] font-display text-[clamp(44px,7.5vw,96px)] leading-[1.04] font-normal tracking-[0.01em]"
+    >
+      <span class="block text-accent">Not here.</span>
+      This page does not exist.
+    </h1>
+
+    <p class="max-w-[44ch] text-[clamp(17px,2vw,20px)] leading-[1.6] text-ink-muted">
+      The rest of the site is still being built. Back to the <a
+        href="/"
+        class="border-b border-accent/45 text-accent transition-colors duration-200 ease-[var(--ease-standard)] hover:border-accent hover:text-ink"
+        >front page</a
+      >.
+    </p>
+  </div>
+</Base>

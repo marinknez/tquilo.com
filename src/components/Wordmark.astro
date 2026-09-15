@@ -1,0 +1,32 @@
+---
+/**
+ * Primarni horizontalni logotip (smjer A · Kap).
+ * Port `components/brand/Wordmark.jsx` iz design systema. Omjer je fiksan
+ * (454,34 × 99,97): `width`/`height` atributi rezerviraju prostor prije
+ * učitavanja, pa `<img>` nikad ne uzrokuje layout shift. Ime je u krivuljama —
+ * mark ne ovisi o učitavanju fonta.
+ *
+ * Renderirana veličina ide kroz `class` (npr. `h-6 w-auto`), ne kroz inline
+ * style — CSP je `style-src 'self'`, bez `unsafe-inline`.
+ */
+interface Props {
+  tone?: 'dark' | 'light';
+  /** Tailwind klase za veličinu. Minimum je 20 px visine (readme §6). */
+  class?: string;
+}
+
+const RATIO = 454.34 / 99.97;
+const HEIGHT = 100;
+
+const { tone = 'dark', class: className = 'h-6 w-auto' } = Astro.props;
+---
+
+<img
+  src={`/logo/tquilo-primary-${tone}.svg`}
+  alt="T’quilo"
+  width={Math.round(HEIGHT * RATIO)}
+  height={HEIGHT}
+  class:list={['flex-none', className]}
+  fetchpriority="high"
+  decoding="async"
+/>

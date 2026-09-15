@@ -1,0 +1,28 @@
+---
+/**
+ * Port `components/core/Tag.jsx` — mali verzalni chip s trackingom +0,16 em.
+ * Radijus 0 (brand je pravokutan), 1 px hairline rub.
+ */
+interface Props {
+  tone?: 'outline' | 'accent' | 'muted';
+  class?: string;
+}
+
+const TONES = {
+  outline: 'text-ink border-line',
+  accent: 'text-accent-ink bg-accent border-accent',
+  muted: 'text-ink-muted border-line',
+} as const;
+
+const { tone = 'outline', class: className } = Astro.props;
+---
+
+<span
+  class:list={[
+    'inline-block border px-2.5 py-[5px] text-[11px] font-medium uppercase tracking-[0.16em]',
+    TONES[tone],
+    className,
+  ]}
+>
+  <slot />
+</span>

@@ -1,0 +1,195 @@
+@import 'tailwindcss';
+
+/* ==========================================================================
+   T'quilo — design tokeni
+   Preslikano iz design systema (tokens/*.css). Imena tokena su engleska,
+   kako sustav propisuje. Dark je brand default; light postoji za buduće
+   dokumentacijske/B2B sekcije i prebacuje se s [data-theme="light"].
+   ========================================================================== */
+
+/* ---------------------------------------------------------------- fontovi */
+/* Self-hostano i subsetirano (scripts/prepare-assets.mjs). Ništa se ne
+   učitava s Google Fontsa — vidi readme §3 design systema. */
+@font-face {
+  font-family: 'Marcellus';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url('/fonts/marcellus-400.woff2') format('woff2');
+}
+@font-face {
+  font-family: 'Archivo';
+  font-style: normal;
+  font-weight: 300 600;
+  font-stretch: 100%;
+  font-display: swap;
+  src: url('/fonts/archivo-var.woff2') format('woff2');
+}
+
+@theme {
+  /* --- Brand base scale (fiksna korporativna paleta) --- */
+  --color-abyss: #0b1622;
+  --color-deep-sea: #16304a;
+  --color-harbour: #3a5b78;
+  --color-trench: #24405a;
+  --color-champagne: #d8c29a;
+  --color-sand: #e9dec9;
+  --color-salt: #f6f3ee;
+  --color-brass: #9c7c3c;
+  --color-platinum: #b4b8b9;
+  --color-slate: #6e7681;
+  --color-shell: #d5cfc2;
+  --color-mist: #9ba6b2;
+  --color-success: #4e7d63;
+  --color-warning: #b4762f;
+
+  /* --- Semantički aliasi: dark je default ---
+     Vrijednosti se prepisuju u [data-theme="light"] niže; utilityji
+     (bg-surface, text-ink …) prate promjenu bez dodatnih varijanti. */
+  --color-surface: var(--color-abyss);
+  --color-surface-elevated: var(--color-deep-sea);
+  --color-ink: var(--color-salt);
+  --color-ink-muted: var(--color-mist);
+  --color-accent: var(--color-champagne);
+  --color-accent-ink: var(--color-abyss);
+  --color-line: var(--color-trench);
+  --color-line-strong: var(--color-champagne);
+  --color-focus: var(--color-champagne);
+
+  /* --- Tipografija --- */
+  --font-display: 'Marcellus', Georgia, 'Times New Roman', serif;
+  --font-body: 'Archivo', 'Helvetica Neue', Arial, sans-serif;
+
+  --text-label: 0.75rem; /* 12px */
+  --text-label--line-height: 1.4;
+  --text-label--letter-spacing: 0.16em;
+  --text-caption: 0.875rem; /* 14px */
+  --text-caption--line-height: 1.5;
+  --text-body: 1.0625rem; /* 17px */
+  --text-body--line-height: 1.65;
+  --text-body-lg: 1.25rem; /* 20px */
+  --text-body-lg--line-height: 1.6;
+  --text-h3: 1.5rem; /* 24px */
+  --text-h2: 2.5rem; /* 40px */
+  --text-h1: 4rem; /* 64px */
+  --text-display: 6rem; /* 96px */
+
+  /* --- Layout --- */
+  --container-page: 1160px;
+  --container-page-wide: 1440px;
+
+  /* --- Motion (readme §3: bez bouncea, bez scalea) --- */
+  --ease-standard: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-out-calm: cubic-bezier(0.16, 1, 0.3, 1);
+
+  /* Brand je pravokutan: radijus 0 svugdje. Tailwindovi defaultni radijusi
+     se gase da `rounded-*` ne može slučajno ući u markup. */
+  --radius-xs: 0;
+  --radius-sm: 0;
+  --radius-md: 0;
+  --radius-lg: 0;
+  --radius-xl: 0;
+  --radius-2xl: 0;
+  --radius-3xl: 0;
+  --radius-4xl: 0;
+}
+
+/* Light tema — prebacuje samo semantičke aliase, bazna skala se ne dira. */
+[data-theme='light'] {
+  --color-surface: var(--color-salt);
+  --color-surface-elevated: var(--color-sand);
+  --color-ink: var(--color-abyss);
+  --color-ink-muted: var(--color-slate);
+  --color-accent: var(--color-champagne);
+  --color-line: var(--color-shell);
+  --color-line-strong: var(--color-abyss);
+  --color-focus: var(--color-deep-sea);
+}
+
+/* ------------------------------------------------------------------ base */
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    color-scheme: dark;
+  }
+
+  body {
+    background-color: var(--color-surface);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: 1.65;
+    font-weight: 400;
+    text-wrap: pretty;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  ::selection {
+    background: var(--color-champagne);
+    color: var(--color-abyss);
+  }
+
+  /* Focus je 2 px offset + 2 px Champagne prsten — nikad outline:none bez zamjene. */
+  :focus-visible {
+    outline: none;
+    box-shadow:
+      0 0 0 2px var(--color-surface),
+      0 0 0 4px var(--color-focus);
+  }
+
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+}
+
+@layer components {
+  /* Ulaz sekcije: 700 ms fade + 8 px pomak (readme §3).
+     Bez JS-a — animacija starta odmah, sadržaj je above the fold. */
+  .reveal {
+    animation: reveal 700ms var(--ease-out-calm) both;
+  }
+  .reveal-1 {
+    animation-delay: 60ms;
+  }
+  .reveal-2 {
+    animation-delay: 140ms;
+  }
+  .reveal-3 {
+    animation-delay: 220ms;
+  }
+}
+
+@keyframes reveal {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* prefers-reduced-motion: svaki pomak prelazi u čisti fade. */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes reveal {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

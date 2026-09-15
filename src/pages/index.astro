@@ -1,0 +1,31 @@
+---
+/**
+ * Coming soon — port `ComingSoon.dc.html` iz design fajlova.
+ * Copy, hijerarhija i mjere su iz originala; ništa nije dodano osim
+ * kontakt e-maila u footeru (Base.astro) i strukture za tražilice.
+ */
+import Base from '../layouts/Base.astro';
+import Tag from '../components/Tag.astro';
+import { SITE } from '../data/site';
+---
+
+<Base title={SITE.title} path="/">
+  <div
+    class="mx-auto grid w-full max-w-page content-center justify-items-start gap-7 px-5 py-[clamp(56px,10vw,120px)] md:px-10"
+  >
+    <Tag tone="outline" class="reveal reveal-1">{SITE.launch.label}</Tag>
+
+    <h1
+      class="reveal reveal-2 max-w-[20ch] font-display text-[clamp(44px,7.5vw,96px)] leading-[1.04] font-normal tracking-[0.01em]"
+    >
+      <span class="block text-accent">Coming soon.</span>
+      Your tranquilo place on water.
+    </h1>
+
+    <p
+      class="reveal reveal-3 max-w-[44ch] text-[clamp(17px,2vw,20px)] leading-[1.6] text-ink-muted"
+    >
+      A floating sunbed for two. No crew, no schedule.
+    </p>
+  </div>
+</Base>

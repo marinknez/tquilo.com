@@ -24,7 +24,7 @@ export const SITE = {
   titleTemplate: '%s - T’quilo',
   tagline: 'Your tranquilo place on water.',
   description:
-    'T’quilo is a floating sunbed for two - a private 5 m² room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Launching October 2026.',
+    'T’quilo is a floating sunbed for two - a private 6 m² room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Launching October 2026.',
   /** Kratki opis za manifest i Twitter card (≤ 120 znakova). */
   descriptionShort: 'A floating sunbed for two. No crew, no schedule. Launching October 2026.',
 

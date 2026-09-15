@@ -24,7 +24,7 @@ pricing page or product catalogue yet.
 
 ## Product facts
 
-- Format: floating platform, 2.5 × 2.5 m, for two people.
+- Format: floating platform, about 6 m² of deck (5.75 m² exactly), for two people.
 - No boating licence and no vessel registration are required to use it.
 - It is not a boat and not an inflatable - the brand describes it as a room on the water.
 - Equipment: two large sunbeds, fridge, Bluetooth speakers, shower, awning with curtains,

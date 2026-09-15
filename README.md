@@ -56,6 +56,48 @@ buildu. Izlaz je commitan u `public/`, pa deploy ne ovisi o `sharp` ni
    Android i 1200 × 630 OG slika (renderirana iz istih tokena i fontova
    kao stranica, bez ovisnosti o fontovima na build stroju).
 
+## Jedan ekran, bez scrollbara
+
+Stranica mora stati u jedan view bez scrollanja. To ne rješava
+`clamp(min, Xvw, max)` - on gleda **samo širinu**, pa u landscapeu na mobitelu
+i na niskim laptopima (1280 × 600) naslov ostane velik i sadržaj ispadne van.
+
+Zato je fluidna skala u `src/styles/global.css` vezana za **obje osi**:
+
+```css
+--fs-display: clamp(30px, min(11.7vw, 10.6dvh), 96px);
+```
+
+`min(vw, dvh)` znači: veličinu diktira ona os prozora koja je tjesnja. `dvh`, a
+ne `vh`, jer se na mobilnim preglednicima URL traka uvlači i izvlači - `vh` bi
+ostao zaključan na veću vrijednost i proizveo scroll od par piksela.
+
+Isto vrijedi za razmake, padding sekcije, visinu headera i footera. Layout je
+`grid-rows-[auto_1fr_auto]` na `min-h-dvh`; `main` je **grid** (ne blok) da se
+sadržaj stvarno centrira u preostaloj visini.
+
+Nema `overflow: hidden` - ako sadržaj u nekom ekstremu ipak ne stane, bolje je
+da se stranica skrola nego da se tekst odreže. Izmjereno (`scrollHeight` vs
+`clientHeight`, kroz iframe da `dvh` bude stvaran):
+
+| Viewport | h1 | Scroll |
+| --- | --- | --- |
+| 320 × 568 (iPhone SE 1) | 37 px | ne |
+| 375 × 812 (iPhone 13 mini) | 44 px | ne |
+| 430 × 932 (Pro Max) | 50 px | ne |
+| 812 × 375 (telefon, landscape) | 40 px | ne |
+| 768 × 1024 (iPad) | 90 px | ne |
+| 1280 × 600 (niski laptop) | 64 px | ne |
+| 1440 × 900 | 95 px | ne |
+| 1920 × 1080 / 2560 × 1440 | 96 px | ne |
+| 1920 × 400 (ekstrem) | 42 px | ne |
+
+Ispod ~280 px širine stranica se skrola - ondje nijedan realan uređaj nije.
+
+⚠ Ako mijenjaš `text-[...]` s CSS varijablom, **treba type hint**:
+`text-[length:var(--fs-display)]`. Bez `length:` Tailwind ne zna je li to
+font-size ili boja, tiho preskoči klasu i naslov padne na 17 px.
+
 ## SEO, AI SEO i social
 
 - **Meta** - title, description, canonical, `robots` s `max-image-preview:large`.

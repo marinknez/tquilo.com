@@ -94,6 +94,31 @@
   --radius-4xl: 0;
 }
 
+/* ==========================================================================
+   FLUIDNA SKALA - stranica mora stati u jedan ekran, bez scrollbara.
+
+   Trik je `min(Xvw, Ydvh)`: veličinu diktira ona os prozora koja je tjesnja.
+   Klasični `clamp(min, Xvw, max)` gleda samo širinu, pa u landscapeu na
+   mobitelu i na niskim laptopima (1280 × 600) naslov ostane velik i sadržaj
+   ispadne iz ekrana. Ovako naslov pada čim visina postane ograničenje.
+
+   `dvh`, a ne `vh`: na mobilnim preglednicima se URL traka uvlači i izvlači,
+   a `vh` bi ostao zaključan na veću vrijednost i proizveo scroll od par px.
+
+   Koeficijenti su izvedeni iz tri referentne točke:
+     375 × 812  (telefon, portret)  -> naslov ~44 px, širina je ograničenje
+     812 × 375  (telefon, landscape) -> naslov ~40 px, visina je ograničenje
+    1440 × 900  (desktop)            -> naslov 96 px, oba stižu do maksimuma
+   ========================================================================== */
+:root {
+  --fs-display: clamp(30px, min(11.7vw, 10.6dvh), 96px);
+  --fs-lede: clamp(15px, min(4.5vw, 2.6dvh), 20px);
+  --gap-hero: clamp(8px, min(4vw, 3dvh), 28px);
+  --pad-section-y: clamp(16px, min(8vw, 7dvh), 120px);
+  --h-header: clamp(52px, 9dvh, 76px);
+  --pad-footer-y: clamp(10px, 2.4dvh, 32px);
+}
+
 /* Light tema - prebacuje samo semantičke aliase, bazna skala se ne dira. */
 [data-theme='light'] {
   --color-surface: var(--color-salt);

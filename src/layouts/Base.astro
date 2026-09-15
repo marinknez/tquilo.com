@@ -59,21 +59,23 @@ const year = new Date().getFullYear();
 
     <header class="border-b border-line">
       <div
-        class="mx-auto flex min-h-[76px] w-full max-w-page flex-wrap items-center gap-6 px-5 md:px-10"
+        class="mx-auto flex min-h-[var(--h-header)] w-full max-w-page items-center gap-6 px-5 md:px-10"
       >
         <a href="/" aria-label={`${SITE.name} - home`} class="inline-flex">
-          <Wordmark class="h-6 w-auto" />
+          <Wordmark class="h-[clamp(18px,2.6dvh,24px)] w-auto" />
         </a>
       </div>
     </header>
 
-    <main id="main" class="w-full">
+    {/* `grid` (a ne blok) da se sadržaj stvarno centrira u preostaloj visini:
+        main je 1fr red, dijete se rasteže, `content-center` radi svoj posao. */}
+    <main id="main" class="grid w-full">
       <slot />
     </main>
 
     <footer class="border-t border-line">
       <div
-        class="mx-auto flex w-full max-w-page flex-wrap items-center justify-between gap-6 px-5 py-8 text-caption text-ink-muted md:px-10"
+        class="mx-auto flex w-full max-w-page flex-wrap items-center justify-between gap-x-6 gap-y-1 px-5 py-[var(--pad-footer-y)] text-caption text-ink-muted md:px-10"
       >
         <span>© {year} {SITE.name}</span>
         <span>Sun. Silence. T’quilo.</span>

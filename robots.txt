@@ -1,10 +1,10 @@
 # https://www.robotstxt.org/robotstxt.html
-# T’quilo — https://tquilo.com
+# T’quilo - https://tquilo.com
 
 User-agent: *
 Allow: /
 
-# AI crawleri i asistenti — izričito dopušteni.
+# AI crawleri i asistenti - izričito dopušteni.
 User-agent: GPTBot
 Allow: /
 

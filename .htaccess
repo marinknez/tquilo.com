@@ -1,10 +1,10 @@
 # ============================================================================
-#  T'quilo — tquilo.com
+#  T'quilo - tquilo.com
 #  Apache/LiteSpeed konfiguracija za statični Astro build (Hostinger).
 #
 #  Ova datoteka je dio repozitorija (public/.htaccess) i završi u dist/ pri
 #  svakom buildu; _deploy.bat provjerava da je tamo prije nego išta pushne.
-#  Ne uređivati na serveru — promjena bi nestala sljedećim deployem.
+#  Ne uređivati na serveru - promjena bi nestala sljedećim deployem.
 # ============================================================================
 
 Options -Indexes -MultiViews
@@ -47,13 +47,13 @@ ErrorDocument 404 /404.html
   # --- CSP -----------------------------------------------------------------
   # Stranica je statična: nema inline skripti, nema inline stilova, nema
   # vanjskih domena. Zato 'none' kao default i eksplicitna dopuštenja.
-  # Ako se jednom doda analitika ili forma, mijenja se OVDJE — ne dodavati
+  # Ako se jednom doda analitika ili forma, mijenja se OVDJE - ne dodavati
   # 'unsafe-inline' ni 'unsafe-eval'.
   Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
 
   # --- Transport -----------------------------------------------------------
   # HSTS: 2 godine + subdomene + preload. Uključiti tek kad je HTTPS siguran
-  # na SVIM subdomenama — preload lista se teško poništava.
+  # na SVIM subdomenama - preload lista se teško poništava.
   Header always set Strict-Transport-Security "max-age=63072000; includeSubDomains; preload" "expr=%{HTTPS} == 'on'"
 
   # --- Klasika -------------------------------------------------------------
@@ -76,7 +76,7 @@ ErrorDocument 404 /404.html
   Header always unset Server
   Header unset X-Pingback
 
-  # OG slika i logotipi smiju se dohvaćati s drugih origina — inače je
+  # OG slika i logotipi smiju se dohvaćati s drugih origina - inače je
   # Cross-Origin-Resource-Policy: same-origin blokira Facebooku i sličnima.
   <FilesMatch "\.(png|jpg|jpeg|webp|svg|ico)$">
     Header always set Cross-Origin-Resource-Policy "cross-origin"
@@ -93,7 +93,7 @@ ErrorDocument 404 /404.html
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
 
-  # Astro assetovi nose hash u nazivu (index.BSJgnQNG.css) — sadržaj se pod
+  # Astro assetovi nose hash u nazivu (index.BSJgnQNG.css) - sadržaj se pod
   # tim imenom više nikad ne mijenja, pa smiju u cache zauvijek.
   <FilesMatch "\.[A-Za-z0-9_-]{8,}\.(css|js|mjs)$">
     Header set Cache-Control "public, max-age=31536000, immutable"
@@ -122,7 +122,7 @@ ErrorDocument 404 /404.html
   AddOutputFilterByType DEFLATE application/javascript application/json
   AddOutputFilterByType DEFLATE application/xml application/rss+xml
   AddOutputFilterByType DEFLATE application/manifest+json image/svg+xml
-  # WOFF2 je već komprimiran — ponovno pakiranje samo troši CPU.
+  # WOFF2 je već komprimiran - ponovno pakiranje samo troši CPU.
 </IfModule>
 
 <IfModule mod_brotli.c>
@@ -149,7 +149,7 @@ ErrorDocument 404 /404.html
 #  PRISTUP
 # ============================================================================
 
-# Skrivene datoteke nisu javne — uz iznimku /.well-known/ (security.txt,
+# Skrivene datoteke nisu javne - uz iznimku /.well-known/ (security.txt,
 # ACME challenge za obnovu certifikata).
 <IfModule mod_rewrite.c>
   RewriteEngine On
@@ -157,7 +157,7 @@ ErrorDocument 404 /404.html
   RewriteRule "(^|/)\." - [F]
 </IfModule>
 
-# Izvorni i konfiguracijski otpad koji nikad ne smije biti serviran — i u
+# Izvorni i konfiguracijski otpad koji nikad ne smije biti serviran - i u
 # slučaju da zaluta u deploy granu.
 <FilesMatch "(^|\.)(env|git|gitignore|gitattributes|htaccess|htpasswd|bak|config|ini|log|sh|sql|ts|yml|yaml|lock)$">
   Require all denied

@@ -49,7 +49,7 @@ ErrorDocument 404 /404.html
   # vanjskih domena. Zato 'none' kao default i eksplicitna dopuštenja.
   # Ako se jednom doda analitika ili forma, mijenja se OVDJE - ne dodavati
   # 'unsafe-inline' ni 'unsafe-eval'.
-  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; manifest-src 'self'; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'none'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
 
   # --- Transport -----------------------------------------------------------
   # HSTS: 2 godine + subdomene + preload. Uključiti tek kad je HTTPS siguran
@@ -89,7 +89,7 @@ ErrorDocument 404 /404.html
 <IfModule mod_headers.c>
   # HTML i generirani tekstualni resursi: uvijek revalidirati.
   # Bez ovoga Hostingerov deploy ne bi bio vidljiv dok cache ne istekne.
-  <FilesMatch "\.(html|xml|json|txt|webmanifest)$">
+  <FilesMatch "\.(html|xml|json|txt)$">
     Header set Cache-Control "public, max-age=0, must-revalidate"
   </FilesMatch>
 
@@ -121,7 +121,7 @@ ErrorDocument 404 /404.html
   AddOutputFilterByType DEFLATE text/html text/plain text/css text/xml
   AddOutputFilterByType DEFLATE application/javascript application/json
   AddOutputFilterByType DEFLATE application/xml application/rss+xml
-  AddOutputFilterByType DEFLATE application/manifest+json image/svg+xml
+  AddOutputFilterByType DEFLATE image/svg+xml
   # WOFF2 je već komprimiran - ponovno pakiranje samo troši CPU.
 </IfModule>
 
@@ -129,20 +129,18 @@ ErrorDocument 404 /404.html
   AddOutputFilterByType BROTLI_COMPRESS text/html text/plain text/css text/xml
   AddOutputFilterByType BROTLI_COMPRESS application/javascript application/json
   AddOutputFilterByType BROTLI_COMPRESS application/xml image/svg+xml
-  AddOutputFilterByType BROTLI_COMPRESS application/manifest+json
 </IfModule>
 
 # ============================================================================
 #  MIME
 # ============================================================================
 <IfModule mod_mime.c>
-  AddType application/manifest+json .webmanifest
   AddType image/svg+xml .svg
   AddType font/woff2 .woff2
   AddType text/plain .txt
 
   AddDefaultCharset UTF-8
-  AddCharset UTF-8 .html .css .js .json .webmanifest .svg .txt .xml
+  AddCharset UTF-8 .html .css .js .json .svg .txt .xml
 </IfModule>
 
 # ============================================================================

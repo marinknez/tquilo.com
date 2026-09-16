@@ -117,42 +117,20 @@ async function buildLogos() {
 
 /* -------------------------------------------------------- rasterski derivati */
 
-/**
- * Monogram (Abyss ploča, Salt „T", Champagne kap) kao PNG.
- * `padRatio` > 0 uvlači znak unutar ploče - treba samo za Androidov maskable
- * safe zone; sve ostalo je full-bleed, kako je monogram i nacrtan.
- */
-async function iconPng(size, padRatio = 0) {
+/** Monogram (Abyss ploča, Salt „T", Champagne kap) kao PNG, full-bleed. */
+async function iconPng(size) {
   const mono = await readFile(out('logo', 'tquilo-monogram-ink.svg'));
-  if (padRatio === 0) {
-    return sharp(mono, { density: 600 }).resize(size, size).png({ compressionLevel: 9 }).toBuffer();
-  }
-  const inner = Math.round(size * (1 - padRatio * 2));
-  const glyph = await sharp(mono, { density: 600 }).resize(inner, inner).png().toBuffer();
-  return sharp({
-    create: { width: size, height: size, channels: 4, background: brandColors.abyss },
-  })
-    .composite([{ input: glyph, gravity: 'centre' }])
-    .png({ compressionLevel: 9 })
-    .toBuffer();
+  return sharp(mono, { density: 600 }).resize(size, size).png({ compressionLevel: 9 }).toBuffer();
 }
 
 async function buildIcons() {
   console.log('Ikone:');
-  const icons = [
-    ['icon-32.png', 32, 0],
-    ['apple-touch-icon.png', 180, 0],
-    ['icon-192.png', 192, 0],
-    ['icon-512.png', 512, 0],
-    // Android maskable: znak mora stati u središnjih 80 % - inače ga launcher odreže.
-    ['icon-512-maskable.png', 512, 0.14],
-  ];
-  for (const [name, size, pad] of icons) {
-    await writeFile(out(name), await iconPng(size, pad));
-    console.log(`  icon  ${name} (${size}×${size}${pad ? ', maskable' : ''})`);
+  for (const [name, size] of [['icon-32.png', 32], ['apple-touch-icon.png', 180]]) {
+    await writeFile(out(name), await iconPng(size));
+    console.log(`  icon  ${name} (${size}×${size})`);
   }
   // /favicon.ico se traži i bez <link> deklaracije (stari klijenti, feed čitači).
-  await writeFile(out('favicon.ico'), await iconPng(32, 0));
+  await writeFile(out('favicon.ico'), await iconPng(32));
   console.log('  icon  favicon.ico (32×32)');
 }
 

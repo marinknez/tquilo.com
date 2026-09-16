@@ -26,7 +26,7 @@ npm run assets     # regeneriraj fontove, logotipe, ikone i OG sliku
 | `src/data/site.ts` | **jedini izvor istine** - URL, naziv, opisi, e-mail, OG slika, datum lansiranja |
 | `src/pages/index.astro` | coming soon stranica (port `ComingSoon.dc.html`) |
 | `src/pages/404.astro` | 404, u istom brand jeziku |
-| `src/pages/robots.txt.ts` · `llms.txt.ts` · `site.webmanifest.ts` · `.well-known/security.txt.ts` | generirani tekstualni resursi |
+| `src/pages/robots.txt.ts` · `llms.txt.ts` · `.well-known/security.txt.ts` | generirani tekstualni resursi |
 | `src/styles/global.css` | design tokeni preslikani u Tailwind `@theme` |
 | `src/components/` | `Wordmark`, `Tag`, `Seo` - portovi komponenti iz design systema |
 | `brand/` | **izvorni** assetovi: licencirani TTF-ovi i logo SVG-ovi |
@@ -52,8 +52,8 @@ buildu. Izlaz je commitan u `public/`, pa deploy ne ovisi o `sharp` ni
 2. **Logotipi** - SVG-ovi iz design systema nose ugrađen C2PA manifest
    (~8 kB base64 po datoteci) koji preglednik ignorira. Skida se:
    **13 kB → 5 kB** po datoteci.
-3. **Rasterski derivati** - favicon, apple-touch-icon, maskable ikona za
-   Android i 1200 × 630 OG slika (renderirana iz istih tokena i fontova
+3. **Rasterski derivati** - favicon, apple-touch-icon i 1200 × 630 OG slika
+   (renderirana iz istih tokena i fontova
    kao stranica, bez ovisnosti o fontovima na build stroju).
 
 ## Jedan ekran, bez scrollbara
@@ -112,8 +112,8 @@ font-size ili boja, tiho preskoči klasu i naslov padne na 17 px.
 - **`llms.txt`** - strojno čitljiv sažetak proizvoda za jezične modele.
   Činjenice su iz design system readmea §1; ako se proizvod promijeni,
   mijenja se i ovdje.
-- **Ikone i manifest** - favicon (ICO + SVG), apple-touch-icon,
-  192/512 + maskable, `site.webmanifest` s brand bojama.
+- **Ikone** - favicon (ICO + SVG) i apple-touch-icon. Nema web app
+  manifesta - stranica se namjerno ne nudi za instalaciju.
 
 ## Sigurnost
 

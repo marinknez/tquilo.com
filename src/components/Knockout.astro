@@ -48,9 +48,10 @@ interface Props {
   eager?: boolean;
   /**
    * Skupina veličine naslova na mobitelu (v. stage.ts):
-   * `a` = naslov dominira ekranom, `b` = naslov je naslov sekcije.
+   * `hero` = naslovnica, sama za sebe i najveća;
+   * `a` = naslov dominira ekranom; `b` = naslov je naslov sekcije.
    */
-  group?: 'a' | 'b';
+  group?: 'hero' | 'a' | 'b';
   /** Dodatne klase na `data-text` - Fjaka uvlači naslov iza bočnog stupca. */
   textClass?: string;
 }

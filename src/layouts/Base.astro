@@ -2,6 +2,7 @@
 import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import Wordmark from '../components/Wordmark.astro';
+import Consent from '../components/Consent.astro';
 import { SITE } from '../data/site';
 
 interface Props {
@@ -80,5 +81,13 @@ const year = new Date().getFullYear();
         <span>Sun. Silence. T’quilo.</span>
       </div>
     </footer>
+
+    {/* Coming soon stranica je engleska (SITE.locale). */}
+    <Consent lang="en" />
+
+    <script>
+      import { initConsent } from '../scripts/consent';
+      initConsent();
+    </script>
   </body>
 </html>

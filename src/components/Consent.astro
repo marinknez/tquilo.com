@@ -1,0 +1,71 @@
+---
+/**
+ * Pristanak na lokalnu pohranu.
+ *
+ * Stranica nema analitiku, nema piksele i ne postavlja kolačiće. Jedino što
+ * sprema je pozicija u vodoravnoj prezentaciji (`tquilo.D2.x`) - zgodno, ali
+ * nije nužno za rad, pa traži pristanak. Sam zapis o pristanku je nužan i
+ * sprema se u svakom slučaju.
+ *
+ * Zato „Samo nužno" nije ukrasni gumb: ako se odabere, engine prestaje
+ * pamtiti poziciju. Traka bez stvarne posljedice ne bi bila pristanak nego
+ * kulisa.
+ *
+ * Traka se ne renderira dok skripta ne provjeri postoji li već odluka -
+ * inače bi bljesnula svakom posjetitelju koji se vraća.
+ */
+import { type Lang } from '../data/site';
+
+interface Props {
+  lang: Lang;
+  /** `true` na stranicama s fiksnom donjom trakom (56 px). */
+  raised?: boolean;
+}
+
+const { lang, raised = false } = Astro.props;
+
+const L =
+  lang === 'hr'
+    ? {
+        text: 'Pamtimo samo gdje ste stali na stranici. Nema kolačića, analitike ni praćenja.',
+        accept: 'Prihvaćam',
+        reject: 'Samo nužno',
+        label: 'Pristanak na lokalnu pohranu',
+      }
+    : {
+        text: 'We only remember where you left off. No cookies, no analytics, no tracking.',
+        accept: 'Accept',
+        reject: 'Essential only',
+        label: 'Local storage consent',
+      };
+---
+
+<aside
+  data-consent
+  data-no-nav
+  hidden
+  role="dialog"
+  aria-live="polite"
+  aria-label={L.label}
+  class:list={[
+    'fixed left-[6vw] z-50 max-w-[440px] border border-trench bg-deep-sea p-5 md:left-[clamp(20px,3vw,48px)]',
+    'max-md:right-[6vw] max-md:max-w-none',
+    raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4',
+  ]}
+>
+  <p class="m-0 text-[14px] leading-[1.6] text-mist">{L.text}</p>
+  <p class="m-0 mt-4 flex flex-wrap gap-3">
+    <button
+      type="button"
+      data-consent-accept
+      class="border-2 border-champagne bg-champagne px-5 py-[10px] text-[14px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-salt hover:bg-salt active:translate-y-px"
+      >{L.accept}</button
+    >
+    <button
+      type="button"
+      data-consent-reject
+      class="border-2 border-trench px-5 py-[10px] text-[14px] tracking-[0.04em] text-mist transition-colors duration-[90ms] hover:border-champagne hover:text-champagne active:translate-y-px"
+      >{L.reject}</button
+    >
+  </p>
+</aside>

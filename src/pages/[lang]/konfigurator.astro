@@ -6,6 +6,7 @@
 import '../../styles/global.css';
 import Seo from '../../components/Seo.astro';
 import Icon from '../../components/Icon.astro';
+import Consent from '../../components/Consent.astro';
 import { SITE, LANGS, type Lang } from '../../data/site';
 import { t, localePath, alternates } from '../../i18n';
 import { SEGMENTS, LINES, SCHEMES, TEAK, FILL, DEFAULT_CONFIG } from '../../data/palette';
@@ -317,8 +318,12 @@ const fills = FILL;
         politika ne dira. Modul ga pročita i parsira. */}
     <script type="application/json" data-config set:html={JSON.stringify({ lang, defaults: DEFAULT_CONFIG, labels: L })} is:inline />
 
+    <Consent lang={lang} />
+
     <script>
       import { initConfigurator } from '../../scripts/configurator';
+      import { initConsent } from '../../scripts/consent';
+      initConsent();
       initConfigurator();
     </script>
   </body>

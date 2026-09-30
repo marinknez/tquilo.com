@@ -6,6 +6,7 @@
 import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import Icon from '../components/Icon.astro';
+import Consent from '../components/Consent.astro';
 import { t, localePath, alternates, type Lang } from '../i18n';
 import { SITE, LANGS } from '../data/site';
 
@@ -129,8 +130,12 @@ const alts = alternates();
       </div>
     </footer>
 
+    <Consent lang={lang} raised />
+
     <script>
       import { initStage } from '../scripts/stage';
+      import { initConsent } from '../scripts/consent';
+      initConsent();
       initStage();
     </script>
   </body>

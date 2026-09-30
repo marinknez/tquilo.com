@@ -94,15 +94,17 @@ na najgori slučaj: najuži naslov (Za partnere, „For those who") i najgušća
 legenda spustili su i naslovnicu na istu, sitnu veličinu - naslov je prestao
 dominirati.
 
-Zato su na mobitelu dvije skupine (`data-hgroup` na sekciji):
+Zato su na mobitelu tri skupine (`data-hgroup` na sekciji):
 
 | Skupina | Ekrani | 390×844 |
 | --- | --- | --- |
-| **a** - naslov nosi ekran | Mir, Voda, Kvaliteta, Fjaka | **66,9 px** |
+| **hero** - naslovnica | Mir | **82,6 px** |
+| **a** - naslov nosi ekran | Voda, Kvaliteta, Fjaka | **66,9 px** |
 | **b** - naslov je naslov sekcije | Za partnere, Boje, Izvedbe, Kontakt | 52,6 px |
 
 Unutar skupine je veličina jednaka, pa naslov ne poskakuje pri listanju.
-Skupinu **a** ograničava Fjaka: „Engineered" se ne da prelomiti, a na 328 px
+Naslovnica je sama u skupini jer je prvo što se vidi i mora dominirati.
+Skupinu **a** ograničava Fjaka: „Engineered" se ne da prelomiti, a u 328 px
 sadržaja stane do 66,9 px.
 
 Prijelomi u `mh` prilagođeni su tome - Kvaliteta je s 2 retka na 4, Fjaka s 2
@@ -184,6 +186,28 @@ Astro iz commitanih izvora gradi AVIF u četiri širine.
   `WebPage`, povezani preko `@id`.
 - `robots.txt` s poimence dopuštenim AI crawlerima; `llms.txt` sa strojno
   čitljivim sažetkom proizvoda.
+
+## Pristanak na pohranu
+
+Stranica nema kolačiće, analitiku ni piksele. Jedino što sprema je pozicija u
+vodoravnoj prezentaciji (`tquilo.D2.x`) - korisno, ali nije nužno za rad, pa
+traži pristanak.
+
+`„Samo nužno"` nije ukrasni gumb: ako se odabere, engine **prestaje pamtiti
+poziciju** i briše već spremljenu. Traka bez stvarne posljedice ne bi bila
+pristanak nego kulisa.
+
+- `src/scripts/consent.ts` - `canStore()` je jedino mjesto koje ostatak koda
+  pita smije li spremati. Ako se doda analitika, provjerava se **ondje**, a
+  domena se dodaje u CSP - ne obrnuto.
+- Odluka je u `localStorage` pod `tquilo.consent` (`all` | `essential`).
+- Traka se ne renderira dok skripta ne provjeri postoji li već odluka, pa ne
+  bljesne posjetitelju koji se vraća.
+- Blokirana pohrana (privatni prozor) tretira se kao „samo nužno".
+
+⚠ **Nedostaje stranica o privatnosti.** Traka je točna i minimalna, ali bez
+poveznice na politiku privatnosti jer ta stranica još ne postoji. Kad nastane,
+dodaje se poveznica u `Consent.astro`.
 
 ## Sigurnost
 

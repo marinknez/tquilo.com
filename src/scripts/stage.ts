@@ -15,6 +15,8 @@
  * <style> blokove), pa politika ostaje stroga bez `unsafe-inline`.
  */
 
+import { canStore } from './consent';
+
 const HEADER = 76;
 const BOTTOM = 56;
 
@@ -64,11 +66,14 @@ export function initStage(root: ParentNode = document) {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
-  try {
-    const x = parseFloat(localStorage.getItem('tquilo.D2.x') || '');
-    if (!Number.isNaN(x)) cur = target = x;
-  } catch {
-    /* privatni prozor ili blokirani storage - pozicija se jednostavno ne pamti */
+  // Pozicija se pamti samo uz pristanak - v. consent.ts.
+  if (canStore()) {
+    try {
+      const x = parseFloat(localStorage.getItem('tquilo.D2.x') || '');
+      if (!Number.isNaN(x)) cur = target = x;
+    } catch {
+      /* privatni prozor ili blokirani storage - pozicija se ne pamti */
+    }
   }
 
   /** Polumjer koji iz točke (sx, sy) prekriva cijeli viewport. */
@@ -163,8 +168,10 @@ export function initStage(root: ParentNode = document) {
      * i najgušća legenda spustili su i naslovnicu na istu, sitnu veličinu.
      *
      * Zato dvije skupine:
-     *   a - Mir, Voda, Kvaliteta, Fjaka. Naslov je glavni element ekrana i
-     *       dobiva najveću veličinu koju sva četiri podnose.
+     *   hero - naslovnica. Sama u skupini, pa je najveća koju podnosi -
+     *          ona je prvo što se vidi i mora dominirati.
+     *   a - Voda, Kvaliteta, Fjaka. Naslov je glavni element ekrana i
+     *       dobiva najveću veličinu koju sva tri podnose.
      *   b - Za partnere, Boje, Izvedbe, Kontakt. Naslov je naslov sekcije;
      *       ovdje legenda odnosno sadržaj nosi ekran.
      *
@@ -189,7 +196,7 @@ export function initStage(root: ParentNode = document) {
         return parseFloat(text.style.fontSize);
       };
 
-      for (const name of ['a', 'b']) {
+      for (const name of ['hero', 'a', 'b']) {
         const sections = els.filter(
           (el) => !el.hasAttribute('data-clone') && groupOf(el) === name,
         );
@@ -460,7 +467,7 @@ export function initStage(root: ParentNode = document) {
     }
 
     const now = Date.now();
-    if (now - lastSave > 500 && savedX !== Math.round(target)) {
+    if (canStore() && now - lastSave > 500 && savedX !== Math.round(target)) {
       lastSave = now;
       savedX = Math.round(target);
       try { localStorage.setItem('tquilo.D2.x', String(savedX)); } catch { /* storage blokiran */ }
@@ -510,8 +517,10 @@ export function initStage(root: ParentNode = document) {
   };
 
   const onKey = (e: KeyboardEvent) => {
-    const tag = (e.target as HTMLElement | null)?.tagName || '';
-    if (/INPUT|TEXTAREA|SELECT/.test(tag)) return;
+    const t = e.target as HTMLElement | null;
+    if (/INPUT|TEXTAREA|SELECT/.test(t?.tagName || '')) return;
+    // Razmak i strelice pripadaju traci pristanka dok je otvorena, ne sceni.
+    if (t?.closest?.('[data-no-nav]')) return;
     if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) {
       e.preventDefault();
       step(1);

@@ -87,12 +87,32 @@ Stranica se ne skrola - `body` je fiksan, a traka se pomiče transformom.
   `position: relative` da se računaju u njezinim koordinatama. Inače se na
   spoju, gdje se sekcije preklapaju -4 px, vidi tamna traka.
 
+### Dvije skupine veličine naslova (mobitel)
+
+Dizajn traži jednu veličinu naslova na svim ekranima. U praksi to sve povuče
+na najgori slučaj: najuži naslov (Za partnere, „For those who") i najgušća
+legenda spustili su i naslovnicu na istu, sitnu veličinu - naslov je prestao
+dominirati.
+
+Zato su na mobitelu dvije skupine (`data-hgroup` na sekciji):
+
+| Skupina | Ekrani | 390×844 |
+| --- | --- | --- |
+| **a** - naslov nosi ekran | Mir, Voda, Kvaliteta, Fjaka | **66,9 px** |
+| **b** - naslov je naslov sekcije | Za partnere, Boje, Izvedbe, Kontakt | 52,6 px |
+
+Unutar skupine je veličina jednaka, pa naslov ne poskakuje pri listanju.
+Skupinu **a** ograničava Fjaka: „Engineered" se ne da prelomiti, a na 328 px
+sadržaja stane do 66,9 px.
+
+Prijelomi u `mh` prilagođeni su tome - Kvaliteta je s 2 retka na 4, Fjaka s 2
+na 3. **Broj redaka mora biti jednak u HR i EN** (provjereno za sve ključeve),
+inače se dvije verzije razilaze.
+
 ### HR i EN moraju biti identični
 
-Na mobitelu svi naslovi imaju **jednu veličinu** - na svim ekranima i u oba
-jezika. Inače naslov poskakuje pri vodoravnom listanju i pri prebacivanju
-jezika. Svaki je jezik zasebna ruta, pa se drugi jezik mora izmjeriti na
-skrivenim kopijama:
+Svaki je jezik zasebna ruta, pa se drugi jezik mora izmjeriti na skrivenim
+kopijama:
 
 - `[data-alt-head]` - prijelomi naslova drugog jezika (`Headline.astro`).
 - `[data-alt-legend]` - legenda drugog jezika (`legends/Legend.astro`).
@@ -111,8 +131,8 @@ skrivenim kopijama:
    zadnji redak uži za ~0,15 em; s novim redom u markupu ispred nje - širi za
    jedan razmak. Oboje daje krivu veličinu.
 
-Izmjereno, HR i EN **identično**: 47,9 px na 360×740 · 52 px na 390×844 ·
-54,8 px na 412×915. Bez okomitog preljeva sadržaja na ijednom ekranu.
+Izmjereno, HR i EN **identično** po veličini i broju redaka na svakom ekranu,
+bez okomitog preljeva sadržaja na 360×740, 375×812, 390×844 i 412×915.
 Na desktopu se svaki naslov fita zasebno, kako dizajn i traži.
 
 ## Konfigurator

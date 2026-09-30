@@ -46,6 +46,11 @@ interface Props {
   exp?: number;
   clone?: boolean;
   eager?: boolean;
+  /**
+   * Skupina veličine naslova na mobitelu (v. stage.ts):
+   * `a` = naslov dominira ekranom, `b` = naslov je naslov sekcije.
+   */
+  group?: 'a' | 'b';
   /** Dodatne klase na `data-text` - Fjaka uvlači naslov iza bočnog stupca. */
   textClass?: string;
 }
@@ -60,6 +65,7 @@ const {
   exp = 3,
   clone = false,
   eager = false,
+  group = 'a',
   textClass,
 } = Astro.props;
 
@@ -72,6 +78,7 @@ const restFilter = dark ? '0.72 1.18' : '0.9 0.72';
   data-exp={exp}
   data-clone={clone ? '' : undefined}
   data-bg={dark ? '#0B1622' : '#F6F3EE'}
+  data-hgroup={group}
   class:list={[
     'relative isolate h-full flex-none overflow-hidden',
     // Sekcije se preklapaju 4 px - inače se na spoju vidi 1 px šav.

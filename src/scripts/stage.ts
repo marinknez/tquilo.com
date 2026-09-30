@@ -155,15 +155,30 @@ export function initStage(root: ParentNode = document) {
     const gap = Math.max(20, H * 0.035);
     const els = Array.from(track!.querySelectorAll<HTMLElement>('[data-scene]'));
 
-    let fsM = 0;
+    /**
+     * Mobitel: veličina naslova po SKUPINI, ne po ekranu.
+     *
+     * Dizajn traži jednu veličinu na svim ekranima. Ispalo je da to sve
+     * povuče na najgori slučaj: najuži naslov (Za partnere, „For those who")
+     * i najgušća legenda spustili su i naslovnicu na istu, sitnu veličinu.
+     *
+     * Zato dvije skupine:
+     *   a - Mir, Voda, Kvaliteta, Fjaka. Naslov je glavni element ekrana i
+     *       dobiva najveću veličinu koju sva četiri podnose.
+     *   b - Za partnere, Boje, Izvedbe, Kontakt. Naslov je naslov sekcije;
+     *       ovdje legenda odnosno sadržaj nosi ekran.
+     *
+     * Unutar skupine je veličina jednaka, pa naslov ne poskakuje pri
+     * listanju, a oba jezika daju isti broj i istu veličinu redaka.
+     */
+    const fsBy: Record<string, number> = {};
     if (mobile) {
-      // Mobitel: JEDNA veličina naslova na svim ekranima i u oba jezika.
-      // Inače naslov poskakuje između ekrana, što na vodoravnom listanju
-      // izgleda kao greška. Zato se uzme minimum svih ekrana...
-      const sizes: number[] = [];
-      for (const el of els) {
+      const groupOf = (el: HTMLElement) => el.dataset.hgroup ?? 'b';
+
+      /** Najveća veličina koju podnosi naslov jednog ekrana. */
+      const fitOne = (el: HTMLElement) => {
         const text = el.querySelector<HTMLElement>('[data-text]');
-        if (!text || el.hasAttribute('data-clone')) continue;
+        if (!text) return Infinity;
         const sp = el.querySelector<HTMLElement>('[data-spacer]');
         const dot = dotOf(el);
         const side = el.querySelector<HTMLElement>('[data-side]');
@@ -171,25 +186,44 @@ export function initStage(root: ParentNode = document) {
         if (sp) sp.style.width = '0px';
         const xt = side && side.offsetHeight ? side.offsetHeight + gap : 0;
         fit(text, H - HEADER - BOTTOM - pad * 2 - xt - legendHeight(el) - gap);
-        sizes.push(parseFloat(text.style.fontSize));
+        return parseFloat(text.style.fontSize);
+      };
+
+      for (const name of ['a', 'b']) {
+        const sections = els.filter(
+          (el) => !el.hasAttribute('data-clone') && groupOf(el) === name,
+        );
+        if (!sections.length) continue;
+
+        const sizes = sections.map(fitOne).filter(Number.isFinite);
+        let fs = sizes.length ? Math.min(...sizes) : H * 0.08;
+
+        // Naslovi sekcija (`[data-head]`) ne prolaze kroz `fit()` - nemaju
+        // fotografiju ni točku - ali moraju stati u širinu, pa ulaze ovdje.
+        const nodes = sections.flatMap((el) =>
+          Array.from(el.querySelectorAll<HTMLElement>('[data-text],[data-head]')),
+        );
+
+        // Drugi jezik se mjeri sam od sebe: `[data-alt-head]` je apsolutno
+        // pozicioniran potomak naslova, pa `overflows()` gleda i njega.
+        // Veličinu fonta mu se NE smije postavljati - mora je naslijediti,
+        // inače se prestane skalirati zajedno s naslovom.
+        for (const t of nodes) t.style.fontSize = fs + 'px';
+        for (let k = 0; k < 14 && nodes.some(overflows); k++) {
+          fs *= 0.96;
+          for (const t of nodes) t.style.fontSize = fs + 'px';
+        }
+        fsBy[name] = fs;
       }
-      fsM = sizes.length ? Math.min(...sizes) : 48;
 
-      const heads = Array.from(track!.querySelectorAll<HTMLElement>('[data-head]'));
-      const all = heads.concat(
-        Array.from(track!.querySelectorAll<HTMLElement>('[data-scene]:not([data-clone]) [data-text]')),
-      );
-
-      // Drugi jezik se mjeri sam od sebe: `[data-alt-head]` je apsolutno
-      // pozicioniran potomak naslova, pa njegov preljev ulazi u
-      // `scrollWidth` roditelja. Veličinu fonta mu se NE smije postavljati -
-      // mora je naslijediti, inače se prestane skalirati zajedno s naslovom
-      // i mjerenje od druge `measure()` nadalje više ništa ne znači.
-
-      for (const t of all) t.style.fontSize = fsM + 'px';
-      for (let k = 0; k < 14 && all.some(overflows); k++) {
-        fsM *= 0.96;
-        for (const t of all) t.style.fontSize = fsM + 'px';
+      // Klon prvog ekrana nosi veličinu svoje skupine.
+      for (const el of els) {
+        if (!el.hasAttribute('data-clone')) continue;
+        const fs = fsBy[groupOf(el)];
+        if (!fs) continue;
+        for (const t of el.querySelectorAll<HTMLElement>('[data-text],[data-head]')) {
+          t.style.fontSize = fs + 'px';
+        }
       }
     }
 
@@ -206,7 +240,8 @@ export function initStage(root: ParentNode = document) {
       const side = mobile ? el.querySelector<HTMLElement>('[data-side]') : null;
       const xt = side && side.offsetHeight ? side.offsetHeight + gap : 0;
       const avail = H - HEADER - BOTTOM - pad * 2 - xt;
-      if (fsM) text.style.fontSize = fsM + 'px';
+      const fsGroup = mobile ? fsBy[el.dataset.hgroup ?? 'b'] : 0;
+      if (fsGroup) text.style.fontSize = fsGroup + 'px';
       else fit(text, avail - lgH - gap);
 
       const tH = text.offsetHeight;

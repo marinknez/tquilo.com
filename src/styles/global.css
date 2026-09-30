@@ -42,6 +42,10 @@
   --color-mist: #9ba6b2;
   --color-success: #4e7d63;
   --color-warning: #b4762f;
+  /* Tintane inačice za svijetlu podlogu: champagne i slate na Saltu nemaju
+     dovoljan kontrast za tekst (readme §3), pa svijetli ekran koristi ove. */
+  --color-brass-ink: #785e2c;
+  --color-slate-ink: #596069;
 
   /* --- Semantički aliasi: dark je default ---
      Vrijednosti se prepisuju u [data-theme="light"] niže; utilityji

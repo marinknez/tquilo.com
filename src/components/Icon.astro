@@ -1,0 +1,39 @@
+---
+/**
+ * Brand ikona, inline SVG.
+ *
+ * Set je zatvoren (13 glifova iz handoffa, `src/icons/icons.ts`). Emoji,
+ * unicode strelice i kvačice nisu ikone - brand ih izričito zabranjuje.
+ * Inline je, a ne <img>, da naslijedi `currentColor` i ne traži 13 zahtjeva.
+ */
+import { ICONS, type IconName } from '../icons/icons';
+
+interface Props {
+  name: IconName;
+  size?: number;
+  class?: string;
+  /** Opis za čitače ekrana. Bez njega je ikona dekorativna (aria-hidden). */
+  label?: string;
+}
+
+const { name, size = 24, class: className, label } = Astro.props;
+const body = ICONS[name];
+
+if (!body) throw new Error(`Icon: nepoznat glif "${name}". Set je zatvoren - vidi src/icons/icons.ts.`);
+---
+
+<svg
+  xmlns="http://www.w3.org/2000/svg"
+  viewBox="0 0 24 24"
+  width={size}
+  height={size}
+  fill="none"
+  stroke="currentColor"
+  stroke-linecap="butt"
+  stroke-linejoin="miter"
+  class:list={['flex-none', className]}
+  role={label ? 'img' : undefined}
+  aria-label={label}
+  aria-hidden={label ? undefined : 'true'}
+  set:html={body}
+/>

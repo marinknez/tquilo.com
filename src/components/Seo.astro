@@ -9,7 +9,7 @@
  *      Graf je jedan `<script>`, povezan preko @id-jeva: tako Google i LLM
  *      crawleri dobiju jednu koherentnu tvrdnju o brendu, a ne tri odvojene.
  */
-import { SITE, absolute } from '../data/site';
+import { SITE, absolute, LAUNCHED, LANGS, OG_LOCALE, type Lang } from '../data/site';
 
 interface Props {
   title: string;
@@ -18,12 +18,29 @@ interface Props {
   path?: string;
   /** `true` na stranicama koje ne smiju u indeks (404). */
   noindex?: boolean;
+  /** Postavi na jezičnim rutama - uključuje hreflang i mijenja og:locale. */
+  lang?: Lang;
+  /** Podstranica unutar jezika, npr. "konfigurator". Prazno = naslovnica. */
+  page?: string;
 }
 
-const { title, description = SITE.description, path = '/', noindex = false } = Astro.props;
+const { title, description = SITE.description, path = '/', lang, page = '' } = Astro.props;
+
+// Dok je LAUNCHED false, puni site postoji samo za pregled: gradi se, ali
+// ne smije u indeks. Coming soon stranica (bez `lang`) ostaje indeksabilna.
+const noindex = Astro.props.noindex || (!!lang && !LAUNCHED);
 
 const canonical = absolute(path);
 const ogImage = absolute(SITE.og.image);
+const ogLocale = lang ? OG_LOCALE[lang] : SITE.localeOg;
+const inLanguage = lang ?? SITE.locale;
+
+const hreflang = lang
+  ? [
+      ...LANGS.map((l) => ({ l, href: absolute(page ? `/${l}/${page}` : `/${l}`) })),
+      { l: 'x-default', href: absolute(page ? `/hr/${page}` : '/hr') },
+    ]
+  : [];
 
 const orgId = `${SITE.url}/#organization`;
 const siteId = `${SITE.url}/#website`;
@@ -48,6 +65,8 @@ const jsonLd = {
         caption: SITE.name,
       },
       image: { '@id': `${SITE.url}/#logo` },
+      legalName: SITE.legal.name,
+      vatID: SITE.legal.vatId,
       address: {
         '@type': 'PostalAddress',
         addressCountry: SITE.country,
@@ -60,7 +79,7 @@ const jsonLd = {
       url: SITE.url,
       name: SITE.name,
       description: SITE.description,
-      inLanguage: SITE.locale,
+      inLanguage: LANGS,
       publisher: { '@id': orgId },
     },
     {
@@ -71,7 +90,7 @@ const jsonLd = {
       description,
       isPartOf: { '@id': siteId },
       about: { '@id': orgId },
-      inLanguage: SITE.locale,
+      inLanguage,
       primaryImageOfPage: {
         '@type': 'ImageObject',
         url: ogImage,
@@ -87,6 +106,7 @@ const jsonLd = {
 <title>{title}</title>
 <meta name="description" content={description} />
 <link rel="canonical" href={canonical} />
+{hreflang.map((h) => <link rel="alternate" hreflang={h.l} href={h.href} />)}
 <meta name="keywords" content={SITE.keywords.join(', ')} />
 
 {/* --- Indeksiranje --- */}
@@ -104,7 +124,7 @@ const jsonLd = {
 {/* --- Open Graph --- */}
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content={SITE.name} />
-<meta property="og:locale" content={SITE.localeOg} />
+<meta property="og:locale" content={ogLocale} />
 <meta property="og:url" content={canonical} />
 <meta property="og:title" content={title} />
 <meta property="og:description" content={description} />

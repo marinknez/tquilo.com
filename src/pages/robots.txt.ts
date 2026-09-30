@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { SITE, absolute } from '../data/site';
+import { SITE, absolute, LAUNCHED, LANGS } from '../data/site';
 
 /**
  * robots.txt se generira, ne piše ručno - sitemap URL i host moraju pratiti
@@ -45,6 +45,9 @@ export const GET: APIRoute = () => {
     '',
     'User-agent: *',
     'Allow: /',
+    // Dok site nije lansiran, pune jezične rute postoje samo za pregled.
+    // Ne smiju u indeks - stranice uz to nose i `noindex`.
+    ...(LAUNCHED ? [] : LANGS.map((l) => `Disallow: /${l}`)),
     '',
     '# AI crawleri i asistenti - izričito dopušteni.',
     ...AI_CRAWLERS.flatMap((ua) => [`User-agent: ${ua}`, 'Allow: /', '']),

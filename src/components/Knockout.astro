@@ -1,0 +1,149 @@
+---
+/**
+ * "Knockout" ekran - naslov je prozor na fotografiju.
+ *
+ * Četiri sloja u jednoj sekciji, i redoslijed je bitan:
+ *   1. Tekstualni blok  - crna ploha, bijeli naslov (na svijetlom ekranu obrnuto).
+ *   2. Medijski sloj    - foto/video preko teksta, `mix-blend-multiply`:
+ *                         crno × bilo što = crno, bijelo × foto = foto.
+ *                         Zato se slika vidi SAMO kroz slova.
+ *   3. Tint             - Abyss preko svega, `mix-blend-lighten`: crna podloga
+ *                         postaje brand plava, a slova ostaju svijetla.
+ *   4. Legenda          - iznad svega, izvan blendanja.
+ *
+ * Svijetla varijanta (Za partnere) okreće logiku: bijela ploha, crni tekst,
+ * `screen` + `darken`.
+ *
+ * Točka na kraju naslova je pravi element. Engine je skalira dok ne prekrije
+ * ekran - tada je vidljiva cijela fotografija.
+ */
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+
+/**
+ * `object-position` mora biti statična klasa, a ne inline style: CSP je
+ * `style-src 'self'` bez `unsafe-inline`, a Tailwind ne može generirati
+ * klasu iz runtime vrijednosti. Zato zatvorena mapa - dizajn ionako koristi
+ * samo ovih pet kadrova.
+ */
+const POSITION = {
+  center: 'object-center',
+  'voda': 'object-[40%_55%]',
+  'kvaliteta': 'object-[50%_55%]',
+  'partneri': 'object-[50%_45%]',
+  'fjaka': 'object-[55%_50%]',
+} as const;
+
+interface Props {
+  /** Ime scene - samo za čitljivost DOM-a u devtoolsu. */
+  scene: string;
+  tone?: 'dark' | 'light';
+  image?: ImageMetadata;
+  /** Kadriranje fotografije - ključ iz `POSITION`. */
+  position?: keyof typeof POSITION;
+  video?: { mp4: string; webm: string; poster: ImageMetadata };
+  alt: string;
+  /** Eksponent rasta točke. 3 = dugo miruje pa naglo otvori. */
+  exp?: number;
+  /** Označava klon prvog ekrana na kraju trake (beskonačna petlja). */
+  clone?: boolean;
+  /** Prioritetno učitavanje - samo prvi ekran. */
+  eager?: boolean;
+  class?: string;
+}
+
+const {
+  scene,
+  tone = 'dark',
+  image,
+  position = 'center',
+  video,
+  alt,
+  exp = 3,
+  clone = false,
+  eager = false,
+  class: className,
+} = Astro.props;
+
+const dark = tone === 'dark';
+
+// Filtar mirovanja: spljošti fotografiju da rubovi slova ostanu čitljivi
+// prema podlozi. Engine ga iz ovih vrijednosti interpolira prema punoj
+// zasićenosti dok se točka otvara.
+const restFilter = dark ? '0.72 1.18' : '0.9 0.72';
+---
+
+<section
+  data-scene={scene}
+  data-exp={exp}
+  data-clone={clone ? '' : undefined}
+  data-bg={dark ? '#0B1622' : '#F6F3EE'}
+  class:list={[
+    'relative isolate flex h-full shrink-0 overflow-hidden',
+    // Sekcije se preklapaju 4 px: bez toga se između ekrana vidi 1 px šav.
+    '-mr-[4px]',
+    dark ? 'bg-black' : 'bg-white',
+    className,
+  ]}
+>
+  {/* BEZ z-index-a. Redoslijed slaganja je redoslijed u DOM-u:
+      tekst < medij < tint < legenda. Bilo koji `z-*` ovdje digne tekstualni
+      blok iznad medija i knockout nestane - slova postanu obična bijela. */}
+  <div class="relative flex h-full w-screen shrink-0 flex-col justify-start px-[8vw]">
+    <slot />
+  </div>
+
+  {/* Spacer: sekcija mora biti šira od ekrana da krug stigne prekriti ekran,
+      zadržati se, pa otploviti. Širinu računa engine. */}
+  <div data-spacer class="h-full shrink-0"></div>
+
+  <div
+    data-media
+    class:list={[
+      'pointer-events-none absolute inset-y-0 left-0 w-screen will-change-transform',
+      dark ? 'mix-blend-multiply' : 'mix-blend-screen',
+    ]}
+  >
+    {
+      video ? (
+        <video
+          data-filter={restFilter}
+          class="h-full w-full object-cover"
+          autoplay
+          muted
+          loop
+          playsinline
+          preload="auto"
+          poster={video.poster.src}
+          aria-label={alt}
+        >
+          <source src={video.webm} type="video/webm" />
+          <source src={video.mp4} type="video/mp4" />
+        </video>
+      ) : image ? (
+        <Image
+          data-filter={restFilter}
+          src={image}
+          alt={alt}
+          widths={[960, 1440, 1920, 2560]}
+          sizes="100vw"
+          loading={eager ? 'eager' : 'lazy'}
+          fetchpriority={eager ? 'high' : undefined}
+          format="avif"
+          quality={72}
+          class:list={['h-full w-full object-cover', POSITION[position]]}
+        />
+      ) : null
+    }
+  </div>
+
+  <div
+    class:list={[
+      'pointer-events-none absolute inset-0',
+      dark ? 'bg-abyss mix-blend-lighten' : 'bg-salt mix-blend-darken',
+    ]}
+  >
+  </div>
+
+  <slot name="legend" />
+</section>

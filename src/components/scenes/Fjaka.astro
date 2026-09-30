@@ -1,0 +1,56 @@
+---
+/** 07 Fjaka - jedini knockout ekran s bočnim stupcem fotografija. */
+import Knockout from '../Knockout.astro';
+import Headline from '../Headline.astro';
+import Icon from '../Icon.astro';
+import { Image } from 'astro:assets';
+import img from '../../assets/photo/fjaka.jpg';
+import d1 from '../../assets/photo/fjaka-detail-1.jpg';
+import d2 from '../../assets/photo/fjaka-detail-2.jpg';
+import d3 from '../../assets/photo/fjaka-detail-3.jpg';
+import { t, type Lang } from '../../i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const c = t(lang);
+const details = [d1, d2, d3];
+---
+
+<Knockout scene="fjaka" image={img} position="fjaka" alt={c.g3} class="[&_[data-text]]:md:pl-[calc(20vw+4vw)]">
+  {/* Naslov je uvijek engleski - to je brand tagline, ne prijevod. */}
+  <Headline lines={['Engineered', 'for fjaka']} breakAfter={[0]} />
+
+  <div
+    slot="legend"
+    data-side
+    class="pointer-events-none absolute top-[76px] bottom-[56px] left-[8vw] z-20 hidden w-[min(20vw,34vh)] flex-col gap-[2px] md:flex"
+  >
+    {
+      details.map((d, i) => (
+        <Image
+          src={d}
+          alt=""
+          widths={[300, 600]}
+          sizes="20vw"
+          format="avif"
+          quality={70}
+          loading="lazy"
+          class="min-h-0 flex-1 object-cover"
+        />
+      ))
+    }
+  </div>
+
+  <div
+    slot="legend"
+    data-legend
+    class="pointer-events-none absolute left-[8vw] z-20 w-[84vw] max-w-[560px] md:left-[calc(8vw+min(20vw,34vh)+4vw)] md:w-[calc(76vw-min(20vw,34vh))]"
+  >
+    <p class="m-0 text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-salt">{c.g3}</p>
+    <hr class="my-6 border-0 border-t border-trench" />
+    <p class="m-0 flex items-center gap-3 font-display text-[20px] text-salt">
+      <Icon name="fjaka" size={24} class="text-champagne" />
+      Fjaka
+    </p>
+    <p class="mt-2 mb-0 text-[14px] leading-[1.6] text-mist">{c.fjakaDef}</p>
+  </div>
+</Knockout>

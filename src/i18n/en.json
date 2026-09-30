@@ -1,0 +1,196 @@
+{
+  "scenes": [
+    "Quiet",
+    "Water",
+    "Quality",
+    "For partners",
+    "Colours",
+    "Versions",
+    "Fjaka",
+    "Contact"
+  ],
+  "vLabel": "Versions",
+  "vHead": "One platform. Two versions.",
+  "vPdf": "Compare versions (PDF)",
+  "vPure": "A luxury lounge on water for two, without electrical extras.",
+  "vPureNote": "Reduced to the essentials: sun, shade and silence.",
+  "vSig": "A luxury lounge on water for two, fully equipped.",
+  "vShared": "In both versions",
+  "vCommon": [
+    {
+      "icon": "motor",
+      "label": "Electric motor"
+    },
+    {
+      "icon": "cushions",
+      "label": "Cushions"
+    },
+    {
+      "icon": "awning",
+      "label": "Awning"
+    },
+    {
+      "icon": "module-curtain",
+      "label": "Curtains"
+    },
+    {
+      "icon": "steps",
+      "label": "Steps"
+    }
+  ],
+  "vKit": [
+    {
+      "icon": "shower",
+      "label": "Shower"
+    },
+    {
+      "icon": "fridge",
+      "label": "Fridge"
+    },
+    {
+      "icon": "sound",
+      "label": "Sound system"
+    },
+    {
+      "icon": "lights",
+      "label": "Lighting"
+    }
+  ],
+  "fLabel": "Contact",
+  "fHead": "Write to us.",
+  "fSub": "Guest or partner - we’ll be glad to hear from you.",
+  "fWho": [
+    {
+      "value": "guest",
+      "label": "Guest"
+    },
+    {
+      "value": "partner",
+      "label": "Partner"
+    }
+  ],
+  "fName": "Name",
+  "fMail": "E-mail",
+  "fMsg": "Message",
+  "fSend": "Send enquiry",
+  "fOkTitle": "Enquiry sent.",
+  "fOk": "We’ll be in touch soon.",
+  "l0a": "Your tranquilo place on",
+  "l0b": "water",
+  "l1a": "The crowd stays",
+  "l1b": "ashore",
+  "l2": "Fjaka",
+  "lqa": "Calm water,",
+  "lqb": "solid build",
+  "q1label": "Nautical standards",
+  "q1": "A Croatian product, built to the highest standards - for sea and lake.",
+  "q2label": "20+ years of experience",
+  "q2": "Behind T’quilo stand more than twenty years of boatbuilding tradition and experience.",
+  "q3label": "Safety",
+  "q3": "The product complies with all maritime standards.",
+  "l3a": "For those who offer calm on",
+  "l3b": "water",
+  "g0label": "About 5 m² · no licence",
+  "g0": "A floating sunbed for two. No licence, no registration - shade, a shower and a cold drink within reach.",
+  "g1label": "No licence, no crew",
+  "g1": "A quiet electric motor and simple controls. Head out when you like, stop where it’s calmest.",
+  "g2label": "Within reach",
+  "g2": "A cold drink from the fridge, a shower after the swim, shade under the awning and your own music.",
+  "fjakaPos": "",
+  "fjakaDef": "Fjaka is a Dalmatian state of relaxed doing-nothing, a gentle boredom and lack of motivation, but without stress. It is a meditative break from obligations in which you simply “be” and watch the world around you, accompanied by the sea, the sun, and the slow rhythm of coastal life.",
+  "g3": "Time nobody measures. And back on shore, you’ll already want to return.",
+  "g4label": "Hotels · resorts · campsites · marinas · beach clubs",
+  "g4": "Your guests don’t need a licence, and all you need is a concession on part of the beach, by the sea or on a lake. T’quilo can even wear your brand colours.",
+  "verPre": "Available in two versions",
+  "ver": "Compare versions (PDF)",
+  "quote": "Get in touch",
+  "spec": "Specification (PDF)",
+  "g5label": "Branding",
+  "g5head": "In your brand’s colours.",
+  "g5": "Awning, curtains, cushions, teak and both parts of the hull are chosen separately. Start from one of three colour lines or create your own combination.",
+  "config": "Configure your T’quilo",
+  "k1label": "Guests",
+  "k1": "Tell us where you’re holidaying. We’ll tell you where T’quilo is waiting.",
+  "k2label": "Partners",
+  "k2": "Quote and specification on request.",
+  "mailNote": "Address is a placeholder",
+  "videoNote": "Placeholder video",
+  "forPartners": "For partners",
+  "overview": "Hotels, resorts, marinas",
+  "configurator": "Configure your T’quilo",
+  "prev": "Back",
+  "next": "Next",
+  "mh": {
+    "l0": [
+      "Your",
+      "tranquilo",
+      "place on",
+      "water"
+    ],
+    "l1": [
+      "The crowd",
+      "stays",
+      "ashore"
+    ],
+    "lq": [
+      "Calm water,",
+      "solid build"
+    ],
+    "l3": [
+      "For those who",
+      "offer calm",
+      "on water"
+    ],
+    "l2": [
+      "Engineered",
+      "for fjaka"
+    ],
+    "g5head": [
+      "In your",
+      "brand’s",
+      "colours."
+    ],
+    "vHead": [
+      "One platform.",
+      "Two versions."
+    ],
+    "fHead": [
+      "Write to us."
+    ]
+  },
+  "lines": [
+    {
+      "name": "Midnight",
+      "code": "Line I",
+      "hullUpper": "var(--ral-5004)",
+      "hullLower": "var(--ral-5004)",
+      "awning": "var(--awning-light-grey)",
+      "curtain": "var(--curtain-white)",
+      "cushion": "var(--cushion-white)",
+      "teak": "var(--teak-platinum)",
+      "note": "City marinas and evening slots."
+    },
+    {
+      "name": "Riviera",
+      "code": "Line II",
+      "hullUpper": "var(--ral-1013)",
+      "hullLower": "var(--ral-7016)",
+      "awning": "var(--awning-beige)",
+      "curtain": "var(--curtain-beige)",
+      "cushion": "var(--cushion-white)",
+      "teak": "var(--teak-walnut)",
+      "note": "Long days in the sun."
+    },
+    {
+      "name": "Salt",
+      "code": "Line III",
+      "hullUpper": "var(--ral-7035)",
+      "hullLower": "var(--ral-7016)",
+      "awning": "var(--awning-light-grey)",
+      "curtain": "var(--curtain-white)",
+      "cushion": "var(--cushion-white)",
+      "teak": "var(--teak-graphite)",
+      "note": "Wellness, spa and lakes."
+    }
+  ]
+}

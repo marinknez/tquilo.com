@@ -1,0 +1,310 @@
+---
+/**
+ * Konfigurator boja. Za razliku od naslovnice, ova se stranica skrola
+ * normalno - vodoravni engine ovdje nema smisla jer panel je dugačak.
+ */
+import '../../styles/global.css';
+import Seo from '../../components/Seo.astro';
+import Icon from '../../components/Icon.astro';
+import { SITE, LANGS, type Lang } from '../../data/site';
+import { t, localePath, alternates } from '../../i18n';
+import { SEGMENTS, LINES, SCHEMES, TEAK, FILL, DEFAULT_CONFIG } from '../../data/palette';
+
+export function getStaticPaths() {
+  return LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const c = t(lang);
+const alts = alternates('konfigurator');
+
+const L = lang === 'hr'
+  ? {
+      label: 'Konfigurator boja',
+      head: 'Konfigurirajte svoj T’quilo.',
+      sub: 'Svaki modul bira se zasebno. Krenite od jedne od tri linije ili složite vlastitu kombinaciju.',
+      back: 'Natrag na početnu',
+      lines: 'Linije boja',
+      schemes: 'Brendirane sheme',
+      schemesNote: 'Primjeri platformi u bojama partnera.',
+      teakFill: 'Ispuna između letvica',
+      summary: 'Odabrana kombinacija',
+      rotate: 'Rotacija',
+      reset: 'Resetiraj prikaz',
+      copy: 'Kopiraj link',
+      copied: 'Link je kopiran.',
+      pdf: 'Preuzmi PDF',
+      send: 'Pošalji upit',
+      hint: 'Povucite za rotaciju · kotačić za zoom',
+      custom: 'RAL 7016 ili #383E42',
+      invalid: 'Nepoznat RAL ili neispravan HEX.',
+      byOrder: 'po narudžbi',
+      bothNote: 'Boje vrijede za obje izvedbe, Pure i Signature.',
+      loading: 'Učitavam 3D prikaz…',
+    }
+  : {
+      label: 'Colour configurator',
+      head: 'Configure your T’quilo.',
+      sub: 'Every module is chosen separately. Start from one of three lines or build your own combination.',
+      back: 'Back to home',
+      lines: 'Colour lines',
+      schemes: 'Branded schemes',
+      schemesNote: 'Examples of platforms in partner colours.',
+      teakFill: 'Slat fill',
+      summary: 'Your combination',
+      rotate: 'Rotation',
+      reset: 'Reset view',
+      copy: 'Copy link',
+      copied: 'Link copied.',
+      pdf: 'Download PDF',
+      send: 'Send enquiry',
+      hint: 'Drag to rotate · scroll to zoom',
+      custom: 'RAL 7016 or #383E42',
+      invalid: 'Unknown RAL or invalid HEX.',
+      byOrder: 'on request',
+      bothNote: 'Colours apply to both versions, Pure and Signature.',
+      loading: 'Loading 3D view…',
+    };
+
+const teakDecors = TEAK;
+const fills = FILL;
+---
+
+<!doctype html>
+<html lang={lang} data-theme="dark" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo
+      title={`${L.head} - T’quilo`}
+      description={L.sub}
+      path={localePath(lang, 'konfigurator')}
+      lang={lang}
+      page="konfigurator"
+    />
+    <link rel="preload" href="/fonts/marcellus-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content={SITE.themeColor} />
+    <meta name="color-scheme" content="dark" />
+  </head>
+
+  <body class="bg-abyss text-salt">
+    <header
+      class="sticky top-0 z-40 flex h-[76px] items-center justify-between gap-4 border-b border-trench bg-abyss px-[clamp(20px,3vw,48px)]"
+    >
+      <p class="flex items-center gap-4">
+        <a href={localePath(lang)} aria-label={SITE.name} class="inline-flex">
+          <img src="/logo/tquilo-primary-dark.svg" alt={SITE.name} width="454" height="100" class="h-[22px] w-auto" />
+        </a>
+        <span class="h-6 w-px bg-trench" aria-hidden="true"></span>
+        <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{L.label}</span>
+      </p>
+      <nav class="flex items-center gap-[clamp(16px,2.5vw,32px)]">
+        <a href={localePath(lang)} class="hidden text-caption text-mist transition-colors duration-[90ms] hover:text-champagne sm:inline">{L.back}</a>
+        <span class="flex items-center gap-2 text-label font-medium tracking-[0.16em] uppercase">
+          {alts.map((a, i) => (
+            <>
+              {i > 0 && <span class="text-trench" aria-hidden="true">/</span>}
+              <a href={a.path} hreflang={a.lang} class:list={['transition-colors duration-[90ms] hover:text-champagne', a.lang === lang ? 'text-salt' : 'text-mist']}>{a.lang.toUpperCase()}</a>
+            </>
+          ))}
+        </span>
+      </nav>
+    </header>
+
+    <main class="flex flex-wrap items-start">
+      {/* ------------------------------------------------- 3D prikaz */}
+      <div class="flex-[1_1_560px] lg:sticky lg:top-[76px]">
+        <div class="relative h-[52vh] min-h-[320px] bg-abyss lg:h-[calc(100vh-76px-73px)]">
+          <div data-viewport class="absolute inset-0"></div>
+          <p
+            data-viewport-status
+            class="pointer-events-none absolute inset-0 grid place-items-center text-caption text-mist"
+          >
+            {L.loading}
+          </p>
+          <p
+            class="pointer-events-none absolute bottom-4 left-4 border border-trench bg-abyss/80 px-3 py-2 text-[11px] tracking-[0.16em] text-mist uppercase"
+          >
+            {L.hint}
+          </p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2 border-t border-trench px-4 py-4">
+          <button type="button" data-rotate aria-pressed="true" class="border border-champagne bg-champagne px-4 py-2 text-caption text-abyss transition-colors duration-[90ms] aria-[pressed=false]:border-trench aria-[pressed=false]:bg-transparent aria-[pressed=false]:text-mist">{L.rotate}</button>
+          <button type="button" data-reset class="border border-trench px-4 py-2 text-caption text-mist transition-colors duration-[90ms] hover:border-champagne hover:text-champagne">{L.reset}</button>
+          <span class="ml-auto flex gap-2">
+            <button type="button" data-copy class="inline-flex items-center gap-2 px-3 py-2 text-caption text-mist transition-colors duration-[90ms] hover:text-champagne">
+              <Icon name="arrow-right" size={18} />{L.copy}
+            </button>
+            <button type="button" data-pdf class="inline-flex items-center gap-2 px-3 py-2 text-caption text-mist transition-colors duration-[90ms] hover:text-champagne">
+              <Icon name="download" size={18} />{L.pdf}
+            </button>
+          </span>
+        </div>
+      </div>
+
+      {/* ---------------------------------------------------- panel */}
+      <div
+        class="flex-[1_1_420px] border-trench px-[clamp(20px,3vw,48px)] pt-[clamp(28px,4vh,48px)] pb-16 lg:max-w-[720px] lg:border-l"
+      >
+        <div class="grid gap-8">
+          <div>
+            <p class="m-0 text-label font-medium tracking-[0.16em] text-champagne uppercase">{L.label}</p>
+            <h1 class="m-0 mt-3 font-display text-[clamp(32px,4vw,48px)] leading-[1.05] font-normal">{L.head}</h1>
+            <p class="mt-3 mb-0 text-[15px] leading-[1.6] text-mist">{L.sub}</p>
+          </div>
+
+          {/* linije */}
+          <section>
+            <h2 class="m-0 text-[17px] font-medium">{L.lines}</h2>
+            <div class="mt-4 grid grid-cols-3 gap-3">
+              {LINES.map((line) => (
+                <button
+                  type="button"
+                  data-line={JSON.stringify(line.config)}
+                  class="group border border-trench p-2 text-left transition-colors duration-[90ms] hover:border-champagne aria-[pressed=true]:border-champagne"
+                  aria-pressed="false"
+                >
+                  <span data-swatch-stack={['awning','curtain','cushion','teak','upper','lower'].map((k) => (line.config as Record<string,string>)[k]).join(',')} class="flex h-[14px] w-full">
+                    {Array.from({ length: 6 }).map(() => <span data-band class="h-full flex-1" />)}
+                  </span>
+                  <span class="mt-2 block font-display text-[20px] leading-tight">{line.name}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* brendirane sheme - bez naziva partnera */}
+          <section>
+            <h2 class="m-0 text-[17px] font-medium">{L.schemes}</h2>
+            <div class="mt-4 grid grid-cols-5 gap-3">
+              {SCHEMES.map((s, i) => (
+                <button
+                  type="button"
+                  data-scheme={JSON.stringify(s)}
+                  aria-label={`${L.schemes} ${i + 1}`}
+                  aria-pressed="false"
+                  class="border border-trench p-2 transition-colors duration-[90ms] hover:border-champagne aria-[pressed=true]:border-champagne"
+                >
+                  <span data-swatch-stack={['awning','curtain','cushion','teak','upper','lower'].map((k) => (s as Record<string,string>)[k]).join(',')} class="flex h-[22px] w-full">
+                    {Array.from({ length: 6 }).map(() => <span data-band class="h-full flex-1" />)}
+                  </span>
+                </button>
+              ))}
+            </div>
+            <p class="mt-3 mb-0 text-[13px] text-mist">{L.schemesNote}</p>
+          </section>
+
+          {/* segmenti */}
+          {SEGMENTS.filter((s) => s.key !== 'teak' && s.key !== 'fill').map((seg) => (
+            <section data-segment={seg.key} class="border-t border-trench pt-[22px]">
+              <p class="m-0 flex flex-wrap items-baseline justify-between gap-2">
+                <span class="text-[17px] font-medium">{lang === 'hr' ? seg.hr : seg.en}</span>
+                <span data-value class="text-[14px] text-mist tabular-nums"></span>
+              </p>
+              <div class="mt-4 flex flex-wrap gap-3">
+                {seg.palette.map((sw) => (
+                  <button
+                    type="button"
+                    data-pick={sw.hex}
+                    data-ral={sw.ral}
+                    data-name={lang === 'hr' ? sw.name : sw.nameEn}
+                    aria-label={`${sw.ral ? 'RAL ' + sw.ral + ' - ' : ''}${lang === 'hr' ? sw.name : sw.nameEn}`}
+                    aria-pressed="false"
+                    class="h-10 w-10 border border-trench transition-[outline] aria-[pressed=true]:outline-2 aria-[pressed=true]:outline-champagne aria-[pressed=true]:outline-offset-2"
+                  >
+                    <span data-swatch={sw.hex} class="block h-full w-full"></span>
+                  </button>
+                ))}
+              </div>
+              {seg.custom && (
+                <p class="mt-4 mb-0 flex gap-2">
+                  <input
+                    type="text"
+                    data-custom
+                    placeholder={L.custom}
+                    spellcheck="false"
+                    class="min-w-0 flex-1 border border-trench bg-transparent px-3 py-2 text-[14px] text-salt outline-none focus-visible:border-champagne"
+                  />
+                  <button type="button" data-apply aria-label="OK" class="border border-trench px-3 text-mist transition-colors duration-[90ms] hover:border-champagne hover:text-champagne">
+                    <Icon name="arrow-right" size={18} />
+                  </button>
+                </p>
+              )}
+              <p data-error class="m-0 mt-2 hidden text-[13px] text-warning">{L.invalid}</p>
+            </section>
+          ))}
+
+          {/* tikovina */}
+          <section data-segment="teak" class="border-t border-trench pt-[22px]">
+            <p class="m-0 flex flex-wrap items-baseline justify-between gap-2">
+              <span class="text-[17px] font-medium">{lang === 'hr' ? 'Tikovina (pod + stol)' : 'Teak (deck + table)'}</span>
+              <span data-value class="text-[14px] text-mist"></span>
+            </p>
+            <div class="mt-4 grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
+              {teakDecors.map((d) => (
+                <button type="button" data-pick={d.hex} data-name={d.name} aria-pressed="false" class="border border-trench p-2 text-left transition-colors duration-[90ms] hover:border-champagne aria-[pressed=true]:border-champagne">
+                  <span data-swatch={d.hex} class="block h-[26px] w-full"></span>
+                  <span class="mt-2 block text-[13px] text-mist">{d.name}</span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          <section data-segment="fill" class="border-t border-trench pt-[22px]">
+            <p class="m-0 flex flex-wrap items-baseline justify-between gap-2">
+              <span class="text-[17px] font-medium">{L.teakFill}</span>
+              <span data-value class="text-[14px] text-mist"></span>
+            </p>
+            <div class="mt-4 flex gap-3">
+              {fills.map((f) => (
+                <button type="button" data-pick={f.hex} data-name={lang === 'hr' ? f.name : f.nameEn} aria-pressed="false" aria-label={lang === 'hr' ? f.name : f.nameEn} class="h-8 w-8 border border-trench transition-[outline] aria-[pressed=true]:outline-2 aria-[pressed=true]:outline-champagne aria-[pressed=true]:outline-offset-2">
+                  <span data-swatch={f.hex} class="block h-full w-full"></span>
+                </button>
+              ))}
+            </div>
+          </section>
+
+          {/* sažetak */}
+          <section class="border-t-2 border-salt pt-6">
+            <h2 class="m-0 font-display text-[24px] font-normal">{L.summary}</h2>
+            <dl data-summary class="mt-4 grid gap-3 text-[14px]"></dl>
+
+            <p class="mt-8 mb-0 flex flex-wrap gap-3">
+              <a href={`${localePath(lang)}#kontakt`} class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-[14px] text-[15px] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px">
+                {L.send}
+                <Icon name="arrow-right" size={20} />
+              </a>
+              <button type="button" data-pdf class="inline-flex items-center gap-3 border-2 border-trench px-6 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] hover:border-champagne active:translate-y-px">
+                <Icon name="download" size={20} />
+                {L.pdf}
+              </button>
+            </p>
+            <p class="mt-4 mb-0 text-[13px] text-mist">{L.bothNote}</p>
+          </section>
+        </div>
+      </div>
+    </main>
+
+    <p
+      data-toast
+      role="status"
+      aria-live="polite"
+      class="pointer-events-none fixed right-6 bottom-6 z-50 border-l-[3px] border-success bg-deep-sea px-5 py-4 text-[14px] opacity-0 transition-opacity duration-200"
+    >
+    </p>
+
+    {/* Podatkovni blok, ne izvršna skripta: CSP je `script-src 'self'` bez
+        `unsafe-inline`, a `application/json` preglednik ne izvršava, pa ga
+        politika ne dira. Modul ga pročita i parsira. */}
+    <script type="application/json" data-config set:html={JSON.stringify({ lang, defaults: DEFAULT_CONFIG, labels: L })} is:inline />
+
+    <script>
+      import { initConfigurator } from '../../scripts/configurator';
+      initConfigurator();
+    </script>
+  </body>
+</html>

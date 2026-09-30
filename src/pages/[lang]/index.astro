@@ -1,0 +1,46 @@
+---
+/**
+ * Naslovnica u oba jezika: /hr i /en.
+ *
+ * Osam ekrana + klon prvog na kraju, koji omogućuje beskonačnu petlju bez
+ * vidljivog skoka - engine na granici oduzme duljinu trake i sinkronizira
+ * vrijeme dvaju hero videa.
+ */
+import Stage from '../../layouts/Stage.astro';
+import Hero from '../../components/scenes/Hero.astro';
+import Voda from '../../components/scenes/Voda.astro';
+import Kvaliteta from '../../components/scenes/Kvaliteta.astro';
+import Partneri from '../../components/scenes/Partneri.astro';
+import Boje from '../../components/scenes/Boje.astro';
+import Izvedbe from '../../components/scenes/Izvedbe.astro';
+import Fjaka from '../../components/scenes/Fjaka.astro';
+import Kontakt from '../../components/scenes/Kontakt.astro';
+import { LANGS, type Lang } from '../../data/site';
+import { t } from '../../i18n';
+
+export function getStaticPaths() {
+  return LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const c = t(lang);
+---
+
+<Stage lang={lang} title={`T’quilo - ${c.g5head}`} description={c.g0}>
+  <Hero lang={lang} />
+  <Voda lang={lang} />
+  <Kvaliteta lang={lang} />
+  <Partneri lang={lang} />
+  <Boje lang={lang} />
+  <Izvedbe lang={lang} />
+  <Fjaka lang={lang} />
+  <Kontakt lang={lang} />
+  <Hero lang={lang} clone />
+</Stage>
+
+<script>
+  import { paintSwatches } from '../../scripts/swatch';
+  import { initContactForm } from '../../scripts/contact';
+  paintSwatches();
+  initContactForm();
+</script>

@@ -1,0 +1,105 @@
+---
+/**
+ * 08 Kontakt.
+ *
+ * Dizajn na ovom ekranu ima i `mailto:hello@tquilo.com`, označen u handoffu
+ * kao placeholder. Namjerno je izostavljen: adresa ne postoji, a uputa je
+ * bila da e-mail ne stoji nigdje na stranici. Forma je kanal; kad prava
+ * adresa postoji, dodaje se ovdje i u `SITE`.
+ *
+ * Forma radi i bez JavaScripta (obični POST na PHP endpoint). Sa skriptom
+ * se šalje u pozadini i javlja toast, bez napuštanja ekrana.
+ */
+import Icon from '../Icon.astro';
+import { SITE } from '../../data/site';
+import { t, type Lang } from '../../i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const c = t(lang);
+---
+
+<section
+  data-scene="kontakt"
+  data-bg="#0B1622"
+  class="relative flex h-full w-screen shrink-0 -mr-[4px] overflow-hidden bg-abyss px-[8vw] pt-[calc(76px+4vh)] pb-[calc(56px+3vh+52px)] md:pb-[calc(56px+4vh)]"
+>
+  <div class="grid w-full gap-[6vw] max-md:content-start md:grid-cols-[1fr_1.1fr] md:items-center">
+    <div>
+      <p class="m-0 text-label font-medium tracking-[0.16em] text-champagne uppercase">{c.fLabel}</p>
+      <h2 data-head class="m-0 mt-4 font-display font-normal text-[min(6vw,13vh)] leading-[1.02] text-salt">
+        {c.fHead}
+      </h2>
+      <p class="mt-6 mb-0 font-display text-[22px] text-mist">
+        Sun. Silence. <span class="text-champagne">T’quilo.</span>
+      </p>
+      <p
+        class="m-0 mt-[3vh] grid gap-[2px] text-[12px] leading-[1.5] text-mist max-md:absolute max-md:bottom-[calc(56px+3vh)] max-md:left-[8vw] max-md:mt-0"
+      >
+        <span>{SITE.legal.name}</span>
+        <span class="tabular-nums">OIB {SITE.legal.oib}</span>
+      </p>
+    </div>
+
+    <form
+      data-contact
+      method="post"
+      action="/api/kontakt.php"
+      class="grid w-full max-w-[560px] gap-4"
+    >
+      <input type="hidden" name="lang" value={lang} />
+      {/* Honeypot: pravi posjetitelj ga ne vidi, bot ga popuni. */}
+      <p class="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
+        <label>
+          Website
+          <input type="text" name="website" tabindex="-1" autocomplete="off" />
+        </label>
+      </p>
+
+      <div class="grid gap-4 md:grid-cols-2">
+        <label class="grid gap-2">
+          <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fName}</span>
+          <input
+            type="text"
+            name="name"
+            required
+            autocomplete="name"
+            class="w-full border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+          />
+        </label>
+        <label class="grid gap-2">
+          <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fMail}</span>
+          <input
+            type="email"
+            name="email"
+            required
+            autocomplete="email"
+            class="w-full border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+          />
+        </label>
+      </div>
+
+      <label class="grid gap-2">
+        <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fMsg}</span>
+        <textarea
+          name="message"
+          rows="3"
+          required
+          class="w-full resize-none border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+        ></textarea>
+      </label>
+
+      <div class="flex justify-end">
+        <button
+          type="submit"
+          class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-[14px] text-[15px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px"
+        >
+          {c.fSend}
+          <Icon name="arrow-right" size={20} />
+        </button>
+      </div>
+
+      {/* Prostor za poruku je rezerviran da se layout ne trza kad se pojavi. */}
+      <p data-form-status role="status" aria-live="polite" class="m-0 min-h-[64px] text-[14px] leading-[1.5]"></p>
+    </form>
+  </div>
+</section>

@@ -1,0 +1,196 @@
+{
+  "scenes": [
+    "Mir",
+    "Voda",
+    "Kvaliteta",
+    "Za partnere",
+    "Boje",
+    "Izvedbe",
+    "Fjaka",
+    "Kontakt"
+  ],
+  "vLabel": "Izvedbe",
+  "vHead": "Ista platforma. Dvije izvedbe.",
+  "vPdf": "Usporedba izvedbi (PDF)",
+  "vPure": "Luksuzni lounge na vodi za dvoje, bez električnih dodataka.",
+  "vPureNote": "Svedeno na bit: sunce, sjena i tišina.",
+  "vSig": "Luksuzni lounge na vodi za dvoje, u punoj opremi.",
+  "vShared": "U obje izvedbe",
+  "vCommon": [
+    {
+      "icon": "motor",
+      "label": "Električni motor"
+    },
+    {
+      "icon": "cushions",
+      "label": "Jastuci"
+    },
+    {
+      "icon": "awning",
+      "label": "Tenda"
+    },
+    {
+      "icon": "module-curtain",
+      "label": "Zavjese"
+    },
+    {
+      "icon": "steps",
+      "label": "Stepenice"
+    }
+  ],
+  "vKit": [
+    {
+      "icon": "shower",
+      "label": "Tuš"
+    },
+    {
+      "icon": "fridge",
+      "label": "Hladnjak"
+    },
+    {
+      "icon": "sound",
+      "label": "Glazbeni sustav"
+    },
+    {
+      "icon": "lights",
+      "label": "Rasvjeta"
+    }
+  ],
+  "fLabel": "Kontakt",
+  "fHead": "Pišite nam.",
+  "fSub": "Gost ili partner - rado ćemo vam odgovoriti.",
+  "fWho": [
+    {
+      "value": "guest",
+      "label": "Gost"
+    },
+    {
+      "value": "partner",
+      "label": "Partner"
+    }
+  ],
+  "fName": "Ime",
+  "fMail": "E-mail",
+  "fMsg": "Poruka",
+  "fSend": "Pošalji upit",
+  "fOkTitle": "Upit je poslan.",
+  "fOk": "Javit ćemo vam se uskoro.",
+  "l0a": "Vaših par kvadrata",
+  "l0b": "mira",
+  "l1a": "Gužva ostaje na",
+  "l1b": "obali",
+  "l2": "Fjaka",
+  "lqa": "Mirna voda,",
+  "lqb": "čvrsta gradnja",
+  "q1label": "Nautički standardi",
+  "q1": "Hrvatski proizvod, napravljen po najvišim standardima gradnje - za more i jezera.",
+  "q2label": "20+ godina iskustva",
+  "q2": "Iza T’quila stoji više od dvadeset godina tradicije i iskustva u brodogradnji.",
+  "q3label": "Sigurnost",
+  "q3": "Proizvod je sukladan svim pomorskim normama.",
+  "l3a": "Za one koji nude mir na",
+  "l3b": "vodi",
+  "g0label": "Oko 5 m² · bez dozvole",
+  "g0": "Plutajuće sunčalište za dvoje. Bez dozvole za upravljanje i bez registracije - tenda, tuš i hladno piće na dohvat ruke.",
+  "g1label": "Bez dozvole, bez posade",
+  "g1": "Tihi električni motor i jednostavno upravljanje. Isplovite kad želite, stanite gdje je najmirnije.",
+  "g2label": "Na dohvat ruke",
+  "g2": "Piće iz hladnjaka, tuš nakon kupanja, hlad ispod tende i vaša glazba.",
+  "fjakaPos": "",
+  "fjakaDef": "Fjaka je dalmatinsko stanje opuštenog ništaneradenja, lagane dosade i bezvoljnosti, ali bez stresa. To je meditativni odmor od obaveza u kojem samo „bivaš“ i promatraš svijet oko sebe, uz more, sunce i polagani ritam obale.",
+  "g3": "Vrijeme koje nitko ne mjeri. A kad se vratite na obalu, već ćete htjeti natrag.",
+  "g4label": "Hoteli · resorti · kampovi · marine · beach klubovi",
+  "g4": "Vašim gostima ne treba dozvola, a vama je dovoljna koncesija na dio plaže, na moru ili jezeru. T’quilo može nositi i boje vašeg brenda.",
+  "verPre": "Dolazi u dvije verzije",
+  "ver": "Usporedba verzija (PDF)",
+  "quote": "Javite nam se",
+  "spec": "Specifikacija (PDF)",
+  "g5label": "Brendiranje",
+  "g5head": "U bojama vašeg brenda.",
+  "g5": "Tenda, zavjese, jastuci, tikovina i oba dijela trupa biraju se zasebno. Krenite od jedne od tri linije boja ili složite vlastitu kombinaciju.",
+  "config": "Konfigurirajte svoj T’quilo",
+  "k1label": "Gosti",
+  "k1": "Pišite nam gdje ljetujete. Javljamo vam gdje vas T’quilo čeka.",
+  "k2label": "Partneri",
+  "k2": "Ponuda i specifikacija na upit.",
+  "mailNote": "Adresa je placeholder",
+  "videoNote": "Privremeni video",
+  "forPartners": "Za partnere",
+  "overview": "Hoteli, resorti, marine",
+  "configurator": "Konfigurirajte svoj T’quilo",
+  "prev": "Natrag",
+  "next": "Dalje",
+  "mh": {
+    "l0": [
+      "Vaših",
+      "par",
+      "kvadrata",
+      "mira"
+    ],
+    "l1": [
+      "Gužva",
+      "ostaje na",
+      "obali"
+    ],
+    "lq": [
+      "Mirna voda,",
+      "čvrsta gradnja"
+    ],
+    "l3": [
+      "Za one koji",
+      "nude mir",
+      "na vodi"
+    ],
+    "l2": [
+      "Engineered",
+      "for fjaka"
+    ],
+    "g5head": [
+      "U bojama",
+      "vašeg",
+      "brenda."
+    ],
+    "vHead": [
+      "Ista platforma.",
+      "Dvije izvedbe."
+    ],
+    "fHead": [
+      "Pišite nam."
+    ]
+  },
+  "lines": [
+    {
+      "name": "Midnight",
+      "code": "Linija I",
+      "hullUpper": "var(--ral-5004)",
+      "hullLower": "var(--ral-5004)",
+      "awning": "var(--awning-light-grey)",
+      "curtain": "var(--curtain-white)",
+      "cushion": "var(--cushion-white)",
+      "teak": "var(--teak-platinum)",
+      "note": "Gradske marine i večernji termini."
+    },
+    {
+      "name": "Riviera",
+      "code": "Linija II",
+      "hullUpper": "var(--ral-1013)",
+      "hullLower": "var(--ral-7016)",
+      "awning": "var(--awning-beige)",
+      "curtain": "var(--curtain-beige)",
+      "cushion": "var(--cushion-white)",
+      "teak": "var(--teak-walnut)",
+      "note": "Duga dnevna sunčanja."
+    },
+    {
+      "name": "Salt",
+      "code": "Linija III",
+      "hullUpper": "var(--ral-7035)",
+      "hullLower": "var(--ral-7016)",
+      "awning": "var(--awning-light-grey)",
+      "curtain": "var(--curtain-white)",
+      "cushion": "var(--cushion-white)",
+      "teak": "var(--teak-graphite)",
+      "note": "Wellness, spa i jezera."
+    }
+  ]
+}

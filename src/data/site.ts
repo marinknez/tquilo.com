@@ -60,7 +60,37 @@ export const SITE = {
 
   founded: '2026',
   country: 'HR',
+
+  /** Pravna osoba iza proizvoda - podnožje kontakta i JSON-LD. */
+  legal: {
+    name: 'Arba Nautika d.o.o. za proizvodnju i trgovinu',
+    vatId: 'HR00720431425',
+    oib: '00720431425',
+  },
 } as const;
+
+/**
+ * ⚠ PREKIDAČ LANSIRANJA.
+ *
+ * `false` - javni korijen je coming soon stranica. Puni site se i dalje gradi
+ * na /hr/ i /en/ da ga se može pregledati i pokazati klijentu, ali nosi
+ * `noindex`, izostaje iz sitemapa i robots.txt ga zabranjuje.
+ *
+ * `true` - korijen vodi na /hr/, coming soon se povlači, sve ide u indeks.
+ *
+ * Mijenja se SAMO ovdje. Sve ostalo (rute, meta, sitemap, robots) to prati.
+ */
+export const LAUNCHED = false;
+
+export const LANGS = ['hr', 'en'] as const;
+export type Lang = (typeof LANGS)[number];
+
+export const DEFAULT_LANG: Lang = 'hr';
+
+export const OG_LOCALE: Record<Lang, string> = {
+  hr: 'hr_HR',
+  en: 'en_US',
+};
 
 /** Apsolutni URL iz relativne putanje - meta tagovi i JSON-LD traže apsolutni. */
 export const absolute = (path: string): string => new URL(path, SITE.url).href;

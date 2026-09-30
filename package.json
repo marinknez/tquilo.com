@@ -12,17 +12,20 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
-    "assets": "node scripts/prepare-assets.mjs",
-    "astro": "astro"
+    "assets": "node scripts/prepare-assets.mjs && node scripts/prepare-web-assets.mjs",
+    "astro": "astro",
+    "assets:web": "node scripts/prepare-web-assets.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.4",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.3.2",
-    "tailwindcss": "^4.3.3"
+    "tailwindcss": "^4.3.3",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@astrojs/check": "^0.9.10",
+    "@types/three": "^0.186.0",
     "sharp": "^0.35.4",
     "subset-font": "^2.7.0",
     "typescript": "^6.0.3"

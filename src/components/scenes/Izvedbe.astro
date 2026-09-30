@@ -1,0 +1,61 @@
+---
+/** 06 Izvedbe / Versions - Pure i Signature. */
+import Icon from '../Icon.astro';
+import { t, type Lang } from '../../i18n';
+import type { IconName } from '../../icons/icons';
+
+const { lang } = Astro.props as { lang: Lang };
+const c = t(lang);
+
+const versions = [
+  { name: 'Pure', desc: c.vPure, extra: [] as typeof c.vKit },
+  { name: 'Signature', desc: c.vSig, extra: c.vKit },
+];
+---
+
+<section
+  data-scene="izvedbe"
+  data-bg="#0B1622"
+  class="relative flex h-full w-screen shrink-0 -mr-[4px] flex-col overflow-hidden bg-abyss px-[8vw] pt-[calc(76px+4vh)] pb-[calc(56px+4vh)]"
+>
+  <div class="shrink-0">
+    <p class="m-0 text-label font-medium tracking-[0.16em] text-champagne uppercase">{c.vLabel}</p>
+    <h2 data-head class="m-0 mt-4 font-display font-normal text-[min(4.6vw,9vh)] leading-[1.02] text-salt">
+      {c.vHead}
+    </h2>
+  </div>
+
+  <div data-fitbox class="relative mt-[4vh] min-h-0 flex-1">
+    <div data-fit class="grid md:grid-cols-2">
+      {
+        versions.map((v, i) => (
+          <div
+            class:list={[
+              'border-t-2 border-salt pt-6',
+              // Druga kolona: na desktopu okomita crta lijevo, na mobitelu
+              // vodoravna gore - okomita nema smisla kad se stupci slože.
+              i === 1 && 'md:border-l-2 md:border-l-trench md:pl-[4vw] max-md:mt-8',
+            ]}
+          >
+            <p class="m-0 font-display text-[22px] text-mist">T’quilo</p>
+            <p class="m-0 font-display text-[min(8vw,16vh)] leading-none text-champagne max-md:text-[12vw]">
+              {v.name}
+            </p>
+            <p class="mt-4 mb-0 max-w-[40ch] text-[clamp(15px,1.3vw,19px)] leading-[1.6] text-mist">
+              {v.desc}
+            </p>
+
+            <ul class="mt-6 mb-0 flex list-none flex-wrap gap-x-7 gap-y-3 p-0 max-md:gap-x-4 max-md:gap-y-2">
+              {[...c.vCommon, ...v.extra].map((item) => (
+                <li class="flex items-center gap-3 text-[15px] text-mist max-md:text-[13px]">
+                  <Icon name={item.icon as IconName} size={24} class="text-champagne" />
+                  {item.label}
+                </li>
+              ))}
+            </ul>
+          </div>
+        ))
+      }
+    </div>
+  </div>
+</section>

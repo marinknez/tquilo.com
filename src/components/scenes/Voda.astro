@@ -1,0 +1,42 @@
+---
+/** 02 Voda / Water. */
+import Knockout from '../Knockout.astro';
+import Headline from '../Headline.astro';
+import Icon from '../Icon.astro';
+import img from '../../assets/photo/voda-aerial.jpg';
+import { t, type Lang } from '../../i18n';
+
+const { lang } = Astro.props as { lang: Lang };
+const c = t(lang);
+---
+
+<Knockout scene="voda" image={img} position="voda" alt={c.g1}>
+  <Headline lines={c.mh.l1} />
+
+  <div
+    slot="legend"
+    data-legend
+    class="pointer-events-none absolute left-[8vw] z-20 flex w-[84vw] flex-wrap gap-x-[56px] gap-y-4"
+  >
+    <div class="max-w-[360px]">
+      <p class="m-0 flex items-center gap-3 text-label font-medium tracking-[0.16em] text-champagne uppercase">
+        <Icon name="no-licence" size={24} />
+        {c.g1label}
+      </p>
+      <p class="mt-3 mb-0 text-[15px] leading-[1.6] text-mist">{c.g1}</p>
+    </div>
+
+    <div class="max-w-[360px]">
+      <p class="m-0 flex items-center gap-3 text-label font-medium tracking-[0.16em] text-champagne uppercase">
+        <span class="flex gap-3">
+          <Icon name="fridge" size={24} />
+          <Icon name="shower" size={24} />
+          <Icon name="awning" size={24} />
+          <Icon name="sound" size={24} />
+        </span>
+      </p>
+      <p class="mt-3 mb-0 text-label font-medium tracking-[0.16em] text-champagne uppercase">{c.g2label}</p>
+      <p class="mt-3 mb-0 text-[15px] leading-[1.6] text-mist">{c.g2}</p>
+    </div>
+  </div>
+</Knockout>

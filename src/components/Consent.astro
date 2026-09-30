@@ -4,15 +4,17 @@
  *
  * Stranica nema analitiku, nema piksele i ne postavlja kolačiće. Jedino što
  * sprema je pozicija u vodoravnoj prezentaciji (`tquilo.D2.x`) - zgodno, ali
- * nije nužno za rad, pa traži pristanak. Sam zapis o pristanku je nužan i
+ * nije nužno za rad, pa traži pristanak. Sam zapis o odluci je nužan i
  * sprema se u svakom slučaju.
  *
  * Zato „Samo nužno" nije ukrasni gumb: ako se odabere, engine prestaje
  * pamtiti poziciju. Traka bez stvarne posljedice ne bi bila pristanak nego
  * kulisa.
  *
- * Traka se ne renderira dok skripta ne provjeri postoji li već odluka -
- * inače bi bljesnula svakom posjetitelju koji se vraća.
+ * Zatvaranje (×) NIJE pristanak. Traka se skuplja u kap - brandov znak - i
+ * do izbora se ponaša kao „samo nužno". Kap ostaje na ekranu da se odluka
+ * može donijeti kasnije; sakriti je posve značilo bi da pristanka nema, a
+ * nema ni načina da se da.
  */
 import { type Lang } from '../data/site';
 
@@ -31,42 +33,87 @@ const L =
         accept: 'Prihvaćam',
         reject: 'Samo nužno',
         label: 'Pristanak na lokalnu pohranu',
+        close: 'Smanji',
+        open: 'Otvori postavke pohrane',
       }
     : {
         text: 'We only remember where you left off. No cookies, no analytics, no tracking.',
         accept: 'Accept',
         reject: 'Essential only',
         label: 'Local storage consent',
+        close: 'Minimise',
+        open: 'Open storage settings',
       };
+
+const bottom = raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4';
 ---
 
-<aside
-  data-consent
-  data-no-nav
-  hidden
-  role="dialog"
-  aria-live="polite"
-  aria-label={L.label}
-  class:list={[
-    'fixed right-[6vw] z-50 max-w-[440px] border border-trench bg-deep-sea p-5 md:right-[clamp(20px,3vw,48px)]',
-    // Na mobitelu se razvlači preko obje margine - inače je pretijesna.
-    'max-md:left-[6vw] max-md:max-w-none',
-    raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4',
-  ]}
->
-  <p class="m-0 text-[14px] leading-[1.6] text-mist">{L.text}</p>
-  <p class="m-0 mt-4 flex flex-wrap gap-3">
+<aside data-consent data-no-nav hidden aria-label={L.label}>
+  {/* Puna traka */}
+  <div
+    data-consent-panel
+    role="dialog"
+    aria-live="polite"
+    aria-label={L.label}
+    class:list={[
+      'fixed right-[6vw] z-50 max-w-[440px] border border-trench bg-deep-sea p-5 md:right-[clamp(20px,3vw,48px)]',
+      // Na mobitelu se razvlači preko obje margine - inače je pretijesna.
+      'max-md:left-[6vw] max-md:max-w-none',
+      bottom,
+    ]}
+  >
     <button
       type="button"
-      data-consent-accept
-      class="border-2 border-champagne bg-champagne px-5 py-[10px] text-[14px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-salt hover:bg-salt active:translate-y-px"
-      >{L.accept}</button
+      data-consent-min
+      aria-label={L.close}
+      title={L.close}
+      class="absolute top-2 right-2 grid h-8 w-8 place-items-center text-mist transition-colors duration-[90ms] hover:text-champagne"
     >
-    <button
-      type="button"
-      data-consent-reject
-      class="border-2 border-trench px-5 py-[10px] text-[14px] tracking-[0.04em] text-mist transition-colors duration-[90ms] hover:border-champagne hover:text-champagne active:translate-y-px"
-      >{L.reject}</button
-    >
-  </p>
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        viewBox="0 0 24 24"
+        width="16"
+        height="16"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2"
+        aria-hidden="true"
+      >
+        <path d="M5 5 19 19M19 5 5 19"></path>
+      </svg>
+    </button>
+
+    <p class="m-0 pr-8 text-[14px] leading-[1.6] text-mist">{L.text}</p>
+    <p class="m-0 mt-4 flex flex-wrap gap-3">
+      <button
+        type="button"
+        data-consent-accept
+        class="border-2 border-champagne bg-champagne px-5 py-[10px] text-[14px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-salt hover:bg-salt active:translate-y-px"
+        >{L.accept}</button
+      >
+      <button
+        type="button"
+        data-consent-reject
+        class="border-2 border-trench px-5 py-[10px] text-[14px] tracking-[0.04em] text-mist transition-colors duration-[90ms] hover:border-champagne hover:text-champagne active:translate-y-px"
+        >{L.reject}</button
+      >
+    </p>
+  </div>
+
+  {/* Skupljeno stanje: kap. Radijus je ovdje dopušten - oblik znaka ga traži,
+      kao kod `Switch`a u design systemu. */}
+  <button
+    type="button"
+    data-consent-open
+    hidden
+    aria-label={L.open}
+    title={L.open}
+    class:list={[
+      'fixed right-[6vw] z-50 grid h-11 w-11 place-items-center border border-trench bg-deep-sea',
+      'transition-colors duration-[90ms] hover:border-champagne md:right-[clamp(20px,3vw,48px)]',
+      bottom,
+    ]}
+  >
+    <img src="/logo/kap-champagne.svg" alt="" width="24" height="24" class="h-5 w-auto" />
+  </button>
 </aside>

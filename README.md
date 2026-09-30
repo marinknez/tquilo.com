@@ -73,6 +73,14 @@ Stranica se ne skrola - `body` je fiksan, a traka se pomiče transformom.
   visinu i ne prelazi 2 retka (desktop) / 4 (mobitel).
 - **Petlja:** klon prvog ekrana iza osmog; na granici se oduzme duljina trake
   i sinkronizira vrijeme dvaju hero videa.
+- **Adresa nosi ekran.** Svaki ekran ima jezično neutralan ID (`#mir`,
+  `#voda`, …, `SCENE_IDS` u `Stage.astro`). Engine ga upisuje u adresu pri
+  svakoj promjeni ekrana i **istovremeno u `href` jezičnih linkova**. Bez
+  toga prebacivanje jezika (puni odlazak na drugu rutu) uvijek vrati
+  posjetitelja na naslovnicu. ID-evi su isti u HR i EN, pa `#partneri`
+  vrijedi na obje rute.
+- Pri dolasku na `#ekran` engine jednom pozove `tick()` odmah nakon
+  `measure()` - inače traka krene s nule i vidljivo otklizi do cilja.
 
 ### Zamke na koje sam naletio
 
@@ -192,6 +200,12 @@ Astro iz commitanih izvora gradi AVIF u četiri širine.
 - `robots.txt` s poimence dopuštenim AI crawlerima; `llms.txt` sa strojno
   čitljivim sažetkom proizvoda.
 
+## Jezik
+
+**Primarni jezik je EN** i ne ovisi o postavkama preglednika - nigdje se ne
+čita `navigator.language`. `DEFAULT_LANG = 'en'`, `hreflang="x-default"`
+pokazuje na `/en`. HR posjetitelj bira sam, prekidačem u zaglavlju.
+
 ## Pristanak na pohranu
 
 Stranica nema kolačiće, analitiku ni piksele. Jedino što sprema je pozicija u
@@ -210,6 +224,11 @@ pristanak nego kulisa.
   bljesne posjetitelju koji se vraća.
 - Pozicija: dolje desno (kao DS `Toast`), iznad fiksne donje trake. Na
   mobitelu se razvlači preko obje margine jer bi inače bila pretijesna.
+- **× skuplja traku u kap** (brandov znak, 44 × 44). To **nije** pristanak:
+  do izbora se ponaša kao „samo nužno", a kap ostaje na ekranu da se odluka
+  može donijeti kasnije. Sakriti je posve značilo bi da pristanka nema, a
+  nema ni načina da se da. Stanje trake je u `tquilo.consent.ui` - dio
+  mehanizma pristanka, pa se sprema bez obzira na odluku.
 - Blokirana pohrana (privatni prozor) tretira se kao „samo nužno".
 
 ⚠ **Nedostaje stranica o privatnosti.** Traka je točna i minimalna, ali bez

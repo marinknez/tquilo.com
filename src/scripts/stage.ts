@@ -46,6 +46,10 @@ export function initStage(root: ParentNode = document) {
   const numEl = root.querySelector<HTMLElement>('[data-scene-num]');
   const nameEl = root.querySelector<HTMLElement>('[data-scene-name]');
   const sceneNames: string[] = JSON.parse(stage.dataset.scenes || '[]');
+  /** Jezično neutralni ID-evi ekrana - hash u adresi i veza između jezika. */
+  const sceneIds: string[] = JSON.parse(stage.dataset.sceneIds || '[]');
+  const navLinks = Array.from(root.querySelectorAll<HTMLElement>('[data-nav]'));
+  const langLinks = Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-lang-link]'));
   const loop = stage.dataset.loop !== 'false';
 
   let W = window.innerWidth;
@@ -66,8 +70,12 @@ export function initStage(root: ParentNode = document) {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  // Ekran iz adrese ima prednost pred zapamćenom pozicijom: tako prebacivanje
+  // jezika, dijeljenje linka i izbornik vode na točan ekran, a ne na početak.
+  const hashScene = sceneIds.indexOf(location.hash.replace(/^#/, ''));
+
   // Pozicija se pamti samo uz pristanak - v. consent.ts.
-  if (canStore()) {
+  if (hashScene < 0 && canStore()) {
     try {
       const x = parseFloat(localStorage.getItem('tquilo.D2.x') || '');
       if (!Number.isNaN(x)) cur = target = x;
@@ -468,6 +476,17 @@ export function initStage(root: ParentNode = document) {
       sc = active;
       if (numEl) numEl.textContent = String(sc + 1).padStart(2, '0') + ' / 08';
       if (nameEl) nameEl.textContent = sceneNames[sc] || '';
+
+      const id = sceneIds[sc];
+      for (const a of navLinks) {
+        a.setAttribute('aria-current', String(Number(a.dataset.nav) === sc));
+      }
+      // Prebacivanje jezika je puni odlazak na drugu rutu, pa mora ponijeti
+      // ekran sa sobom - inače posjetitelj uvijek ispadne na naslovnici.
+      if (id) {
+        for (const a of langLinks) a.hash = id;
+        history.replaceState(null, '', '#' + id);
+      }
     }
 
     const now = Date.now();
@@ -576,6 +595,12 @@ export function initStage(root: ParentNode = document) {
   root.querySelector<HTMLElement>('[data-prev]')?.addEventListener('click', () => step(-1));
 
   measure();
+  if (hashScene >= 0 && scenes[hashScene]) {
+    cur = target = scenes[hashScene].left;
+  }
+  // Odmah nacrtaj zatečeno stanje. Bez ovoga traka pri dolasku na #ekran
+  // krene s nule i vidljivo otklizi do cilja.
+  tick();
   setTimeout(measure, 300);
 
   if (window.ResizeObserver) {

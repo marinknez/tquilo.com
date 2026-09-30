@@ -21,6 +21,10 @@ interface Props {
 const { lang, title, description, loop = true } = Astro.props;
 const c = t(lang);
 const alts = alternates();
+
+/** ID-evi ekrana za hash u adresi. Namjerno jezično neutralni, da ista
+ *  adresa vrijedi i nakon prebacivanja jezika. */
+const SCENE_IDS = ['mir', 'voda', 'kvaliteta', 'partneri', 'boje', 'izvedbe', 'fjaka', 'kontakt'];
 ---
 
 <!doctype html>
@@ -58,12 +62,26 @@ const alts = alternates();
       </a>
 
       <nav class="flex items-center gap-[clamp(16px,2.5vw,32px)]">
-        <a
-          href="#partneri"
-          data-go="3"
-          class="hidden text-caption text-mist transition-colors duration-[90ms] hover:text-champagne md:inline"
-          >{c.forPartners}</a
-        >
+        {/* Svi ekrani u izborniku (desktop). Klik vodi na ekran preko
+            engineovog `data-go`; `href` s hashem drži smisao i bez JS-a i
+            daje adresu koja se može podijeliti. */}
+        <ul class="hidden list-none items-center gap-[clamp(10px,1.4vw,22px)] p-0 md:flex">
+          {
+            c.scenes.map((name: string, i: number) => (
+              <li>
+                <a
+                  href={`#${SCENE_IDS[i]}`}
+                  data-go={i}
+                  data-nav={i}
+                  class="text-caption whitespace-nowrap text-mist transition-colors duration-[90ms] hover:text-champagne aria-[current=true]:text-salt"
+                >
+                  {name}
+                </a>
+              </li>
+            ))
+          }
+        </ul>
+
         <p class="flex items-center gap-2 text-label font-medium tracking-[0.16em] uppercase">
           {
             alts.map((a, i) => (
@@ -72,6 +90,7 @@ const alts = alternates();
                 <a
                   href={a.path}
                   hreflang={a.lang}
+                  data-lang-link={a.lang}
                   aria-current={a.lang === lang ? 'true' : undefined}
                   class:list={[
                     'transition-colors duration-[90ms] hover:text-champagne',
@@ -93,6 +112,7 @@ const alts = alternates();
       data-stage
       data-loop={String(loop)}
       data-scenes={JSON.stringify(c.scenes)}
+      data-scene-ids={JSON.stringify(SCENE_IDS)}
       class="fixed inset-0 overflow-hidden"
     >
       <div data-track class="relative flex h-full will-change-transform">

@@ -65,7 +65,9 @@ const versions = [
                   {v.name}
                 </span>
               </div>
-              <span class="max-w-[440px] text-[15px] leading-[1.45] text-pretty md:text-[clamp(15px,1.3vw,19px)] md:leading-[1.55]">
+              {/* `balance` + mjera u `ch`: oba jezika i obje izvedbe daju
+                  točno dva retka, pa stupci ostaju iste visine. */}
+              <span class="max-w-[34ch] text-[15px] leading-[1.45] text-balance md:text-[clamp(15px,1.3vw,19px)] md:leading-[1.55]">
                 {v.desc}
               </span>
               <div class="flex flex-wrap gap-x-4 gap-y-2 md:gap-x-7 md:gap-y-3">

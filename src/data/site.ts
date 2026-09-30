@@ -85,7 +85,12 @@ export const LAUNCHED = false;
 export const LANGS = ['hr', 'en'] as const;
 export type Lang = (typeof LANGS)[number];
 
-export const DEFAULT_LANG: Lang = 'hr';
+/**
+ * Primarni jezik je EN i ne ovisi o postavkama preglednika.
+ * Nigdje se ne čita `navigator.language` - posjetitelj koji dođe bez jezika
+ * u putanji dobiva EN, a HR bira sam.
+ */
+export const DEFAULT_LANG: Lang = 'en';
 
 export const OG_LOCALE: Record<Lang, string> = {
   hr: 'hr_HR',

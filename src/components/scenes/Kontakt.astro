@@ -26,7 +26,7 @@ const alt = t(altLang(lang));
   class="relative -mr-[4px] h-full w-screen flex-none overflow-hidden bg-abyss"
 >
   <div
-    class="grid h-full grid-cols-[minmax(0,1fr)] content-start gap-[2.5vh] px-[6vw] pt-[calc(76px+2vh)] pb-[calc(56px+3vh+52px)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-center md:gap-[6vw] md:px-[8vw] md:pt-[calc(76px+6vh)] md:pb-[calc(56px+5vh)]"
+    class="grid h-full grid-cols-[minmax(0,1fr)] content-start gap-[2.5vh] px-[6vw] pt-[calc(76px+2vh)] pb-[calc(56px+3vh+52px)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:content-center md:items-center md:gap-[6vw] md:px-[8vw] md:pt-[calc(76px+6vh)] md:pb-[calc(56px+5vh)]"
   >
     <div class="grid content-start gap-2 md:content-center md:gap-[18px]">
       <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.fLabel}</span>
@@ -47,7 +47,10 @@ const alt = t(altLang(lang));
           >{alt.mh.fHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
         >
       </span>
-      <span class="mt-[1vh] font-display text-[20px] leading-[1.2] text-mist md:mt-[5vh] md:text-[22px]">
+      {/* Tagline je potpis brenda - namjerno krupniji od dizajnovih 22 px. */}
+      <span
+        class="mt-[1vh] font-display text-[clamp(22px,7vw,26px)] leading-[1.25] text-salt md:mt-[5vh] md:text-[clamp(26px,2.3vw,36px)]"
+      >
         Sun. Silence. <span class="text-champagne">T’quilo.</span>
       </span>
       <span
@@ -62,7 +65,7 @@ const alt = t(altLang(lang));
       data-contact
       method="POST"
       action="https://api.web3forms.com/submit"
-      class="grid content-start gap-2 md:max-w-[560px] md:content-center md:gap-[clamp(12px,2.2vh,22px)]"
+      class="grid content-start gap-2 md:max-w-[560px] md:gap-[clamp(12px,2.2vh,22px)]"
     >
       <input type="hidden" name="access_key" value="7ca9e87d-718a-4615-9228-af3c22de6727" />
       <input type="hidden" name="subject" value="tquilo.com - upit s weba" />

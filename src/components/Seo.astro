@@ -38,7 +38,8 @@ const inLanguage = lang ?? SITE.locale;
 const hreflang = lang
   ? [
       ...LANGS.map((l) => ({ l, href: absolute(page ? `/${l}/${page}` : `/${l}`) })),
-      { l: 'x-default', href: absolute(page ? `/hr/${page}` : '/hr') },
+      // x-default je EN - primarni jezik stranice.
+      { l: 'x-default', href: absolute(page ? `/en/${page}` : '/en') },
     ]
   : [];
 

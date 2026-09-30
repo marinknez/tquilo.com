@@ -48,8 +48,9 @@ const L =
   aria-live="polite"
   aria-label={L.label}
   class:list={[
-    'fixed left-[6vw] z-50 max-w-[440px] border border-trench bg-deep-sea p-5 md:left-[clamp(20px,3vw,48px)]',
-    'max-md:right-[6vw] max-md:max-w-none',
+    'fixed right-[6vw] z-50 max-w-[440px] border border-trench bg-deep-sea p-5 md:right-[clamp(20px,3vw,48px)]',
+    // Na mobitelu se razvlači preko obje margine - inače je pretijesna.
+    'max-md:left-[6vw] max-md:max-w-none',
     raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4',
   ]}
 >

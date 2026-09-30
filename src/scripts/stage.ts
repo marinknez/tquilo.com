@@ -139,7 +139,11 @@ export function initStage(root: ParentNode = document) {
     for (let k = 0; k < 14; k++) {
       const mid = (lo + hi) / 2;
       text.style.fontSize = mid + 'px';
-      const lines = Math.round(text.scrollHeight / (mid * 0.98));
+      // Visina retka se čita iz stvarnog stila, ne iz konstante: prored je
+      // token (`--lh-headline`) i mijenja se u CSS-u, a broj redaka mora
+      // pratiti. S ukucanom vrijednošću bi se to tiho raziđe.
+      const lineH = parseFloat(getComputedStyle(text).lineHeight) || mid;
+      const lines = Math.round(text.scrollHeight / lineH);
       const ok = text.scrollHeight <= maxH && !overflows(text) && lines <= (mobile ? 4 : 2);
       if (ok) lo = mid;
       else hi = mid;

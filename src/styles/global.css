@@ -78,6 +78,12 @@
   --text-h1: 4rem; /* 64px */
   --text-display: 6rem; /* 96px */
 
+  /* Prored naslova. Dizajn propisuje 0,98; na hrvatskoj dijakritici (č, ž,
+     š) i pri 80+ px na mobitelu se kvačice gornjeg retka dodiruju s
+     verzalima donjeg, pa je podignut. Engine broj redaka računa iz stvarnog
+     `line-height`-a, pa ovu vrijednost ne treba nigdje duplicirati. */
+  --lh-headline: 1.06;
+
   /* --- Layout --- */
   --container-page: 1160px;
   --container-page-wide: 1440px;

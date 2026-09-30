@@ -121,6 +121,11 @@ kopijama:
   Legenda se lomi u različit broj redaka, a `fit()` dijeli preostalu visinu,
   pa bez ovoga naslov dobije različito prostora u HR i EN.
 
+**Prored** je token `--lh-headline` (1,06), a ne dizajnovih 0,98: na hrvatskoj
+dijakritici (č, ž, š) i pri 80+ px kvačice gornjeg retka dodiruju verzale
+donjeg. Engine broj redaka računa iz **stvarnog** `line-height`-a elementa, pa
+se vrijednost mijenja samo u CSS-u i ne može se raziči s proračunom.
+
 **Tri zamke pri mjerenju, sve tri koštale su sat vremena:**
 
 1. **Ne `overflow: hidden` na mjernom bloku.** Preljev se odsiječe i
@@ -203,6 +208,8 @@ pristanak nego kulisa.
 - Odluka je u `localStorage` pod `tquilo.consent` (`all` | `essential`).
 - Traka se ne renderira dok skripta ne provjeri postoji li već odluka, pa ne
   bljesne posjetitelju koji se vraća.
+- Pozicija: dolje desno (kao DS `Toast`), iznad fiksne donje trake. Na
+  mobitelu se razvlači preko obje margine jer bi inače bila pretijesna.
 - Blokirana pohrana (privatni prozor) tretira se kao „samo nužno".
 
 ⚠ **Nedostaje stranica o privatnosti.** Traka je točna i minimalna, ali bez

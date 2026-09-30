@@ -1,0 +1,1 @@
+function e(e=document){for(let t of e.querySelectorAll(`[data-swatch-stack]`)){let e=(t.dataset.swatchStack||``).split(`,`);t.querySelectorAll(`[data-band]`).forEach((t,n)=>{e[n]&&(t.style.background=e[n])})}for(let t of e.querySelectorAll(`[data-swatch]`))t.style.background=t.dataset.swatch||``}export{e as t};

@@ -289,6 +289,21 @@ const fills = FILL;
       </div>
     </main>
 
+
+    {/* --------------------------------------------------------------- PDF
+        Blok postoji samo za ispis. Nema ga na ekranu, a `window.print()` ga
+        jedini prikaže - tako "Preuzmi PDF" radi bez servera i bez biblioteke
+        za generiranje PDF-a. Snimka 3D prikaza se ubaci prije poziva. */}
+    <div data-print class="hidden">
+      <img src="/logo/tquilo-primary-light.svg" alt={SITE.name} width="454" height="100" />
+      <h1>{L.head}</h1>
+      <p data-print-date></p>
+      <img data-print-shot alt="" />
+      <dl data-print-summary></dl>
+      <p data-print-url></p>
+      <p>{SITE.legal.name} · OIB {SITE.legal.oib}</p>
+    </div>
+
     <p
       data-toast
       role="status"

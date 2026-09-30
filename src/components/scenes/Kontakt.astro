@@ -44,7 +44,7 @@ const c = t(lang);
       data-contact
       method="post"
       action="/api/kontakt.php"
-      class="grid w-full max-w-[560px] gap-4"
+      class="grid w-full max-w-[560px] gap-3 md:gap-4"
     >
       <input type="hidden" name="lang" value={lang} />
       {/* Honeypot: pravi posjetitelj ga ne vidi, bot ga popuni. */}
@@ -55,7 +55,7 @@ const c = t(lang);
         </label>
       </p>
 
-      <div class="grid gap-4 md:grid-cols-2">
+      <div class="grid gap-3 md:grid-cols-2 md:gap-4">
         <label class="grid gap-2">
           <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fName}</span>
           <input
@@ -82,9 +82,9 @@ const c = t(lang);
         <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fMsg}</span>
         <textarea
           name="message"
-          rows="3"
+          rows="2"
           required
-          class="w-full resize-none border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+          class="w-full resize-none border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne md:min-h-[116px]"
         ></textarea>
       </label>
 
@@ -99,7 +99,7 @@ const c = t(lang);
       </div>
 
       {/* Prostor za poruku je rezerviran da se layout ne trza kad se pojavi. */}
-      <p data-form-status role="status" aria-live="polite" class="m-0 min-h-[64px] text-[14px] leading-[1.5]"></p>
+      <p data-form-status role="status" aria-live="polite" class="m-0 min-h-[36px] text-[14px] leading-[1.5] md:min-h-[64px]"></p>
     </form>
   </div>
 </section>

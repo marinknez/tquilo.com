@@ -1,5 +1,5 @@
 import type { APIRoute } from 'astro';
-import { SITE, absolute } from '../data/site';
+import { SITE, absolute, LAUNCHED } from '../data/site';
 
 /**
  * llms.txt - markdown sažetak stranice namijenjen jezičnim modelima
@@ -19,8 +19,9 @@ floating luxury platform: a private sunbed for two on the sea or a lake.
 
 ## Status
 
-The site is a coming soon page. Launching October 2026. There is no online booking,
-pricing page or product catalogue yet.
+${LAUNCHED
+  ? 'The site is live in Croatian and English. There is no online booking or pricing page; enquiries go through the contact form.'
+  : 'The site is a coming soon page. Launching October 2026. There is no online booking, pricing page or product catalogue yet.'}
 
 ## Product facts
 
@@ -52,7 +53,14 @@ pricing page or product catalogue yet.
 
 ## Pages
 
-- [Coming soon](${absolute('/')}): the only public page at this time.
+${LAUNCHED
+  ? [
+      `- [Home (HR)](${absolute('/hr')}): the full site in Croatian.`,
+      `- [Home (EN)](${absolute('/en')}): the full site in English.`,
+      `- [Colour configurator (HR)](${absolute('/hr/konfigurator')}): choose hull, cushion, awning, curtain and teak colours on a 3D model.`,
+      `- [Colour configurator (EN)](${absolute('/en/konfigurator')})`,
+    ].join('\n')
+  : `- [Coming soon](${absolute('/')}): the only public page at this time.`}
 `;
 
   return new Response(body, {

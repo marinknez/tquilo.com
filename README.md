@@ -1,140 +1,164 @@
-# tquilo.com - coming soon
+# tquilo.com
 
-Statična *coming soon* stranica za T'quilo, izgrađena iz priloženih design
-fajlova (`ComingSoon.dc.html` + T'quilo Design System).
-
-**Stack:** Astro 7 · Tailwind CSS 4 · bez JavaScripta na klijentu.
+**Stack:** Astro 7 · Tailwind CSS 4 · three.js · TypeScript.
 **Hosting:** Hostinger, auto-deploy s GitHuba (`deploy` grana = web root).
 
+Dvije stvari u jednom repozitoriju:
+
+1. **Coming soon** stranica na korijenu - trenutno jedino što je javno.
+2. **Puni site** na `/hr` i `/en`: vodoravna prezentacija od osam ekrana +
+   konfigurator boja s 3D modelom. Izgrađen, ali još ne javan.
+
 ---
+
+## ⚠ Prekidač lansiranja
+
+```ts
+// src/data/site.ts
+export const LAUNCHED = false;
+```
+
+| | `false` (sada) | `true` |
+| --- | --- | --- |
+| `/` | coming soon | puni site |
+| `/hr`, `/en` | grade se, ali `noindex, nofollow` | u indeksu |
+| `sitemap.xml` | samo `/` | sve rute |
+| `robots.txt` | `Disallow: /hr` i `/en` | sve dopušteno |
+| `llms.txt` | opisuje coming soon | popisuje stranice |
+
+Mijenja se **samo ta jedna varijabla**. Sve ostalo je prati.
 
 ## Pokretanje
 
 ```bash
 npm install
-npm run dev        # dev server
-npm run build      # produkcijski build u dist/
-npm run preview    # posluži dist/ lokalno
-npm run check      # astro check (TypeScript)
-npm run assets     # regeneriraj fontove, logotipe, ikone i OG sliku
+npm run dev          # dev server
+npm run build        # produkcijski build u dist/
+npm run preview      # posluži dist/ lokalno
+npm run check        # astro check (TypeScript)
+npm run assets       # regeneriraj SVE assete (brand + web)
+npm run assets:web   # samo fotografije, video, ikone, logotipi
 ```
 
 ## Struktura
 
 | Putanja | Što je |
 | --- | --- |
-| `src/data/site.ts` | **jedini izvor istine** - URL, naziv, opisi, e-mail, OG slika, datum lansiranja |
-| `src/pages/index.astro` | coming soon stranica (port `ComingSoon.dc.html`) |
-| `src/pages/404.astro` | 404, u istom brand jeziku |
-| `src/pages/robots.txt.ts` · `llms.txt.ts` · `.well-known/security.txt.ts` | generirani tekstualni resursi |
-| `src/styles/global.css` | design tokeni preslikani u Tailwind `@theme` |
-| `src/components/` | `Wordmark`, `Tag`, `Seo` - portovi komponenti iz design systema |
-| `brand/` | **izvorni** assetovi: licencirani TTF-ovi i logo SVG-ovi |
-| `public/` | ono što ide u build 1:1 - generirani fontovi, ikone, OG slika, `.htaccess` |
-| `scripts/prepare-assets.mjs` | brand pipeline (`npm run assets`) |
-| `_deploy.bat` | build + push na `main` i `deploy` |
+| `src/data/site.ts` | **izvor istine** - URL, naziv, opisi, pravna osoba, `LAUNCHED` |
+| `src/data/palette.ts` | boje proizvoda: segmenti, linije, partnerske sheme |
+| `src/data/ral.ts` | RAL Classic → hex (213 kodova) + najbliži RAL |
+| `src/i18n/hr.json` · `en.json` | sav copy, uključujući mobilne prijelome (`mh`) |
+| `src/pages/index.astro` | coming soon |
+| `src/pages/[lang]/index.astro` | puni site, osam ekrana |
+| `src/pages/[lang]/konfigurator.astro` | konfigurator boja |
+| `src/scripts/stage.ts` | engine vodoravne prezentacije |
+| `src/scripts/configurator/` | logika konfiguratora + 3D model |
+| `src/components/scenes/` | osam ekrana |
+| `src/components/Knockout.astro` | naslov kao prozor na fotografiju |
+| `brand/` · `images/` · `_design/` | izvorni materijali (`_design` je u gitignoreu) |
+| `public/api/kontakt.php` | primatelj kontakt forme |
 
-`_design/` i `*.zip` su u `.gitignore` - to su originalni paketi (34 MB).
-Sve što build treba iz njih kopirano je u `brand/` i commitano.
+## Vodoravna prezentacija
 
-## Brand pipeline (`npm run assets`)
+Port ponašanja iz `design/TQuilo Web.dc.html` u vanilla TS, bez frameworka.
+Stranica se ne skrola - `body` je fiksan, a traka se pomiče transformom.
 
-Pokreće se **ručno**, kad se promijene izvorni assetovi - ne pri svakom
-buildu. Izlaz je commitan u `public/`, pa deploy ne ovisi o `sharp` ni
-`harfbuzz` binarijima.
+- **Pomicanje:** `cur += (target - cur) · 0.08` po frameu.
+- **Točka:** završna točka naslova je pravi element. Raste od svog polumjera
+  do onog koji prekrije viewport (ease `p³`), zadrži se, pa otplovi.
+- **Knockout:** foto/video preko crne plohe s `mix-blend-multiply`, pa Abyss
+  preko svega s `mix-blend-lighten`. Slika se vidi samo kroz slova.
+  Svijetli ekran (Za partnere) okreće logiku: `screen` + `darken`.
+- **Fit naslova:** binarna pretraga najveće veličine koja stane u širinu i
+  visinu i ne prelazi 2 retka (desktop) / 4 (mobitel).
+- **Petlja:** klon prvog ekrana iza osmog; na granici se oduzme duljina trake
+  i sinkronizira vrijeme dvaju hero videa.
 
-Što radi:
+### Zamke na koje sam naletio
 
-1. **Fontovi** - Marcellus + Archivo TTF → subsetirani WOFF2
-   (latinica + hrvatska dijakritika + tipografski znakovi).
-   **680 kB → 31 kB.** Archivo zadržava varijabilnu os `wght` 300–600,
-   `wdth` je pinnan na 100 - točno raspon koji brand koristi.
-2. **Logotipi** - SVG-ovi iz design systema nose ugrađen C2PA manifest
-   (~8 kB base64 po datoteci) koji preglednik ignorira. Skida se:
-   **13 kB → 5 kB** po datoteci.
-3. **Rasterski derivati** - favicon, apple-touch-icon i 1200 × 630 OG slika
-   (renderirana iz istih tokena i fontova
-   kao stranica, bez ovisnosti o fontovima na build stroju).
+- **`z-index` na tekstualnom bloku ubija knockout.** Redoslijed slaganja mora
+  ostati redoslijed u DOM-u: tekst < medij < tint < legenda.
+- **Točka mora biti UNUTAR zadnjeg retka naslova.** Retci su na mobitelu
+  `block`; točka izvan njih pada u vlastiti red, fit misli da naslov ima redak
+  više i smanji ga do minimuma (16 px umjesto 52 px).
+- **Legenda se pozicionira prema sekciji, a sekcija je šira od ekrana** (zbog
+  spacera za točku). Bez `w-[84vw]` legenda se rastegne na 2660 px.
 
-## Jedan ekran, bez scrollbara
+Izmjereno na mobitelu: naslov **52 px na 390×844**, **48 px na 360×740**, isto
+u HR i EN, bez okomitog preljeva na ijednom ekranu.
 
-Stranica mora stati u jedan view bez scrollanja. To ne rješava
-`clamp(min, Xvw, max)` - on gleda **samo širinu**, pa u landscapeu na mobitelu
-i na niskim laptopima (1280 × 600) naslov ostane velik i sadržaj ispadne van.
+## Konfigurator
 
-Zato je fluidna skala u `src/styles/global.css` vezana za **obje osi**:
+Osam segmenata (trup gore/dolje, zaštita, jastuci, tenda, zavjese, tikovina,
+ispuna), tri linije boja, pet partnerskih shema **bez imena partnera**.
 
-```css
---fs-display: clamp(30px, min(11.7vw, 10.6dvh), 96px);
-```
+- **Ručni unos:** `#RRGGBB`, `RRGGBB`, `RAL 7016`, `ral7016` ili `7016`.
+  HEX prikaže najbliži RAL. Nepoznat unos vrati grešku, ne krivu boju.
+- **Dijeljenje:** cijela konfiguracija je u hashu, `~RAL` sufiks čuva kod
+  prilagođene boje. `history.replaceState` na svaku promjenu.
+- **PDF:** nema servera ni biblioteke - popuni se blok za ispis (snimka 3D
+  prikaza + tablica + URL) i pozove `window.print()`. Za pravi PDF s
+  prijelomom trebao bi server.
 
-`min(vw, dvh)` znači: veličinu diktira ona os prozora koja je tjesnja. `dvh`, a
-ne `vh`, jer se na mobilnim preglednicima URL traka uvlači i izvlači - `vh` bi
-ostao zaključan na veću vrijednost i proizveo scroll od par piksela.
+### 3D model
 
-Isto vrijedi za razmake, padding sekcije, visinu headera i footera. Layout je
-`grid-rows-[auto_1fr_auto]` na `min-h-dvh`; `main` je **grid** (ne blok) da se
-sadržaj stvarno centrira u preostaloj visini.
+**Parametarski, ne GLB - i to je svjesno odstupanje od handoffa.** Jedini
+postojeći 3D izvori (`zen-*.glb`, 2,6-32 MB) su jednomrežni scanovi **bez
+ijednog materijala**; iz njih se ne mogu izdvojiti osam nezavisno obojivih
+grupa, a bez toga konfigurator nema što bojati. Parametarski model nema mrežu
+za skinuti, svaka grupa ima svoj materijal, a geometrija je izvedena iz
+fotografija u `images/`.
 
-Nema `overflow: hidden` - ako sadržaj u nekom ekstremu ipak ne stane, bolje je
-da se stranica skrola nego da se tekst odreže. Izmjereno (`scrollHeight` vs
-`clientHeight`, kroz iframe da `dvh` bude stvaran):
+three.js se učitava lijeno (`IntersectionObserver` + sigurnosni timeout) jer
+je najveći paket na stranici.
 
-| Viewport | h1 | Scroll |
+## Brand pipeline
+
+Pokreće se ručno; izlaz je commitan, pa deploy ne ovisi o `sharp`, `ffmpeg`
+ni `harfbuzz`.
+
+| Što | Prije | Poslije |
 | --- | --- | --- |
-| 320 × 568 (iPhone SE 1) | 37 px | ne |
-| 375 × 812 (iPhone 13 mini) | 44 px | ne |
-| 430 × 932 (Pro Max) | 50 px | ne |
-| 812 × 375 (telefon, landscape) | 40 px | ne |
-| 768 × 1024 (iPad) | 90 px | ne |
-| 1280 × 600 (niski laptop) | 64 px | ne |
-| 1440 × 900 | 95 px | ne |
-| 1920 × 1080 / 2560 × 1440 | 96 px | ne |
-| 1920 × 400 (ekstrem) | 42 px | ne |
+| Fontovi (subset → WOFF2) | 680 kB | **31 kB** |
+| Fotografije (izvori za Astro `<Image>`) | 44 MB | **4,9 MB** |
+| Hero video (H.264 + VP9) | 15,6 MB | **1,17 + 0,96 MB** |
+| Ikone (strip C2PA → inline TS) | 105 kB | **3 kB** |
+| Logotipi (strip C2PA) | 13 kB | 5 kB |
 
-Ispod ~280 px širine stranica se skrola - ondje nijedan realan uređaj nije.
-
-⚠ Ako mijenjaš `text-[...]` s CSS varijablom, **treba type hint**:
-`text-[length:var(--fs-display)]`. Bez `length:` Tailwind ne zna je li to
-font-size ili boja, tiho preskoči klasu i naslov padne na 17 px.
+Astro iz commitanih izvora gradi AVIF u četiri širine.
 
 ## SEO, AI SEO i social
 
-- **Meta** - title, description, canonical, `robots` s `max-image-preview:large`.
-- **Open Graph + Twitter** - `summary_large_image`, apsolutni URL-ovi,
-  dimenzije i alt tekst slike.
-- **Structured data** - jedan JSON-LD `@graph`: `Organization` → `WebSite` →
-  `WebPage`, povezani preko `@id`. Jedna koherentna tvrdnja o brendu umjesto
-  tri odvojene.
-- **Sitemap** - `@astrojs/sitemap`, 404 je filtriran van.
-- **`robots.txt`** - generiran iz `SITE.url`; AI crawleri (GPTBot, ClaudeBot,
-  PerplexityBot, Google-Extended, …) su **izričito dopušteni**, poimence.
-- **`llms.txt`** - strojno čitljiv sažetak proizvoda za jezične modele.
-  Činjenice su iz design system readmea §1; ako se proizvod promijeni,
-  mijenja se i ovdje.
-- **Ikone** - favicon (ICO + SVG) i apple-touch-icon. Nema web app
-  manifesta - stranica se namjerno ne nudi za instalaciju.
+- Meta, canonical, `robots` s `max-image-preview:large`.
+- **`hreflang`** za `hr`, `en` i `x-default` na svim jezičnim rutama.
+- Open Graph + Twitter `summary_large_image`, `og:locale` prati jezik.
+- JSON-LD `@graph`: `Organization` (s `legalName` i `vatID`) → `WebSite` →
+  `WebPage`, povezani preko `@id`.
+- `robots.txt` s poimence dopuštenim AI crawlerima; `llms.txt` sa strojno
+  čitljivim sažetkom proizvoda.
 
 ## Sigurnost
 
-Sve je u `public/.htaccess` (završi u `dist/` pri svakom buildu):
+Sve je u `public/.htaccess`:
 
-- **CSP** `default-src 'none'` s eksplicitnim dopuštenjima. Stranica nema
-  inline skripte, inline stilove ni vanjske domene, pa je to izvedivo bez
-  `unsafe-inline`. **Ako se doda analitika ili forma, mijenja se ovdje -
-  ne dodavati `unsafe-inline`.**
-- **HSTS** 2 godine, `includeSubDomains`, `preload`.
-  ⚠ Preload lista se teško poništava - uključiti tek kad HTTPS radi na svim
-  subdomenama.
-- `X-Content-Type-Options`, `X-Frame-Options: DENY`, `Referrer-Policy`,
-  `X-Permitted-Cross-Domain-Policies`.
-- **COOP / COEP / CORP** - izolacija konteksta. Slike imaju iznimku
-  (`cross-origin`), inače ih social scraperi ne mogu dohvatiti.
-- **Permissions-Policy** - svi senzori i uređaji ugašeni eksplicitno.
-- Skrivene datoteke i konfiguracijski otpad blokirani; `/.well-known/` je
-  iznimka (security.txt, ACME challenge).
-- `/.well-known/security.txt` po RFC 9116. `Expires` se pomiče na svaki
-  build - statična datoteka bi nečujno zastarjela.
+- **CSP `default-src 'none'`, bez `unsafe-inline`.** Zato nigdje nema `style`
+  atributa u markupu ni inline skripti: boje se postavljaju iz JS-a preko
+  `element.style`, a podaci za konfigurator idu kroz
+  `<script type="application/json">` (podatkovni blok, preglednik ga ne
+  izvršava). **Ako se doda analitika, mijenja se ovdje - ne dodavati
+  `unsafe-inline`.**
+- HSTS 2 godine, `includeSubDomains`, `preload`.
+- COOP/COEP/CORP, Permissions-Policy, `X-Frame-Options: DENY`, `nosniff`.
+- `/.well-known/security.txt` po RFC 9116, `Expires` se pomiče na svaki build.
+
+**Kontakt forma** (`public/api/kontakt.php`): honeypot, ograničenje učestalosti
+po IP-u, validacija duljine i e-maila, čišćenje CR/LF iz zaglavlja. `From` je
+adresa na vlastitoj domeni (SPF/DMARC), posjetitelj ide u `Reply-To`. Radi i
+bez JavaScripta.
+
+PHP je izabran jer je site statičan na Hostingeru: Astro API ruta bi tražila
+Node runtime kojeg ondje nema, a vanjski servis bi značio da podaci odlaze
+trećoj strani i da CSP mora pustiti stranu domenu.
 
 ## Deploy
 
@@ -142,30 +166,40 @@ Sve je u `public/.htaccess` (završi u `dist/` pri svakom buildu):
 _deploy.bat
 ```
 
-1. Build **prije** pusha - ako build pukne, na GitHub ne ode ništa.
-2. Izvor → `main` (bez `dist/`).
-3. `dist/` → `deploy` grana, **fast-forward**, uz nastavak postojeće povijesti.
-   Hostinger radi `git pull` nad kloniranim repoom; force-push bi mu razbio
-   povijest i auto-deploy bi tiho prestao raditi.
-4. `--allow-empty` commit i kad je build identičan - inače GitHub ne pošalje
-   webhook i Hostinger ne povuče ništa.
+Build ide **prije** pusha; izvor na `main` (bez `dist/`), build na `deploy`
+granu fast-forwardom uz nastavak povijesti (Hostinger radi `git pull`, pa bi
+force-push razbio auto-deploy). `--allow-empty` commit i kad je build identičan,
+inače GitHub ne pošalje webhook.
 
-Hostinger postavke: repo `marinknez/tquilo.com`, grana **`deploy`**,
-web root = korijen grane.
+Hostinger: repo `marinknez/tquilo.com`, grana **`deploy`**, web root = korijen.
 
-## Prije lansiranja - provjeriti
+## ⚠ Prije lansiranja
 
-- [ ] `SITE.securityEmail` (`security@tquilo.com`) u `src/data/site.ts` -
-      alias mora postojati. Jedino je mjesto gdje stranica uopće navodi
-      e-mail, i to samo u `/.well-known/security.txt`; RFC 9116 traži kontakt,
-      bez njega je datoteka nevažeća. Kontakt e-mail je uklonjen odasvud -
-      footer, JSON-LD i `llms.txt`.
-- [ ] `SITE.social` - dodati profile kad postoje; `sameAs` se tada pojavi u
-      JSON-LD-u.
-- [ ] Datum lansiranja (`SITE.launch`) - trenutno *October 2026*.
-- [ ] HSTS `preload` u `.htaccess` - ostaviti samo ako HTTPS radi na svim
-      subdomenama.
-- [ ] Google Search Console + Bing Webmaster Tools: prijaviti sitemap.
+- [ ] `LAUNCHED = true` u `src/data/site.ts`.
+- [ ] `$TO` u `public/api/kontakt.php` - sada `info@tquilo.com`, placeholder.
+- [ ] `SITE.securityEmail` - jedino mjesto gdje stranica navodi e-mail
+      (RFC 9116 traži kontakt, inače je security.txt nevažeći).
+- [ ] **Tuđe oznake s fotografija**: narančasti vanbrodski motor na
+      `fjaka-detail-3.jpg` i `partneri.jpg`. Brand pravila to traže.
+- [ ] **PDF specifikacije** - nije isporučen; link na ekranu 04 je mrtav.
+- [ ] `SITE.social` - `sameAs` se pojavi u JSON-LD-u kad profili postoje.
+- [ ] HSTS `preload` - samo ako HTTPS radi na svim subdomenama.
+- [ ] Search Console + Bing: prijaviti sitemap.
+
+## Odstupanja od handoffa (i zašto)
+
+1. **RAL 5004** je u handoffu `#1F3A5F`. To nije RAL 5004 („Schwarzblau",
+   ≈`#20232C`) nego nešto bliže RAL 5011. Uzete su vrijednosti iz
+   konfiguratora proizvođača jer odgovaraju lakiranom proizvodu.
+2. **RAL 1013** je u izvornoj tablici bio `#ea9a5` - pet znamenki, nevažeći
+   hex, boja je tiho padala na crnu. Ispravljeno na `#E3D9C6`.
+3. **`tquilo-quality.png`** je bajt-u-bajt identičan heroju, pa bi ekran 03
+   ponovio isti kadar. Zamijenjen pravom fotografijom iz `images/`.
+4. **3D model je parametarski, ne GLB** - obrazloženo gore.
+5. **`mailto:hello@tquilo.com`** s ekrana 08 je izostavljen: adresa ne postoji,
+   a uputa je bila da e-mail ne stoji na stranici. Forma je kanal.
+6. **`fWho` i `fSub`** postoje u copyju, ali ih finalni dizajn ne renderira -
+   nisu implementirani.
 
 ## Licence
 

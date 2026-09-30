@@ -38,8 +38,19 @@ export function initConfigurator() {
       // `~RAL` sufiks čuva kod prilagođene boje, npr. 383E42~7016
       const [hex, ral] = raw.split('~');
       if (!/^[0-9a-fA-F]{6}$/.test(hex)) continue;
-      state[k as SegmentKey] = '#' + hex.toUpperCase();
-      if (ral) meta[k as SegmentKey] = { ral, custom: true };
+      const key = k as SegmentKey;
+      state[key] = '#' + hex.toUpperCase();
+      if (ral) {
+        meta[key] = { ral, custom: true };
+      } else {
+        // Boja iz palete zadržava naziv; samo prilagođene ostaju "po narudžbi".
+        const sw = document.querySelector<HTMLElement>(
+          `[data-segment="${key}"] [data-pick="${state[key]}"]`,
+        );
+        meta[key] = sw
+          ? { name: sw.dataset.name, ral: sw.dataset.ral, custom: false }
+          : { custom: true };
+      }
     }
   };
 
@@ -188,13 +199,43 @@ export function initConfigurator() {
     }
   });
 
+  /**
+   * "Preuzmi PDF" bez servera i bez biblioteke: popuni se blok za ispis i
+   * pozove `window.print()`. Korisnik u dijalogu bira "Spremi kao PDF".
+   * Za pravi PDF s prijeloma bi trebao server - vidi README.
+   */
   for (const b of document.querySelectorAll<HTMLElement>('[data-pdf]')) {
     b.addEventListener('click', () => {
       const shot = model?.snapshot();
-      if (shot) {
-        const img = document.querySelector<HTMLImageElement>('[data-print-shot]');
-        if (img) img.src = shot;
+      const img = document.querySelector<HTMLImageElement>('[data-print-shot]');
+      if (img) {
+        if (shot) img.src = shot;
+        else img.remove();
       }
+
+      const date = document.querySelector<HTMLElement>('[data-print-date]');
+      if (date) {
+        date.textContent =
+          (boot.lang === 'en' ? 'Configuration · ' : 'Konfiguracija · ') +
+          new Date().toLocaleDateString(boot.lang === 'en' ? 'en-GB' : 'hr-HR');
+      }
+
+      const url = document.querySelector<HTMLElement>('[data-print-url]');
+      if (url) url.textContent = location.href;
+
+      const dl = document.querySelector<HTMLElement>('[data-print-summary]');
+      if (dl) {
+        dl.textContent = '';
+        for (const sec of segmentEls) {
+          const k = sec.dataset.segment as SegmentKey;
+          const dt = document.createElement('dt');
+          dt.textContent = sec.querySelector('span')?.textContent ?? k;
+          const dd = document.createElement('dd');
+          dd.textContent = valueText(k);
+          dl.append(dt, dd);
+        }
+      }
+
       window.print();
     });
   }
@@ -225,8 +266,8 @@ export function initConfigurator() {
   };
 
   if (host) {
-    // Učitaj tek kad prikaz uđe u vidno polje - na mobitelu je panel ono što
-    // se prvo čita, a three.js je najveći paket na stranici.
+    // Učitaj kad prikaz uđe u vidno polje - three.js je najveći paket na
+    // stranici, a na mobitelu je panel ono što se prvo čita.
     const io = new IntersectionObserver((entries) => {
       if (entries.some((e) => e.isIntersecting)) {
         io.disconnect();
@@ -234,6 +275,10 @@ export function initConfigurator() {
       }
     }, { rootMargin: '200px' });
     io.observe(host);
+    // Sigurnosna mreža: IntersectionObserver zna ne okinuti kad je stranica
+    // u skaliranom ili skrivenom okviru. Bez ovoga prikaz zauvijek ostane na
+    // "Učitavam…", a to je jedini sadržaj lijevog stupca.
+    setTimeout(() => { io.disconnect(); loadModel(); }, 1500);
   }
 
   readHash();

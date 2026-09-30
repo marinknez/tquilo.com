@@ -222,3 +222,73 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* ==========================================================================
+   ISPIS - konfigurator, "Preuzmi PDF"
+
+   Nema generiranja PDF-a na serveru ni biblioteke u pregledniku: ispisuje se
+   posebno pripremljen blok, a korisnik u dijalogu za ispis odabere "Spremi
+   kao PDF". Sve ostalo se sakrije.
+   ========================================================================== */
+@media print {
+  body > *:not([data-print]) {
+    display: none !important;
+  }
+
+  [data-print] {
+    display: block !important;
+    color: #0b1622;
+    background: #fff;
+    font-family: var(--font-body);
+    padding: 12mm;
+  }
+
+  [data-print] h1 {
+    font-family: var(--font-display);
+    font-size: 24pt;
+    font-weight: 400;
+    margin: 8mm 0 2mm;
+  }
+
+  [data-print] > img:first-child {
+    width: 46mm;
+    height: auto;
+  }
+
+  [data-print] img[data-print-shot] {
+    width: 100%;
+    max-height: 110mm;
+    object-fit: contain;
+    margin: 6mm 0;
+    background: #0b1622;
+  }
+
+  [data-print] dl {
+    display: grid;
+    grid-template-columns: 55mm 1fr;
+    gap: 2mm 4mm;
+    font-size: 10.5pt;
+    margin: 0 0 6mm;
+  }
+
+  [data-print] dt {
+    color: #6e7681;
+  }
+
+  [data-print] dd {
+    margin: 0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  [data-print] p {
+    font-size: 9pt;
+    color: #6e7681;
+    margin: 0 0 2mm;
+    word-break: break-all;
+  }
+
+  @page {
+    size: A4;
+    margin: 0;
+  }
+}

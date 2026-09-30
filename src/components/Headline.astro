@@ -34,20 +34,26 @@ const dark = tone === 'dark';
     dark ? 'text-white' : 'text-black',
   ]}
 >
-  {/* Bez razmaka i novog reda između span-ova i točke - Astro bi ih pretvorio
-      u tekstualne čvorove, pa bi točka odlebdjela od zadnjeg slova. */}
-  {lines.map((line, i) => (<span
+  {/* Bez razmaka i novog reda između elemenata - Astro bi ih pretvorio u
+      tekstualne čvorove, pa bi točka odlebdjela od zadnjeg slova.
+
+      Točka je UNUTAR zadnjeg retka, ne iza njega. Retci su na mobitelu
+      `block`; točka izvan njih bi pala u vlastiti, peti red, pa bi fit
+      mislio da naslov ima jedan redak više nego što ima i smanjio ga do
+      minimuma. */}
+  {lines.map((line: string, i: number) => (<span
         class:list={[
           // Mobitel: svaki redak je svoj, bez prelamanja.
           'block whitespace-nowrap',
           // Desktop: retci se stope osim gdje je prijelom izričito tražen.
           breakAfter.includes(i) ? 'md:block md:whitespace-normal' : 'md:inline md:whitespace-normal',
         ]}
-      >{line}{i < lines.length - 1 && <span class="hidden md:inline">{' '}</span>}</span>))}<span
-    data-dot
-    aria-hidden="true"
-    class:list={[
-      'ml-[0.03em] inline-block h-[0.12em] w-[0.12em] rounded-full align-baseline will-change-transform',
-      dark ? 'bg-white' : 'bg-black',
-    ]}></span>
+      >{line}{i === lines.length - 1 ? (<span
+          data-dot
+          aria-hidden="true"
+          class:list={[
+            'ml-[0.03em] inline-block h-[0.12em] w-[0.12em] rounded-full align-baseline will-change-transform',
+            dark ? 'bg-white' : 'bg-black',
+          ]}
+        />) : (<span class="hidden md:inline">{' '}</span>)}</span>))}
 </Tag>

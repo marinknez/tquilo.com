@@ -46,7 +46,7 @@ const HALF_L = 1.15; // duljina 2,3 m
 const DECK = 0.2; // gornja ploha tikovine iznad vodne linije
 const RUB = 0.14; // gumena letva (spoj donjeg i gornjeg trupa)
 const SEAT = 0.62; // sjedna ploha
-const BACK = 1.04; // vrh naslona
+const BACK = 0.98; // vrh naslona
 const POST_TOP = 2.35; // tenda iznad vodne linije
 
 /* ------------------------------------------------------------------ alati */
@@ -128,7 +128,7 @@ function teakTexture(decor: string, fill: string) {
 
 /** Zavjesa: ravnina s naborima i strukom na mjestu veza. */
 function curtainGeometry(height: number) {
-  const g = new THREE.PlaneGeometry(0.5, height, 40, 30);
+  const g = new THREE.PlaneGeometry(0.34, height, 36, 30);
   const p = g.attributes.position;
   for (let i = 0; i < p.count; i++) {
     const vx = p.getX(i);
@@ -136,9 +136,9 @@ function curtainGeometry(height: number) {
     const t = (vy + height / 2) / height;
     // Struk: zavjesa je vezana malo ispod sredine.
     const ty = vy + height * 0.08;
-    const pinch = 1 - 0.5 * Math.exp(-(ty * ty) / 0.05);
+    const pinch = 1 - 0.62 * Math.exp(-(ty * ty) / 0.035);
     const folds = (Math.sin(vx * 42) * 0.028 + Math.sin(vx * 19 + 0.6) * 0.017) * (0.5 + 0.5 * pinch);
-    const bulge = 0.04 * (1 - Math.min(1, Math.abs(vx) / 0.25)) * (0.45 + 0.55 * t);
+    const bulge = 0.05 * (1 - Math.min(1, Math.abs(vx) / 0.17)) * (0.45 + 0.55 * t);
     p.setX(i, vx * pinch);
     p.setZ(i, folds + bulge);
   }
@@ -171,7 +171,7 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   scene.fog = new THREE.Fog(ABYSS, 9, 22);
 
   const camera = new THREE.PerspectiveCamera(38, el.clientWidth / el.clientHeight, 0.1, 100);
-  const HOME: [number, number, number] = [4.1, 2.5, 5.2];
+  const HOME: [number, number, number] = [3.9, 3.3, 4.9];
   camera.position.set(...HOME);
 
   const controls = new OrbitControls(camera, renderer.domElement);
@@ -182,7 +182,7 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   controls.maxDistance = 11;
   controls.maxPolarAngle = Math.PI / 2 - 0.06; // ne ispod horizonta
   controls.minPolarAngle = 0.2;
-  controls.target.set(0, 0.8, 0);
+  controls.target.set(0, 0.95, 0);
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.8;
 
@@ -368,6 +368,37 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   }), mats.teak, 0, TT, -0.12);
   top.geometry.rotateX(-Math.PI / 2);
 
+  /* ------------------------------------------------------------ LOGOTIP */
+  // Mono logotip kao decal na pramčanom zidu, u boji koja se vidi na bilo
+  // kojoj boji trupa. Učitava se asinkrono; ako padne, ploha se ne doda -
+  // model je i bez oznake ispravan.
+  const decal = new THREE.Mesh(
+    new THREE.PlaneGeometry(1.18, 0.26),
+    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
+  );
+  decal.position.set(0, BACK - 0.42, 1.145);
+  boat.add(decal);
+  void (async () => {
+    try {
+      const svg = await (await fetch('/logo/tquilo-primary-mono.svg')).text();
+      const img = new Image();
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(svg.replace(/currentColor/g, '#FFFFFF'));
+      await img.decode();
+      const cv = document.createElement('canvas');
+      cv.width = 1024;
+      cv.height = Math.round((1024 * img.height) / img.width) || 226;
+      cv.getContext('2d')!.drawImage(img, 0, 0, cv.width, cv.height);
+      const tex = new THREE.CanvasTexture(cv);
+      tex.colorSpace = THREE.SRGBColorSpace;
+      const m = decal.material as THREE.MeshBasicMaterial;
+      m.map = tex;
+      m.opacity = 0.9;
+      m.needsUpdate = true;
+    } catch {
+      /* bez logotipa - model ostaje ispravan */
+    }
+  })();
+
   /* ------------------------------------------------------------- ZVUČNICI */
   for (const x of [-0.78, 0.78]) {
     add(new THREE.CylinderGeometry(0.075, 0.075, 0.03, 24), inox, x, BACK - 0.16, 0.935, { x: Math.PI / 2 });
@@ -384,27 +415,27 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   }
 
   /* ------------------------------------------------------ STUPOVI I TENDA */
-  const px = 1.16;
-  const pz = 1.06;
+  const px = 1.13;
+  const pz = 1.03;
   for (const [x, z] of [
     [-px, pz],
     [px, pz],
     [-px, -pz],
     [px, -pz],
   ] as [number, number][]) {
-    add(new THREE.CylinderGeometry(0.021, 0.024, POST_TOP - SEAT, 16), inox, x, (POST_TOP + SEAT) / 2, z);
+    add(new THREE.CylinderGeometry(0.015, 0.018, POST_TOP - SEAT, 14), inox, x, (POST_TOP + SEAT) / 2, z);
   }
   // Ravna tenda, malo veća od tlocrta, s volanom (skirt) po obodu.
-  add(roundedBox(2.62, 2.46, 0.055, 0.1), mats.awning, 0, POST_TOP, 0);
-  const skirtH = 0.13;
-  add(new THREE.BoxGeometry(2.62, skirtH, 0.025), mats.awning, 0, POST_TOP - skirtH / 2 - 0.02, 1.225);
-  add(new THREE.BoxGeometry(2.62, skirtH, 0.025), mats.awning, 0, POST_TOP - skirtH / 2 - 0.02, -1.225);
-  add(new THREE.BoxGeometry(0.025, skirtH, 2.46), mats.awning, 1.305, POST_TOP - skirtH / 2 - 0.02, 0);
-  add(new THREE.BoxGeometry(0.025, skirtH, 2.46), mats.awning, -1.305, POST_TOP - skirtH / 2 - 0.02, 0);
+  add(roundedBox(2.56, 2.38, 0.035, 0.1), mats.awning, 0, POST_TOP, 0);
+  const skirtH = 0.09;
+  add(new THREE.BoxGeometry(2.56, skirtH, 0.025), mats.awning, 0, POST_TOP - skirtH / 2 - 0.012, 1.19);
+  add(new THREE.BoxGeometry(2.56, skirtH, 0.025), mats.awning, 0, POST_TOP - skirtH / 2 - 0.012, -1.19);
+  add(new THREE.BoxGeometry(0.025, skirtH, 2.38), mats.awning, 1.28, POST_TOP - skirtH / 2 - 0.012, 0);
+  add(new THREE.BoxGeometry(0.025, skirtH, 2.38), mats.awning, -1.28, POST_TOP - skirtH / 2 - 0.012, 0);
 
   /* ------------------------------------------------------------- ZAVJESE */
   const curtainBottom = RUB + 0.04;
-  const cGeo = curtainGeometry(POST_TOP - curtainBottom - 0.06);
+  const cGeo = curtainGeometry(POST_TOP - curtainBottom - 0.1);
   const cy = (POST_TOP + curtainBottom) / 2;
   const diag = Math.atan2(px, pz);
   for (const [x, z, ry] of [
@@ -473,7 +504,7 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
     },
     reset() {
       camera.position.set(...HOME);
-      controls.target.set(0, 0.8, 0);
+      controls.target.set(0, 0.95, 0);
       controls.update();
     },
     setAutoRotate(on) {

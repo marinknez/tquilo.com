@@ -2,28 +2,22 @@
 /** 03 Kvaliteta / Quality. */
 import Knockout from '../Knockout.astro';
 import Headline from '../Headline.astro';
+import Legend from '../legends/Legend.astro';
+import KvalitetaBody from '../legends/KvalitetaBody.astro';
 import img from '../../assets/photo/kvaliteta.jpg';
-import { t, type Lang } from '../../i18n';
+import { t, altLang, type Lang } from '../../i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
+const alt = t(altLang(lang));
 ---
 
 <Knockout scene="kvaliteta" image={img} position="kvaliteta" alt={c.q1}>
-  <Headline a={c.lqa} b={c.lqb} br lines={c.mh.lq} />
+  <Headline a={c.lqa} b={c.lqb} br lines={c.mh.lq} altLines={alt.mh.lq} />
 
-  <div
-    slot="legend"
-    data-legend
-    class="pointer-events-none absolute left-[8vw] z-20 flex w-[84vw] flex-wrap items-start gap-x-[56px] gap-y-4"
-  >
-    <div class="grid max-w-[360px] gap-[10px]">
-      <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.q1label}</span>
-      <span class="text-[15px] leading-[1.6] text-mist">{c.q1}</span>
-    </div>
-    <div class="grid max-w-[360px] gap-[10px]">
-      <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.q2label}</span>
-      <span class="text-[15px] leading-[1.6] text-mist">{c.q2}</span>
-    </div>
-  </div>
+  {/* Legenda se renderira dvaput: vidljivo i nevidljivo na drugom jeziku.
+      Engine uzima veću visinu, pa naslov dobije jednako prostora u oba
+      jezika - v. Legend.astro. */}
+  <Legend slot="legend"><KvalitetaBody c={c} /></Legend>
+  <Legend slot="legend" measure><KvalitetaBody c={alt} /></Legend>
 </Knockout>

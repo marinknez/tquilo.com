@@ -1,11 +1,12 @@
 ---
 /** 06 Izvedbe / Versions - Pure i Signature. */
 import Icon from '../Icon.astro';
-import { t, type Lang } from '../../i18n';
+import { t, altLang, type Lang } from '../../i18n';
 import type { IconName } from '../../icons/icons';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
+const alt = t(altLang(lang));
 
 const versions = [
   { name: 'Pure', desc: c.vPure, items: c.vCommon },
@@ -25,11 +26,19 @@ const versions = [
       <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.vLabel}</span>
       <span
         data-head
-        class="font-display text-[9vw] leading-[1.02] tracking-[-0.01em] text-balance md:text-[min(4.6vw,9vh)]"
+        class="relative font-display text-[9vw] leading-[1.02] tracking-[-0.01em] text-balance md:text-[min(4.6vw,9vh)]"
       >
         <span class="hidden md:inline">{c.vHead}</span>
         <span class="md:hidden"
           >{c.mh.vHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
+        >
+        {/* Mjerni blok drugog jezika - nevidljiv, visine 0. Bez njega HR i
+            EN dobiju različitu veličinu naslova (v. Headline.astro). */}
+        <span
+          data-alt-head
+          aria-hidden="true"
+          class="pointer-events-none invisible absolute inset-x-0 top-0 block h-0 md:hidden"
+          >{alt.mh.vHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
         >
       </span>
     </div>

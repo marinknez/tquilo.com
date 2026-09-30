@@ -2,39 +2,22 @@
 /** 02 Voda / Water. */
 import Knockout from '../Knockout.astro';
 import Headline from '../Headline.astro';
-import Icon from '../Icon.astro';
+import Legend from '../legends/Legend.astro';
+import VodaBody from '../legends/VodaBody.astro';
 import img from '../../assets/photo/voda-aerial.jpg';
-import { t, type Lang } from '../../i18n';
+import { t, altLang, type Lang } from '../../i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
+const alt = t(altLang(lang));
 ---
 
 <Knockout scene="voda" image={img} position="voda" alt={c.g1}>
-  <Headline a={c.l1a} b={c.l1b} lines={c.mh.l1} />
+  <Headline a={c.l1a} b={c.l1b} lines={c.mh.l1} altLines={alt.mh.l1} />
 
-  <div
-    slot="legend"
-    data-legend
-    class="pointer-events-none absolute left-[8vw] z-20 flex w-[84vw] flex-wrap items-start gap-x-[56px] gap-y-4"
-  >
-    <div class="grid max-w-[360px] gap-[10px]">
-      <span class="flex items-center gap-3 text-champagne">
-        <Icon name="no-licence" size={24} />
-        <span class="text-[12px] font-medium tracking-[0.16em] uppercase">{c.g1label}</span>
-      </span>
-      <span class="text-[15px] leading-[1.6] text-mist">{c.g1}</span>
-    </div>
-
-    <div class="grid max-w-[360px] gap-[10px]">
-      <span class="flex items-center gap-3 text-champagne">
-        <Icon name="fridge" size={24} />
-        <Icon name="shower" size={24} />
-        <Icon name="awning" size={24} />
-        <Icon name="sound" size={24} />
-        <span class="text-[12px] font-medium tracking-[0.16em] uppercase">{c.g2label}</span>
-      </span>
-      <span class="text-[15px] leading-[1.6] text-mist">{c.g2}</span>
-    </div>
-  </div>
+  {/* Legenda se renderira dvaput: vidljivo i nevidljivo na drugom jeziku.
+      Engine uzima veću visinu, pa naslov dobije jednako prostora u oba
+      jezika - v. Legend.astro. */}
+  <Legend slot="legend"><VodaBody c={c} /></Legend>
+  <Legend slot="legend" measure><VodaBody c={alt} /></Legend>
 </Knockout>

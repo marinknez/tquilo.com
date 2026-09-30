@@ -15,6 +15,13 @@ const DICT: Record<Lang, Copy> = { hr, en: en as Copy };
 
 export const t = (lang: Lang): Copy => DICT[lang] ?? DICT[DEFAULT_LANG];
 
+/**
+ * Drugi jezik. Treba za mjerenje: mobilni naslov mora biti jednake veličine
+ * u HR i EN, a svaka je ruta zaseban dokument - bez ovoga bi svaki jezik
+ * dobio vlastiti minimum i stranice se ne bi poklapale.
+ */
+export const altLang = (lang: Lang): Lang => (lang === 'hr' ? 'en' : 'hr');
+
 /** Putanja stranice za dani jezik. `page` je bez vodeće kose crte. */
 export const localePath = (lang: Lang, page = ''): string =>
   page ? `/${lang}/${page}` : `/${lang}`;

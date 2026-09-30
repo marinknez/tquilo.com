@@ -87,8 +87,33 @@ Stranica se ne skrola - `body` je fiksan, a traka se pomiče transformom.
   `position: relative` da se računaju u njezinim koordinatama. Inače se na
   spoju, gdje se sekcije preklapaju -4 px, vidi tamna traka.
 
-Izmjereno na mobitelu: naslov **52 px na 390×844**, **48 px na 360×740**, isto
-u HR i EN, bez okomitog preljeva na ijednom ekranu.
+### HR i EN moraju biti identični
+
+Na mobitelu svi naslovi imaju **jednu veličinu** - na svim ekranima i u oba
+jezika. Inače naslov poskakuje pri vodoravnom listanju i pri prebacivanju
+jezika. Svaki je jezik zasebna ruta, pa se drugi jezik mora izmjeriti na
+skrivenim kopijama:
+
+- `[data-alt-head]` - prijelomi naslova drugog jezika (`Headline.astro`).
+- `[data-alt-legend]` - legenda drugog jezika (`legends/Legend.astro`).
+  Legenda se lomi u različit broj redaka, a `fit()` dijeli preostalu visinu,
+  pa bez ovoga naslov dobije različito prostora u HR i EN.
+
+**Tri zamke pri mjerenju, sve tri koštale su sat vremena:**
+
+1. **Ne `overflow: hidden` na mjernom bloku.** Preljev se odsiječe i
+   `scrollWidth` zauvijek ostane jednak `clientWidth`. Koristi se
+   `visibility: hidden` + `height: 0`.
+2. **Ne postavljati mu `font-size`.** Mora naslijediti od naslova, inače se
+   prestane skalirati zajedno s njim i od druge `measure()` nadalje mjeri
+   krivu veličinu.
+3. **Točka mora biti u mjernom bloku, pripijena uz zadnje slovo.** Bez nje je
+   zadnji redak uži za ~0,15 em; s novim redom u markupu ispred nje - širi za
+   jedan razmak. Oboje daje krivu veličinu.
+
+Izmjereno, HR i EN **identično**: 47,9 px na 360×740 · 52 px na 390×844 ·
+54,8 px na 412×915. Bez okomitog preljeva sadržaja na ijednom ekranu.
+Na desktopu se svaki naslov fita zasebno, kako dizajn i traži.
 
 ## Konfigurator
 

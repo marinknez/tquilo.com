@@ -1,0 +1,17 @@
+---
+import Icon from '../Icon.astro';
+import type { Copy } from '../../i18n';
+const { c } = Astro.props as { c: Copy };
+---
+<div class="grid max-w-[640px] gap-[10px]">
+  <span class="text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-salt text-pretty">{c.g3}</span>
+  <span
+    class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-trench pt-[14px] text-[14px] leading-[1.6] text-mist"
+  >
+    <span class="flex items-center gap-3 font-display text-[20px] text-salt">
+      <span class="flex text-champagne"><Icon name="fjaka" size={24} /></span>
+      Fjaka
+    </span>
+    <span class="basis-full text-pretty">{c.fjakaDef}</span>
+  </span>
+</div>

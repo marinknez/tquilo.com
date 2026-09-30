@@ -8,52 +8,22 @@
  */
 import Knockout from '../Knockout.astro';
 import Headline from '../Headline.astro';
-import Icon from '../Icon.astro';
+import Legend from '../legends/Legend.astro';
+import PartneriBody from '../legends/PartneriBody.astro';
 import img from '../../assets/photo/partneri.jpg';
-import { t, localePath, type Lang } from '../../i18n';
+import { t, altLang, localePath, type Lang } from '../../i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
+const alt = t(altLang(lang));
 ---
 
 <Knockout scene="partneri" tone="light" image={img} position="partneri" alt={c.g4}>
-  <Headline a={c.l3a} b={c.l3b} lines={c.mh.l3} tone="light" />
+  <Headline a={c.l3a} b={c.l3b} lines={c.mh.l3} altLines={alt.mh.l3} tone="light" />
 
-  <div
-    slot="legend"
-    data-legend
-    class="absolute left-[8vw] z-20 flex w-[84vw] flex-wrap items-start gap-x-[56px] gap-y-4 text-abyss"
-  >
-    <div class="grid max-w-[480px] gap-[10px]">
-      <span class="text-[12px] font-medium tracking-[0.16em] text-brass-ink uppercase">{c.g4label}</span>
-      <span class="text-[15px] leading-[1.6] text-slate-ink">{c.g4}</span>
-    </div>
-
-    <div class="grid content-start gap-[10px] text-[15px]">
-      <a
-        href="#kontakt"
-        data-go="7"
-        class="hidden justify-self-start border-b border-abyss pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink md:inline"
-        >{c.quote}</a
-      >
-      {/* PDF specifikacije nije isporučen - vidi README, otvorene stavke. */}
-      <a
-        href="#"
-        class="flex items-center justify-self-start gap-2 border-b border-shell pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink"
-      >
-        <Icon name="download" size={20} />
-        {c.spec}
-      </a>
-    </div>
-
-    <div class="self-end max-md:mt-[5vh] max-md:ml-0 max-md:flex max-md:basis-full max-md:justify-center md:ml-auto">
-      <a
-        href={localePath(lang, 'konfigurator')}
-        class="inline-flex items-center gap-3 border-2 border-abyss px-6 py-[14px] text-[15px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:bg-abyss hover:text-salt active:translate-y-px"
-      >
-        {c.configurator}
-        <Icon name="arrow-right" size={20} />
-      </a>
-    </div>
-  </div>
+  {/* Legenda se renderira dvaput: vidljivo i nevidljivo na drugom jeziku.
+      Engine uzima veću visinu, pa naslov dobije jednako prostora u oba
+      jezika - v. Legend.astro. */}
+  <Legend slot="legend" light><PartneriBody c={c} lang={lang} /></Legend>
+  <Legend slot="legend" measure light><PartneriBody c={alt} lang={lang} /></Legend>
 </Knockout>

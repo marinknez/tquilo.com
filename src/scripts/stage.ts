@@ -75,6 +75,20 @@ export function initStage(root: ParentNode = document) {
   const cover = (sx: number, sy: number) =>
     Math.hypot(Math.max(sx, W - sx), Math.max(sy, H - sy)) + 2;
 
+  /**
+   * Visina legende za proračun - veća od vidljive i one na drugom jeziku.
+   *
+   * Bez toga HR i EN dobiju različitu veličinu naslova: `fit()` dijeli
+   * preostalu visinu, a odlomak legende se u dva jezika lomi u različit broj
+   * redaka. Nevidljiva kopija (`[data-alt-legend]`) postoji samo za ovo
+   * mjerenje, pa su obje verzije stranice identične.
+   */
+  const legendHeight = (el: HTMLElement) =>
+    Math.max(
+      el.querySelector<HTMLElement>('[data-legend]')?.offsetHeight ?? 0,
+      el.querySelector<HTMLElement>('[data-alt-legend]')?.offsetHeight ?? 0,
+    );
+
   const dotOf = (el: HTMLElement) => {
     const ds = el.querySelectorAll<HTMLElement>('[data-dot]');
     for (const d of ds) if (d.getClientRects().length) return d;
@@ -94,9 +108,25 @@ export function initStage(root: ParentNode = document) {
   };
 
   /**
-   * Najveća veličina naslova koja istovremeno: stane u širinu, stane u
-   * raspoloživu visinu, i ne prelazi 2 retka na desktopu (4 na mobitelu).
-   * Binarna pretraga jer je odnos veličine i broja redaka stepenast.
+   * Prelijeva li naslov u širinu - uključujući mjerni blok drugog jezika.
+   *
+   * `[data-alt-head]` je apsolutno pozicioniran, pa NE ulazi u `scrollWidth`
+   * roditelja; mora se pitati zasebno. Veličinu fonta nasljeđuje od naslova,
+   * pa se skalira zajedno s njim i ne treba mu ništa postavljati.
+   */
+  const overflows = (el: HTMLElement) => {
+    if (el.scrollWidth > el.clientWidth + 1) return true;
+    for (const a of el.querySelectorAll<HTMLElement>('[data-alt-head]')) {
+      if (a.scrollWidth > a.clientWidth + 1) return true;
+    }
+    return false;
+  };
+
+  /**
+   * Najveća veličina naslova koja istovremeno: stane u širinu (u OBA jezika),
+   * stane u raspoloživu visinu, i ne prelazi 2 retka na desktopu (4 na
+   * mobitelu). Binarna pretraga jer je odnos veličine i broja redaka
+   * stepenast.
    */
   function fit(text: HTMLElement, maxH: number) {
     let lo = 16;
@@ -105,10 +135,7 @@ export function initStage(root: ParentNode = document) {
       const mid = (lo + hi) / 2;
       text.style.fontSize = mid + 'px';
       const lines = Math.round(text.scrollHeight / (mid * 0.98));
-      const ok =
-        text.scrollHeight <= maxH &&
-        text.scrollWidth <= text.clientWidth + 1 &&
-        lines <= (mobile ? 4 : 2);
+      const ok = text.scrollHeight <= maxH && !overflows(text) && lines <= (mobile ? 4 : 2);
       if (ok) lo = mid;
       else hi = mid;
     }
@@ -137,14 +164,13 @@ export function initStage(root: ParentNode = document) {
       for (const el of els) {
         const text = el.querySelector<HTMLElement>('[data-text]');
         if (!text || el.hasAttribute('data-clone')) continue;
-        const lg = el.querySelector<HTMLElement>('[data-legend]');
         const sp = el.querySelector<HTMLElement>('[data-spacer]');
         const dot = dotOf(el);
         const side = el.querySelector<HTMLElement>('[data-side]');
         if (dot) dot.style.transform = 'none';
         if (sp) sp.style.width = '0px';
         const xt = side && side.offsetHeight ? side.offsetHeight + gap : 0;
-        fit(text, H - HEADER - BOTTOM - pad * 2 - xt - (lg ? lg.offsetHeight : 0) - gap);
+        fit(text, H - HEADER - BOTTOM - pad * 2 - xt - legendHeight(el) - gap);
         sizes.push(parseFloat(text.style.fontSize));
       }
       fsM = sizes.length ? Math.min(...sizes) : 48;
@@ -154,18 +180,14 @@ export function initStage(root: ParentNode = document) {
         Array.from(track!.querySelectorAll<HTMLElement>('[data-scene]:not([data-clone]) [data-text]')),
       );
 
-      // ...pa i minimum drugog jezika. Drugi jezik se mjeri na skrivenim
-      // kopijama naslova (`[data-alt-head]`) - bez toga bi HR i EN imali
-      // različitu veličinu, a prekidač jezika bi mijenjao tipografiju.
-      const alt = Array.from(track!.querySelectorAll<HTMLElement>('[data-alt-head]'));
-      for (const a of alt) a.style.fontSize = fsM + 'px';
-      for (let k = 0; k < 14 && alt.some((a) => a.scrollWidth > a.clientWidth + 1); k++) {
-        fsM *= 0.96;
-        for (const a of alt) a.style.fontSize = fsM + 'px';
-      }
+      // Drugi jezik se mjeri sam od sebe: `[data-alt-head]` je apsolutno
+      // pozicioniran potomak naslova, pa njegov preljev ulazi u
+      // `scrollWidth` roditelja. Veličinu fonta mu se NE smije postavljati -
+      // mora je naslijediti, inače se prestane skalirati zajedno s naslovom
+      // i mjerenje od druge `measure()` nadalje više ništa ne znači.
 
       for (const t of all) t.style.fontSize = fsM + 'px';
-      for (let k = 0; k < 14 && all.some((t) => t.scrollWidth > t.clientWidth + 1); k++) {
+      for (let k = 0; k < 14 && all.some(overflows); k++) {
         fsM *= 0.96;
         for (const t of all) t.style.fontSize = fsM + 'px';
       }
@@ -180,7 +202,7 @@ export function initStage(root: ParentNode = document) {
       if (sp) sp.style.width = '0px';
       if (!text) continue;
 
-      const lgH = lg ? lg.offsetHeight : 0;
+      const lgH = legendHeight(el);
       const side = mobile ? el.querySelector<HTMLElement>('[data-side]') : null;
       const xt = side && side.offsetHeight ? side.offsetHeight + gap : 0;
       const avail = H - HEADER - BOTTOM - pad * 2 - xt;

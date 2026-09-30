@@ -12,10 +12,11 @@
  */
 import Icon from '../Icon.astro';
 import { SITE } from '../../data/site';
-import { t, type Lang } from '../../i18n';
+import { t, altLang, type Lang } from '../../i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
+const alt = t(altLang(lang));
 ---
 
 <section
@@ -30,11 +31,19 @@ const c = t(lang);
       <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.fLabel}</span>
       <span
         data-head
-        class="font-display text-[11vw] leading-[0.98] tracking-[-0.01em] text-balance md:text-[min(6vw,13vh)]"
+        class="relative font-display text-[11vw] leading-[0.98] tracking-[-0.01em] text-balance md:text-[min(6vw,13vh)]"
       >
         <span class="hidden md:inline">{c.fHead}</span>
         <span class="md:hidden"
           >{c.mh.fHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
+        >
+        {/* Mjerni blok drugog jezika - nevidljiv, visine 0. Bez njega HR i
+            EN dobiju različitu veličinu naslova (v. Headline.astro). */}
+        <span
+          data-alt-head
+          aria-hidden="true"
+          class="pointer-events-none invisible absolute inset-x-0 top-0 block h-0 md:hidden"
+          >{alt.mh.fHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
         >
       </span>
       <span class="mt-[1vh] font-display text-[20px] leading-[1.2] text-mist md:mt-[5vh] md:text-[22px]">
@@ -52,7 +61,7 @@ const c = t(lang);
       data-contact
       method="POST"
       action="https://api.web3forms.com/submit"
-      class="grid content-start gap-[10px] md:max-w-[560px] md:content-center md:gap-[clamp(12px,2.2vh,22px)]"
+      class="grid content-start gap-2 md:max-w-[560px] md:content-center md:gap-[clamp(12px,2.2vh,22px)]"
     >
       <input type="hidden" name="access_key" value="7ca9e87d-718a-4615-9228-af3c22de6727" />
       <input type="hidden" name="subject" value="tquilo.com - upit s weba" />
@@ -61,43 +70,43 @@ const c = t(lang);
       {/* Web3Forms honeypot: pravi posjetitelj ga ne vidi, bot ga popuni. */}
       <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
 
-      <div class="grid grid-cols-[minmax(0,1fr)] gap-[10px] md:grid-cols-2 md:gap-4">
-        <label class="grid gap-2">
+      <div class="grid grid-cols-[minmax(0,1fr)] gap-2 md:grid-cols-2 md:gap-4">
+        <label class="grid gap-1.5 md:gap-2">
           <span class="text-[12px] font-medium tracking-[0.16em] text-mist uppercase">{c.fName}</span>
           <input
             type="text"
             name="name"
             required
             autocomplete="name"
-            class="w-full border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+            class="w-full border border-trench bg-transparent px-4 py-[11px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
           />
         </label>
-        <label class="grid gap-2">
+        <label class="grid gap-1.5 md:gap-2">
           <span class="text-[12px] font-medium tracking-[0.16em] text-mist uppercase">{c.fMail}</span>
           <input
             type="email"
             name="email"
             required
             autocomplete="email"
-            class="w-full border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+            class="w-full border border-trench bg-transparent px-4 py-[11px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
           />
         </label>
       </div>
 
-      <label class="grid gap-2">
+      <label class="grid gap-1.5 md:gap-2">
         <span class="text-[12px] font-medium tracking-[0.16em] text-mist uppercase">{c.fMsg}</span>
         <textarea
           name="message"
           rows="2"
           required
-          class="w-full resize-none border border-trench bg-transparent px-4 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] outline-none focus-visible:border-champagne md:min-h-[116px]"
+          class="w-full resize-none border border-trench bg-transparent px-4 py-[11px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne md:min-h-[116px]"
         ></textarea>
       </label>
 
       <div class="flex justify-end">
         <button
           type="submit"
-          class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-[14px] text-[15px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px"
+          class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-3 text-[15px] whitespace-nowrap md:py-[14px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px"
         >
           {c.fSend}
           <Icon name="arrow-right" size={20} />
@@ -109,7 +118,7 @@ const c = t(lang);
         data-form-status
         role="status"
         aria-live="polite"
-        class="m-0 min-h-[36px] text-[14px] leading-[1.5] md:min-h-[64px]"
+        class="m-0 min-h-[26px] text-[14px] leading-[1.5] md:min-h-[64px]"
       >
       </p>
     </form>

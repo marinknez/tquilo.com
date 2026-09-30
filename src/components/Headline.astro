@@ -11,6 +11,13 @@
  * Točka je UNUTAR zadnjeg retka. Izvan njega bi na mobitelu (gdje su retci
  * `block`) pala u vlastiti red, pa bi fit mislio da naslov ima redak više i
  * smanjio ga do minimuma.
+ *
+ * `altLines` je mjerni blok s prijelomima DRUGOG jezika. Bez njega HR i EN
+ * dobiju različitu veličinu naslova (vezni ekran je Izvedbe: „Ista
+ * platforma." protiv „One platform."), pa se dvije verzije stranice ne
+ * poklapaju. Blok je visine 0 i apsolutno pozicioniran - ne vidi se, ne
+ * zauzima prostor, ali mu je širina jednaka stvarnom naslovu, pa ga engine
+ * može izmjeriti.
  */
 interface Props {
   /** Desktop: prvi dio naslova, lomi se slobodno. */
@@ -21,10 +28,12 @@ interface Props {
   br?: boolean;
   /** Mobitel: prijelomi iz `mh`; zadnji redak nosi točku. */
   lines: readonly string[];
+  /** Isti prijelomi na drugom jeziku - samo za mjerenje. */
+  altLines?: readonly string[];
   tone?: 'dark' | 'light';
 }
 
-const { a, b, br = false, lines, tone = 'dark' } = Astro.props;
+const { a, b, br = false, lines, altLines, tone = 'dark' } = Astro.props;
 const dark = tone === 'dark';
 const dotClass = [
   'ml-[0.03em] inline-block h-[0.12em] w-[0.12em] rounded-full',
@@ -45,3 +54,20 @@ const last = lines[lines.length - 1];
   >{head.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}<span
     class="block whitespace-nowrap">{last}<span data-dot class={dotClass}></span></span></span
 >
+
+{/* Mjerni blok drugog jezika - nevidljiv, visine 0. */}
+{
+  altLines && (
+    <span
+      data-alt-head
+      aria-hidden="true"
+      class="pointer-events-none invisible absolute inset-x-0 top-0 block h-0 md:hidden"
+    >
+      {/* Točka mora biti pripijena uz zadnje slovo, bez novog reda u markupu:
+          novi red postaje razmak i mjerni blok ispadne širi nego stvarni
+          naslov. BEZ `data-dot` - engine bi je inače mogao uzeti za pravu. */}
+      {altLines.map((ln: string, i: number) => (<span class="block whitespace-nowrap"
+        >{ln}{i === altLines.length - 1 && <span class={dotClass} />}</span>))}
+    </span>
+  )
+}

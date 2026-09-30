@@ -2,10 +2,11 @@
 /** 05 Boje / Colours - brendiranje. Običan ekran, bez knockouta. */
 import ColorwayStack from '../ColorwayStack.astro';
 import { LINES } from '../../data/palette';
-import { t, type Lang } from '../../i18n';
+import { t, altLang, type Lang } from '../../i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
+const alt = t(altLang(lang));
 ---
 
 <section
@@ -20,11 +21,19 @@ const c = t(lang);
       <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.g5label}</span>
       <span
         data-head
-        class="font-display text-[9vw] leading-[1.02] tracking-[-0.01em] text-balance md:text-[min(4.6vw,9vh)]"
+        class="relative font-display text-[9vw] leading-[1.02] tracking-[-0.01em] text-balance md:text-[min(4.6vw,9vh)]"
       >
         <span class="hidden md:inline">{c.g5head}</span>
         <span class="md:hidden"
           >{c.mh.g5head.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
+        >
+        {/* Mjerni blok drugog jezika - nevidljiv, visine 0. Bez njega HR i
+            EN dobiju različitu veličinu naslova (v. Headline.astro). */}
+        <span
+          data-alt-head
+          aria-hidden="true"
+          class="pointer-events-none invisible absolute inset-x-0 top-0 block h-0 md:hidden"
+          >{alt.mh.g5head.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
         >
       </span>
       <span class="text-[14px] leading-[1.5] text-mist text-pretty md:text-[clamp(15px,1.2vw,18px)] md:leading-[1.6]"

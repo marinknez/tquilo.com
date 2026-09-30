@@ -2,12 +2,15 @@
 /** 01 Mir / Quiet - hero s videom. */
 import Knockout from '../Knockout.astro';
 import Headline from '../Headline.astro';
+import Legend from '../legends/Legend.astro';
+import HeroBody from '../legends/HeroBody.astro';
 import poster from '../../assets/photo/hero-poster.jpg';
-import { t, type Lang } from '../../i18n';
+import { t, altLang, type Lang } from '../../i18n';
 
 interface Props { lang: Lang; clone?: boolean; }
 const { lang, clone = false } = Astro.props;
 const c = t(lang);
+const alt = t(altLang(lang));
 ---
 
 <Knockout
@@ -17,13 +20,11 @@ const c = t(lang);
   alt={c.g0}
   video={{ mp4: '/video/hero.mp4', webm: '/video/hero.webm', poster }}
 >
-  <Headline a={c.l0a} b={c.l0b} lines={c.mh.l0} />
+  <Headline a={c.l0a} b={c.l0b} lines={c.mh.l0} altLines={alt.mh.l0} />
 
-  <div
-    slot="legend"
-    data-legend
-    class="pointer-events-none absolute left-[8vw] z-20 flex w-[84vw] flex-wrap items-start gap-x-[56px] gap-y-4"
-  >
-    <p class="m-0 max-w-[600px] text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-mist text-pretty">{c.g0}</p>
-  </div>
+  {/* Legenda se renderira dvaput: vidljivo i nevidljivo na drugom jeziku.
+      Engine uzima veću visinu, pa naslov dobije jednako prostora u oba
+      jezika - v. Legend.astro. */}
+  <Legend slot="legend"><HeroBody c={c} /></Legend>
+  <Legend slot="legend" measure><HeroBody c={alt} /></Legend>
 </Knockout>

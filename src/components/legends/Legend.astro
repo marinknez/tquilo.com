@@ -1,0 +1,41 @@
+---
+/**
+ * Omotač legende knockout ekrana.
+ *
+ * Renderira se dvaput po ekranu: jednom vidljivo (`data-legend`), jednom
+ * nevidljivo s copyjem drugog jezika (`data-alt-legend`). Engine uzima veću
+ * od dvije visine, pa je prostor koji ostaje naslovu jednak u HR i EN -
+ * inače bi HR i EN dobili različitu veličinu naslova samo zato što se
+ * odlomak legende lomi u drugačiji broj redaka.
+ */
+interface Props {
+  /** `true` = nevidljiva mjerna kopija. */
+  measure?: boolean;
+  /** Fjaka ima uži stupac jer lijevo stoje fotografije. */
+  narrow?: boolean;
+  /** Svijetli ekran (Za partnere). */
+  light?: boolean;
+  class?: string;
+}
+
+const { measure = false, narrow = false, light = false, class: className } = Astro.props;
+
+const width = narrow
+  ? 'left-[8vw] w-[84vw] md:left-[calc(8vw+min(20vw,34vh)+4vw)] md:w-[calc(84vw-min(20vw,34vh)-4vw)]'
+  : 'left-[8vw] w-[84vw]';
+---
+
+<div
+  data-legend={measure ? undefined : ''}
+  data-alt-legend={measure ? '' : undefined}
+  aria-hidden={measure ? 'true' : undefined}
+  class:list={[
+    'absolute z-20',
+    width,
+    measure ? 'invisible top-0 -z-10' : '',
+    light ? 'text-abyss' : 'pointer-events-none',
+    className,
+  ]}
+>
+  <slot />
+</div>

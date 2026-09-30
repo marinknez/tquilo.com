@@ -1,0 +1,7 @@
+---
+import type { Copy } from '../../i18n';
+const { c } = Astro.props as { c: Copy };
+---
+<div class="flex flex-wrap items-start gap-x-[56px] gap-y-4">
+  <p class="m-0 max-w-[600px] text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-mist text-pretty">{c.g0}</p>
+</div>

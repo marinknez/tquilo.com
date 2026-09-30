@@ -1,0 +1,39 @@
+---
+import Icon from '../Icon.astro';
+import { localePath, type Lang } from '../../i18n';
+import type { Copy } from '../../i18n';
+const { c, lang } = Astro.props as { c: Copy; lang: Lang };
+---
+<div class="flex flex-wrap items-start gap-x-[56px] gap-y-4">
+  <div class="grid max-w-[480px] gap-[10px]">
+    <span class="text-[12px] font-medium tracking-[0.16em] text-brass-ink uppercase">{c.g4label}</span>
+    <span class="text-[15px] leading-[1.6] text-slate-ink">{c.g4}</span>
+  </div>
+
+  <div class="grid content-start gap-[10px] text-[15px]">
+    <a
+      href="#kontakt"
+      data-go="7"
+      class="hidden justify-self-start border-b border-abyss pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink md:inline"
+      >{c.quote}</a
+    >
+    {/* PDF specifikacije nije isporučen - vidi README, otvorene stavke. */}
+    <a
+      href="#"
+      class="flex items-center justify-self-start gap-2 border-b border-shell pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink"
+    >
+      <Icon name="download" size={20} />
+      {c.spec}
+    </a>
+  </div>
+
+  <div class="self-end max-md:mt-[5vh] max-md:ml-0 max-md:flex max-md:basis-full max-md:justify-center md:ml-auto">
+    <a
+      href={localePath(lang, 'konfigurator')}
+      class="inline-flex items-center gap-3 border-2 border-abyss px-6 py-[14px] text-[15px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:bg-abyss hover:text-salt active:translate-y-px"
+    >
+      {c.configurator}
+      <Icon name="arrow-right" size={20} />
+    </a>
+  </div>
+</div>

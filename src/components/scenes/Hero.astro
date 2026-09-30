@@ -5,10 +5,7 @@ import Headline from '../Headline.astro';
 import poster from '../../assets/photo/hero-poster.jpg';
 import { t, type Lang } from '../../i18n';
 
-interface Props {
-  lang: Lang;
-  clone?: boolean;
-}
+interface Props { lang: Lang; clone?: boolean; }
 const { lang, clone = false } = Astro.props;
 const c = t(lang);
 ---
@@ -20,14 +17,13 @@ const c = t(lang);
   alt={c.g0}
   video={{ mp4: '/video/hero.mp4', webm: '/video/hero.webm', poster }}
 >
-  <Headline lines={c.mh.l0} as={clone ? 'h2' : 'h1'} />
+  <Headline a={c.l0a} b={c.l0b} lines={c.mh.l0} />
 
   <div
     slot="legend"
     data-legend
-    class="pointer-events-none absolute left-[8vw] z-20 w-[84vw] max-w-[600px]"
+    class="pointer-events-none absolute left-[8vw] z-20 flex w-[84vw] flex-wrap items-start gap-x-[56px] gap-y-4"
   >
-    <p class="m-0 text-label font-medium tracking-[0.16em] text-champagne uppercase">{c.g0label}</p>
-    <p class="mt-4 mb-0 text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-mist">{c.g0}</p>
+    <p class="m-0 max-w-[600px] text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-mist text-pretty">{c.g0}</p>
   </div>
 </Knockout>

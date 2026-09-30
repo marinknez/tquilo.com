@@ -2,20 +2,22 @@
 /**
  * "Knockout" ekran - naslov je prozor na fotografiju.
  *
- * Četiri sloja u jednoj sekciji, i redoslijed je bitan:
- *   1. Tekstualni blok  - crna ploha, bijeli naslov (na svijetlom ekranu obrnuto).
- *   2. Medijski sloj    - foto/video preko teksta, `mix-blend-multiply`:
- *                         crno × bilo što = crno, bijelo × foto = foto.
- *                         Zato se slika vidi SAMO kroz slova.
- *   3. Tint             - Abyss preko svega, `mix-blend-lighten`: crna podloga
- *                         postaje brand plava, a slova ostaju svijetla.
- *   4. Legenda          - iznad svega, izvan blendanja.
+ * Slojevi, redom kojim se slažu (redoslijed u DOM-u = redoslijed slaganja,
+ * nijedan nema z-index osim legende):
+ *   1. `data-block`  - crna ploha s bijelim naslovom (na svijetlom obrnuto).
+ *   2. `data-fill`   - krug koji raste. Vidi niže zašto nije skalirana točka.
+ *   3. `data-media`  - foto/video, `mix-blend-multiply`: crno × bilo što = crno,
+ *                      bijelo × foto = foto. Slika se vidi samo kroz slova.
+ *   4. tint          - Abyss preko svega, `mix-blend-lighten`.
+ *   5. legenda       - iznad svega, izvan blendanja.
  *
- * Svijetla varijanta (Za partnere) okreće logiku: bijela ploha, crni tekst,
- * `screen` + `darken`.
- *
- * Točka na kraju naslova je pravi element. Engine je skalira dok ne prekrije
- * ekran - tada je vidljiva cijela fotografija.
+ * KRUG: dizajn skalira samu točku (`transform: scale()`). Točka je ~6 px, a
+ * mora prekriti ekran - to je uvećanje od par stotina puta, pa preglednik
+ * rasterizira rub jednom i razvlači ga: vidljivo nazubljen rub. Ovdje krug
+ * crta `clip-path: circle()` preko plohe pune veličine. Rub se računa
+ * analitički pri svakom frameu, pa ostaje oštar na svakoj veličini.
+ * Točka u tekstu ostaje pravi element - drži mjesto u retku, služi za
+ * mjerenje i vidi se kad JavaScript ne radi.
  */
 import { Image } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
@@ -23,33 +25,29 @@ import type { ImageMetadata } from 'astro';
 /**
  * `object-position` mora biti statična klasa, a ne inline style: CSP je
  * `style-src 'self'` bez `unsafe-inline`, a Tailwind ne može generirati
- * klasu iz runtime vrijednosti. Zato zatvorena mapa - dizajn ionako koristi
- * samo ovih pet kadrova.
+ * klasu iz runtime vrijednosti. Vrijednosti su iz dizajna.
  */
 const POSITION = {
   center: 'object-center',
-  'voda': 'object-[40%_55%]',
-  'kvaliteta': 'object-[50%_55%]',
-  'partneri': 'object-[50%_45%]',
-  'fjaka': 'object-[55%_50%]',
+  voda: 'object-[40%_55%]',
+  kvaliteta: 'object-[50%_55%]',
+  partneri: 'object-[50%_45%]',
+  fjaka: 'object-[55%_50%]',
 } as const;
 
 interface Props {
-  /** Ime scene - samo za čitljivost DOM-a u devtoolsu. */
   scene: string;
   tone?: 'dark' | 'light';
   image?: ImageMetadata;
-  /** Kadriranje fotografije - ključ iz `POSITION`. */
   position?: keyof typeof POSITION;
   video?: { mp4: string; webm: string; poster: ImageMetadata };
   alt: string;
-  /** Eksponent rasta točke. 3 = dugo miruje pa naglo otvori. */
+  /** Eksponent rasta kruga. 3 = dugo miruje pa naglo otvori. */
   exp?: number;
-  /** Označava klon prvog ekrana na kraju trake (beskonačna petlja). */
   clone?: boolean;
-  /** Prioritetno učitavanje - samo prvi ekran. */
   eager?: boolean;
-  class?: string;
+  /** Dodatne klase na `data-text` - Fjaka uvlači naslov iza bočnog stupca. */
+  textClass?: string;
 }
 
 const {
@@ -62,14 +60,10 @@ const {
   exp = 3,
   clone = false,
   eager = false,
-  class: className,
+  textClass,
 } = Astro.props;
 
 const dark = tone === 'dark';
-
-// Filtar mirovanja: spljošti fotografiju da rubovi slova ostanu čitljivi
-// prema podlozi. Engine ga iz ovih vrijednosti interpolira prema punoj
-// zasićenosti dok se točka otvara.
 const restFilter = dark ? '0.72 1.18' : '0.9 0.72';
 ---
 
@@ -79,28 +73,47 @@ const restFilter = dark ? '0.72 1.18' : '0.9 0.72';
   data-clone={clone ? '' : undefined}
   data-bg={dark ? '#0B1622' : '#F6F3EE'}
   class:list={[
-    'relative isolate flex h-full shrink-0 overflow-hidden',
-    // Sekcije se preklapaju 4 px: bez toga se između ekrana vidi 1 px šav.
+    'relative isolate h-full flex-none overflow-hidden',
+    // Sekcije se preklapaju 4 px - inače se na spoju vidi 1 px šav.
     '-mr-[4px]',
     dark ? 'bg-black' : 'bg-white',
-    className,
   ]}
 >
-  {/* BEZ z-index-a. Redoslijed slaganja je redoslijed u DOM-u:
-      tekst < medij < tint < legenda. Bilo koji `z-*` ovdje digne tekstualni
-      blok iznad medija i knockout nestane - slova postanu obična bijela. */}
-  <div class="relative flex h-full w-screen shrink-0 flex-col justify-start px-[8vw]">
-    <slot />
+  <div
+    data-block
+    class:list={[
+      'relative flex h-full items-start',
+      dark ? 'bg-black text-white' : 'bg-white text-black',
+    ]}
+  >
+    <div
+      data-text
+      class:list={[
+        'flex-none font-display leading-[0.98] tracking-[-0.01em] text-balance',
+        textClass ?? 'ml-[8vw] w-[84vw]',
+      ]}
+    >
+      <slot />
+    </div>
+    {/* Sekcija mora biti šira od ekrana da krug stigne prekriti ekran,
+        zadržati se, pa otploviti. Širinu računa engine. */}
+    <div data-spacer class="h-px flex-none"></div>
   </div>
 
-  {/* Spacer: sekcija mora biti šira od ekrana da krug stigne prekriti ekran,
-      zadržati se, pa otploviti. Širinu računa engine. */}
-  <div data-spacer class="h-full shrink-0"></div>
+  <div
+    data-fill
+    aria-hidden="true"
+    class:list={[
+      'pointer-events-none absolute inset-0 [clip-path:circle(0)]',
+      dark ? 'bg-white' : 'bg-black',
+    ]}
+  >
+  </div>
 
   <div
     data-media
     class:list={[
-      'pointer-events-none absolute inset-y-0 left-0 w-screen will-change-transform',
+      'pointer-events-none absolute top-0 left-0 h-full w-screen will-change-transform',
       dark ? 'mix-blend-multiply' : 'mix-blend-screen',
     ]}
   >
@@ -108,7 +121,7 @@ const restFilter = dark ? '0.72 1.18' : '0.9 0.72';
       video ? (
         <video
           data-filter={restFilter}
-          class="h-full w-full object-cover"
+          class="absolute inset-0 h-full w-full object-cover"
           autoplay
           muted
           loop
@@ -131,7 +144,7 @@ const restFilter = dark ? '0.72 1.18' : '0.9 0.72';
           fetchpriority={eager ? 'high' : undefined}
           format="avif"
           quality={72}
-          class:list={['h-full w-full object-cover', POSITION[position]]}
+          class:list={['absolute inset-0 h-full w-full object-cover', POSITION[position]]}
         />
       ) : null
     }

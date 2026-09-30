@@ -56,7 +56,7 @@ npm run assets:web   # samo fotografije, video, ikone, logotipi
 | `src/components/scenes/` | osam ekrana |
 | `src/components/Knockout.astro` | naslov kao prozor na fotografiju |
 | `brand/` · `images/` · `_design/` | izvorni materijali (`_design` je u gitignoreu) |
-| `public/api/kontakt.php` | primatelj kontakt forme |
+| `src/scripts/contact.ts` | slanje kontakt forme na Web3Forms |
 
 ## Vodoravna prezentacija
 
@@ -83,6 +83,9 @@ Stranica se ne skrola - `body` je fiksan, a traka se pomiče transformom.
   više i smanji ga do minimuma (16 px umjesto 52 px).
 - **Legenda se pozicionira prema sekciji, a sekcija je šira od ekrana** (zbog
   spacera za točku). Bez `w-[84vw]` legenda se rastegne na 2660 px.
+- **Šavovi moraju biti iznad sekcija** (`z-index: 5`), a traka mora biti
+  `position: relative` da se računaju u njezinim koordinatama. Inače se na
+  spoju, gdje se sekcije preklapaju -4 px, vidi tamna traka.
 
 Izmjereno na mobitelu: naslov **52 px na 390×844**, **48 px na 360×740**, isto
 u HR i EN, bez okomitog preljeva na ijednom ekranu.
@@ -151,14 +154,12 @@ Sve je u `public/.htaccess`:
 - COOP/COEP/CORP, Permissions-Policy, `X-Frame-Options: DENY`, `nosniff`.
 - `/.well-known/security.txt` po RFC 9116, `Expires` se pomiče na svaki build.
 
-**Kontakt forma** (`public/api/kontakt.php`): honeypot, ograničenje učestalosti
-po IP-u, validacija duljine i e-maila, čišćenje CR/LF iz zaglavlja. `From` je
-adresa na vlastitoj domeni (SPF/DMARC), posjetitelj ide u `Reply-To`. Radi i
-bez JavaScripta.
-
-PHP je izabran jer je site statičan na Hostingeru: Astro API ruta bi tražila
-Node runtime kojeg ondje nema, a vanjski servis bi značio da podaci odlaze
-trećoj strani i da CSP mora pustiti stranu domenu.
+**Kontakt forma** ide na **Web3Forms**. To je jedina vanjska domena na
+stranici, pa je u CSP-u dopuštena poimence (`form-action` i `connect-src`).
+Forma radi i bez JavaScripta: bez njega je običan POST i Web3Forms vrati
+vlastitu potvrdu; s njim se šalje u pozadini i javi status, da posjetitelj ne
+ispadne iz vodoravne prezentacije. Web3Forms honeypot (`botcheck`) je
+uključen.
 
 ## Deploy
 
@@ -176,7 +177,8 @@ Hostinger: repo `marinknez/tquilo.com`, grana **`deploy`**, web root = korijen.
 ## ⚠ Prije lansiranja
 
 - [ ] `LAUNCHED = true` u `src/data/site.ts`.
-- [ ] `$TO` u `public/api/kontakt.php` - sada `info@tquilo.com`, placeholder.
+- [ ] Web3Forms: provjeriti da je `access_key` vezan na pravu primateljsku
+      adresu i poslati testni upit.
 - [ ] `SITE.securityEmail` - jedino mjesto gdje stranica navodi e-mail
       (RFC 9116 traži kontakt, inače je security.txt nevažeći).
 - [ ] **Tuđe oznake s fotografija**: narančasti vanbrodski motor na
@@ -193,13 +195,16 @@ Hostinger: repo `marinknez/tquilo.com`, grana **`deploy`**, web root = korijen.
    konfiguratora proizvođača jer odgovaraju lakiranom proizvodu.
 2. **RAL 1013** je u izvornoj tablici bio `#ea9a5` - pet znamenki, nevažeći
    hex, boja je tiho padala na crnu. Ispravljeno na `#E3D9C6`.
-3. **`tquilo-quality.png`** je bajt-u-bajt identičan heroju, pa bi ekran 03
-   ponovio isti kadar. Zamijenjen pravom fotografijom iz `images/`.
-4. **3D model je parametarski, ne GLB** - obrazloženo gore.
-5. **`mailto:hello@tquilo.com`** s ekrana 08 je izostavljen: adresa ne postoji,
+3. **3D model je parametarski, ne GLB** - obrazloženo gore.
+4. **`mailto:hello@tquilo.com`** s ekrana 08 je izostavljen: adresa ne postoji,
    a uputa je bila da e-mail ne stoji na stranici. Forma je kanal.
-6. **`fWho` i `fSub`** postoje u copyju, ali ih finalni dizajn ne renderira -
+5. **`fWho` i `fSub`** postoje u copyju, ali ih finalni dizajn ne renderira -
    nisu implementirani.
+
+**Napomena o `tquilo-quality.png`:** ta je datoteka u isporučenom paketu
+bajt-u-bajt identična `tquilo-hero-sea.png`, pa ekran 03 pokazuje isti kadar
+kao poster hero videa. Koristi se onako kako je isporučena - ako je to greška
+u paketu, zamijeni se izvorna datoteka u `_design/`, ne popis u skripti.
 
 ## Licence
 

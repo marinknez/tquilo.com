@@ -3,24 +3,26 @@
  * Stup boja jedne linije - šest ploha bez razmaka, redom odozgo:
  * tenda, zavjese, jastuci, tikovina, trup gore, trup dolje.
  *
- * Boje dolaze kao runtime vrijednosti, pa ne mogu biti Tailwind klase.
- * Rješenje koje ne traži `unsafe-inline` u CSP-u: `<template>` s podacima
- * koje mala skripta primijeni preko `element.style` (v. `swatch.ts`).
+ * Boje su runtime vrijednosti, pa ne mogu biti Tailwind klase. Rješenje bez
+ * `unsafe-inline` u CSP-u: vrijednosti idu u `data-` atribut, a mala skripta
+ * ih primijeni preko `element.style` (v. `swatch.ts`).
  */
 import type { Config } from '../data/palette';
 
 interface Props {
   config: Config;
+  /** Opis linije ispod stupa. Izostavi se kad se stup koristi kao gumb. */
+  note?: string;
   /**
-   * `auto` (zadano): vodoravna traka 64 px na mobitelu, uspravan stup na
-   * desktopu. Responzivno klasama, a ne propom, jer se orijentacija mijenja
-   * na istoj stranici - build-time prop to ne bi mogao.
+   * `auto` (zadano): vodoravna traka na mobitelu, uspravan stup na desktopu.
+   * Responzivno klasama, a ne propom - orijentacija se mijenja na istoj
+   * stranici, pa je build-time prop ne bi mogao pratiti.
    */
   orientation?: 'auto' | 'vertical';
   class?: string;
 }
 
-const { config, orientation = 'auto', class: className } = Astro.props;
+const { config, note, orientation = 'auto', class: className } = Astro.props;
 
 // Redoslijed je propisan design systemom i ne mijenja se.
 const ORDER = ['awning', 'curtain', 'cushion', 'teak', 'upper', 'lower'] as const;
@@ -28,23 +30,25 @@ const bands = ORDER.map((k) => config[k]);
 const auto = orientation === 'auto';
 ---
 
-<div
-  data-swatch-stack={bands.join(',')}
-  class:list={[
-    'flex border border-trench',
-    auto ? 'h-16 w-full md:h-auto md:max-w-[240px] md:flex-col' : 'w-full max-w-[240px] flex-col',
-    className,
-  ]}
->
-  {
-    bands.map(() => (
-      <span
-        data-band
-        class:list={[
-          'block',
-          auto ? 'h-full flex-1 md:h-[26px] md:w-full md:flex-none' : 'h-[26px] w-full',
-        ]}
-      />
-    ))
-  }
+<div class={className}>
+  <div
+    data-swatch-stack={bands.join(',')}
+    class:list={[
+      'flex border border-trench',
+      auto ? 'h-16 w-full md:h-auto md:flex-col' : 'w-full flex-col',
+    ]}
+  >
+    {
+      bands.map(() => (
+        <span
+          data-band
+          class:list={[
+            'block',
+            auto ? 'h-full flex-1 md:h-[26px] md:w-full md:flex-none' : 'h-[26px] w-full',
+          ]}
+        />
+      ))
+    }
+  </div>
+  {note && <p class="mt-3 mb-0 hidden text-[14px] leading-[1.5] text-mist md:block">{note}</p>}
 </div>

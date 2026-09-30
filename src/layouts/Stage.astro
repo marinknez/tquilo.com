@@ -94,9 +94,9 @@ const alts = alternates();
       data-scenes={JSON.stringify(c.scenes)}
       class="fixed inset-0 overflow-hidden"
     >
-      <div data-track class="flex h-full will-change-transform">
+      <div data-track class="relative flex h-full will-change-transform">
         <slot />
-        <div data-seams class="pointer-events-none absolute inset-0 z-0"></div>
+        <div data-seams aria-hidden="true" class="pointer-events-none absolute top-0 left-0 h-full w-0"></div>
       </div>
     </div>
 

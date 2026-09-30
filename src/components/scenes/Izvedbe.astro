@@ -8,54 +8,70 @@ const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
 
 const versions = [
-  { name: 'Pure', desc: c.vPure, extra: [] as typeof c.vKit },
-  { name: 'Signature', desc: c.vSig, extra: c.vKit },
+  { name: 'Pure', desc: c.vPure, items: c.vCommon },
+  { name: 'Signature', desc: c.vSig, items: [...c.vCommon, ...c.vKit] },
 ];
 ---
 
 <section
   data-scene="izvedbe"
   data-bg="#0B1622"
-  class="relative flex h-full w-screen shrink-0 -mr-[4px] flex-col overflow-hidden bg-abyss px-[8vw] pt-[calc(76px+4vh)] pb-[calc(56px+4vh)]"
+  class="relative -mr-[4px] h-full w-screen flex-none overflow-hidden bg-abyss"
 >
-  <div class="shrink-0">
-    <p class="m-0 text-label font-medium tracking-[0.16em] text-champagne uppercase">{c.vLabel}</p>
-    <h2 data-head class="m-0 mt-4 font-display font-normal text-[min(4.6vw,9vh)] leading-[1.02] text-salt">
-      {c.vHead}
-    </h2>
-  </div>
+  <div
+    class="grid h-full grid-cols-[minmax(0,1fr)] grid-rows-[auto_minmax(0,1fr)] gap-[2.5vh] px-[6vw] pt-[calc(76px+3vh)] pb-[calc(56px+3vh)] md:gap-[4vh] md:px-[8vw] md:pt-[calc(76px+4vh)] md:pb-[calc(56px+4vh)]"
+  >
+    <div class="grid min-w-0 gap-[min(14px,1.6vh)]">
+      <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.vLabel}</span>
+      <span
+        data-head
+        class="font-display text-[9vw] leading-[1.02] tracking-[-0.01em] text-balance md:text-[min(4.6vw,9vh)]"
+      >
+        <span class="hidden md:inline">{c.vHead}</span>
+        <span class="md:hidden"
+          >{c.mh.vHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
+        >
+      </span>
+    </div>
 
-  <div data-fitbox class="relative mt-[4vh] min-h-0 flex-1">
-    <div data-fit class="grid md:grid-cols-2">
-      {
-        versions.map((v, i) => (
-          <div
-            class:list={[
-              'border-t-2 border-salt pt-6',
-              // Druga kolona: na desktopu okomita crta lijevo, na mobitelu
-              // vodoravna gore - okomita nema smisla kad se stupci slože.
-              i === 1 && 'md:border-l-2 md:border-l-trench md:pl-[4vw] max-md:mt-8',
-            ]}
-          >
-            <p class="m-0 font-display text-[22px] text-mist">T’quilo</p>
-            <p class="m-0 font-display text-[min(8vw,16vh)] leading-none text-champagne max-md:text-[12vw]">
-              {v.name}
-            </p>
-            <p class="mt-4 mb-0 max-w-[40ch] text-[clamp(15px,1.3vw,19px)] leading-[1.6] text-mist">
-              {v.desc}
-            </p>
-
-            <ul class="mt-6 mb-0 flex list-none flex-wrap gap-x-7 gap-y-3 p-0 max-md:gap-x-4 max-md:gap-y-2">
-              {[...c.vCommon, ...v.extra].map((item) => (
-                <li class="flex items-center gap-3 text-[15px] text-mist max-md:text-[13px]">
-                  <Icon name={item.icon as IconName} size={24} class="text-champagne" />
-                  {item.label}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ))
-      }
+    <div data-fitbox class="relative w-full min-h-0 min-w-0 overflow-visible">
+      <div
+        data-fit
+        class="grid origin-top-left grid-cols-[minmax(0,1fr)] border-t-2 border-salt md:grid-cols-2"
+      >
+        {
+          versions.map((v, i) => (
+            <div
+              class:list={[
+                'grid content-start gap-[1.6vh] py-[2.6vh] md:gap-[2.4vh] md:py-0',
+                i === 0
+                  ? 'md:pt-[4vh] md:pr-[4vw]'
+                  : 'border-t-2 border-trench md:border-t-0 md:border-l-2 md:border-l-trench md:pt-[4vh] md:pl-[4vw]',
+              ]}
+            >
+              <div class="grid gap-[0.6vh]">
+                <span class="font-display text-[22px] leading-none text-mist">T’quilo</span>
+                <span class="font-display text-[12vw] leading-[0.95] tracking-[-0.01em] text-champagne md:text-[min(8vw,16vh)]">
+                  {v.name}
+                </span>
+              </div>
+              <span class="max-w-[440px] text-[15px] leading-[1.45] text-pretty md:text-[clamp(15px,1.3vw,19px)] md:leading-[1.55]">
+                {v.desc}
+              </span>
+              <div class="flex flex-wrap gap-x-4 gap-y-2 md:gap-x-7 md:gap-y-3">
+                {v.items.map((item) => (
+                  <span class="flex items-center gap-[6px] text-[13px] text-mist md:gap-[10px] md:text-[15px]">
+                    <span class="flex text-champagne">
+                      <Icon name={item.icon as IconName} size={24} />
+                    </span>
+                    {item.label}
+                  </span>
+                ))}
+              </div>
+            </div>
+          ))
+        }
+      </div>
     </div>
   </div>
 </section>

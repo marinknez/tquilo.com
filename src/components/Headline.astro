@@ -2,58 +2,46 @@
 /**
  * Naslov knockout ekrana.
  *
- * Isti DOM služi i desktopu i mobitelu. Retci iz `mh` u copy JSON-u su
- * mobilni prijelomi; na desktopu se spoje u tekući tekst koji `text-wrap:
- * balance` i engineov fit lome na najviše dva retka. Zato nema dvije verzije
- * naslova u DOM-u - inače bi ih fit mjerio obje i dobio krivu veličinu.
+ * Desktop i mobitel su dvije verzije, kao u dizajnu, a ne jedna prelomljena
+ * CSS-om: mobilni prijelomi (`mh` u copyju) nisu isti prijelomi koje bi
+ * browser sam napravio, a zadnji redak mora ostati u jednom komadu s točkom.
+ * Skrivena verzija ne ulazi u `scrollWidth`/`scrollHeight`, pa mjerenje
+ * veličine naslova ostaje točno.
  *
- * Točka na kraju je pravi element, ne interpunkcija: engine je skalira dok
- * ne prekrije ekran. Veličina je u `em`, pa prati veličinu naslova.
+ * Točka je UNUTAR zadnjeg retka. Izvan njega bi na mobitelu (gdje su retci
+ * `block`) pala u vlastiti red, pa bi fit mislio da naslov ima redak više i
+ * smanjio ga do minimuma.
  */
 interface Props {
-  /** Retci mobilnog prijeloma. Spojeni razmakom daju desktop naslov. */
+  /** Desktop: prvi dio naslova, lomi se slobodno. */
+  a?: string;
+  /** Desktop: zadnji dio - ostaje u jednom retku zajedno s točkom. */
+  b: string;
+  /** Desktop: prisilni prijelom između `a` i `b`. */
+  br?: boolean;
+  /** Mobitel: prijelomi iz `mh`; zadnji redak nosi točku. */
   lines: readonly string[];
-  /** Indeksi redaka koji i na desktopu moraju započeti novi red. */
-  breakAfter?: readonly number[];
   tone?: 'dark' | 'light';
-  /** `h1` samo na prvom ekranu; ostali su `h2` da hijerarhija ostane ispravna. */
-  as?: 'h1' | 'h2';
-  id?: string;
 }
 
-const { lines, breakAfter = [], tone = 'dark', as: Tag = 'h2', id } = Astro.props;
+const { a, b, br = false, lines, tone = 'dark' } = Astro.props;
 const dark = tone === 'dark';
+const dotClass = [
+  'ml-[0.03em] inline-block h-[0.12em] w-[0.12em] rounded-full',
+  dark ? 'bg-white' : 'bg-black',
+].join(' ');
+const head = lines.slice(0, -1);
+const last = lines[lines.length - 1];
 ---
 
-<Tag
-  id={id}
-  data-text
-  class:list={[
-    'm-0 max-w-full font-display font-normal text-balance',
-    'leading-[0.98] tracking-[-0.01em]',
-    dark ? 'text-white' : 'text-black',
-  ]}
+{/* Desktop */}
+<span class="hidden md:inline"
+  >{a && !br && <>{a}{' '}</>}{a && br && (<span class="block whitespace-nowrap">{a}</span>)}<span
+    class="whitespace-nowrap">{b}<span data-dot class={dotClass}></span></span></span
 >
-  {/* Bez razmaka i novog reda između elemenata - Astro bi ih pretvorio u
-      tekstualne čvorove, pa bi točka odlebdjela od zadnjeg slova.
 
-      Točka je UNUTAR zadnjeg retka, ne iza njega. Retci su na mobitelu
-      `block`; točka izvan njih bi pala u vlastiti, peti red, pa bi fit
-      mislio da naslov ima jedan redak više nego što ima i smanjio ga do
-      minimuma. */}
-  {lines.map((line: string, i: number) => (<span
-        class:list={[
-          // Mobitel: svaki redak je svoj, bez prelamanja.
-          'block whitespace-nowrap',
-          // Desktop: retci se stope osim gdje je prijelom izričito tražen.
-          breakAfter.includes(i) ? 'md:block md:whitespace-normal' : 'md:inline md:whitespace-normal',
-        ]}
-      >{line}{i === lines.length - 1 ? (<span
-          data-dot
-          aria-hidden="true"
-          class:list={[
-            'ml-[0.03em] inline-block h-[0.12em] w-[0.12em] rounded-full align-baseline will-change-transform',
-            dark ? 'bg-white' : 'bg-black',
-          ]}
-        />) : (<span class="hidden md:inline">{' '}</span>)}</span>))}
-</Tag>
+{/* Mobitel */}
+<span class="md:hidden"
+  >{head.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}<span
+    class="block whitespace-nowrap">{last}<span data-dot class={dotClass}></span></span></span
+>

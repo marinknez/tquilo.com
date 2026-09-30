@@ -35,13 +35,14 @@ const mb = (n) => `${(n / 1048576).toFixed(2)} MB`;
  * jedini cilj skinuti 18 MB PNG-ove na nešto što smije živjeti u gitu.
  * Kvaliteta 84 + mozjpeg: razlika se ne vidi, a datoteka je 10-20x manja.
  *
- * `tquilo-quality.png` iz handoffa je bajt-u-bajt identičan heroju, pa se
- * za ekran 03 uzima prava fotografija gradnje iz images/.
+ * NAPOMENA: `tquilo-quality.png` je u isporučenom paketu bajt-u-bajt
+ * identičan `tquilo-hero-sea.png`. Koristi se onako kako je isporučen -
+ * ako je to greška u paketu, zamijeni se izvorna datoteka, ne ovaj popis.
  */
 const PHOTOS = [
   { from: src('design/assets/photography/tquilo-hero-sea.png'), to: 'hero-sea.jpg', w: 2560 },
   { from: src('design/assets/photography/tquilo-voda-aerial.png'), to: 'voda-aerial.jpg', w: 2560 },
-  { from: photos('DSC02940.JPG'), to: 'kvaliteta.jpg', w: 2560 },
+  { from: src('design/assets/photography/tquilo-quality.png'), to: 'kvaliteta.jpg', w: 2560 },
   { from: src('design/assets/photography/tquilo-partneri.jpg'), to: 'partneri.jpg', w: 2560 },
   { from: src('design/assets/photography/tquilo-fjaka.png'), to: 'fjaka.jpg', w: 2560 },
   { from: src('design/assets/photography/fjaka-detail-1.jpg'), to: 'fjaka-detail-1.jpg', w: 900 },

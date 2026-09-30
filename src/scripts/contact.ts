@@ -1,9 +1,9 @@
 /**
- * Kontakt forma - progresivno poboljšanje.
+ * Kontakt forma - progresivno poboljšanje nad Web3Forms.
  *
- * Bez JS-a forma je običan POST na PHP endpoint, koji vrati HTML potvrdu.
+ * Bez JS-a forma je običan POST i Web3Forms vrati vlastitu stranicu potvrde.
  * S JS-om se šalje u pozadini i javlja status, pa posjetitelj ne ispada iz
- * vodoravne prezentacije (povratak na ekran 08 bi ga vratio na početak).
+ * vodoravne prezentacije (povratak bi ga vratio na prvi ekran).
  */
 const MSG = {
   hr: {
@@ -44,12 +44,16 @@ export function initContactForm(root: ParentNode = document) {
     say(m.sending, 'idle');
 
     try {
+      // Web3Forms prima i JSON i multipart; JSON je ovdje jednostavniji jer
+      // odgovor uvijek dolazi kao { success, message }.
+      const data = Object.fromEntries(new FormData(form).entries());
       const res = await fetch(form.action, {
         method: 'POST',
-        body: new FormData(form),
-        headers: { Accept: 'application/json' },
+        headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+        body: JSON.stringify(data),
       });
-      if (!res.ok) throw new Error(String(res.status));
+      const json = await res.json().catch(() => null);
+      if (!res.ok || !json?.success) throw new Error(json?.message || String(res.status));
       form.reset();
       say(m.ok, 'ok');
     } catch {

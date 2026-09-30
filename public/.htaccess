@@ -45,11 +45,12 @@ ErrorDocument 404 /404.html
 <IfModule mod_headers.c>
 
   # --- CSP -----------------------------------------------------------------
-  # Stranica je statična: nema inline skripti, nema inline stilova, nema
-  # vanjskih domena. Zato 'none' kao default i eksplicitna dopuštenja.
-  # Ako se jednom doda analitika ili forma, mijenja se OVDJE - ne dodavati
-  # 'unsafe-inline' ni 'unsafe-eval'.
-  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'self'; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
+  # Stranica je statična: nema inline skripti ni inline stilova. Zato 'none'
+  # kao default i eksplicitna dopuštenja.
+  # Jedina vanjska domena je api.web3forms.com - primatelj kontakt forme.
+  # Ako se doda analitika, mijenja se OVDJE - ne dodavati 'unsafe-inline'
+  # ni 'unsafe-eval'.
+  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'self' https://api.web3forms.com; frame-ancestors 'none'; object-src 'none'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self' https://api.web3forms.com; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
 
   # --- Transport -----------------------------------------------------------
   # HSTS: 2 godine + subdomene + preload. Uključiti tek kad je HTTPS siguran

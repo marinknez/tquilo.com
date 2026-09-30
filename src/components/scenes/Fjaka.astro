@@ -12,29 +12,41 @@ import { t, type Lang } from '../../i18n';
 
 const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
-const details = [d1, d2, d3];
+
+// Kadriranje je iz dizajna; statične klase jer CSP ne dopušta inline style.
+const details = [
+  { src: d1, pos: 'object-[70%_60%]' },
+  { src: d2, pos: 'object-[50%_60%]' },
+  { src: d3, pos: 'object-[55%_60%]' },
+];
 ---
 
-<Knockout scene="fjaka" image={img} position="fjaka" alt={c.g3} class="[&_[data-text]]:md:pl-[calc(20vw+4vw)]">
+<Knockout
+  scene="fjaka"
+  image={img}
+  position="fjaka"
+  alt={c.g3}
+  textClass="ml-[8vw] w-[84vw] pb-[0.2em] tracking-[-0.015em] md:ml-[calc(8vw+min(20vw,34vh)+4vw)] md:w-[calc(84vw-min(20vw,34vh)-4vw)]"
+>
   {/* Naslov je uvijek engleski - to je brand tagline, ne prijevod. */}
-  <Headline lines={['Engineered', 'for fjaka']} breakAfter={[0]} />
+  <Headline a="Engineered" b="for fjaka" br lines={c.mh.l2} />
 
   <div
     slot="legend"
     data-side
-    class="pointer-events-none absolute top-[76px] bottom-[56px] left-[8vw] z-20 hidden w-[min(20vw,34vh)] flex-col gap-[2px] md:flex"
+    class="pointer-events-none absolute top-[calc(76px+4vh)] bottom-[calc(56px+4vh)] left-[8vw] z-[2] hidden w-[min(20vw,34vh)] grid-rows-3 gap-[2px] md:grid"
   >
     {
-      details.map((d, i) => (
+      details.map((d) => (
         <Image
-          src={d}
+          src={d.src}
           alt=""
           widths={[300, 600]}
           sizes="20vw"
           format="avif"
           quality={70}
           loading="lazy"
-          class="min-h-0 flex-1 object-cover"
+          class:list={['block h-full w-full object-cover', d.pos]}
         />
       ))
     }
@@ -43,14 +55,17 @@ const details = [d1, d2, d3];
   <div
     slot="legend"
     data-legend
-    class="pointer-events-none absolute left-[8vw] z-20 w-[84vw] max-w-[560px] md:left-[calc(8vw+min(20vw,34vh)+4vw)] md:w-[calc(76vw-min(20vw,34vh))]"
+    class="pointer-events-none absolute left-[8vw] z-20 grid w-[84vw] max-w-[640px] gap-[10px] md:left-[calc(8vw+min(20vw,34vh)+4vw)] md:w-[calc(84vw-min(20vw,34vh)-4vw)]"
   >
-    <p class="m-0 text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-salt">{c.g3}</p>
-    <hr class="my-6 border-0 border-t border-trench" />
-    <p class="m-0 flex items-center gap-3 font-display text-[20px] text-salt">
-      <Icon name="fjaka" size={24} class="text-champagne" />
-      Fjaka
-    </p>
-    <p class="mt-2 mb-0 text-[14px] leading-[1.6] text-mist">{c.fjakaDef}</p>
+    <span class="text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-salt text-pretty">{c.g3}</span>
+    <span
+      class="mt-2 flex flex-wrap items-baseline gap-x-3 gap-y-1 border-t border-trench pt-[14px] text-[14px] leading-[1.6] text-mist"
+    >
+      <span class="flex items-center gap-3 font-display text-[20px] text-salt">
+        <span class="flex text-champagne"><Icon name="fjaka" size={24} /></span>
+        Fjaka
+      </span>
+      <span class="basis-full text-pretty">{c.fjakaDef}</span>
+    </span>
   </div>
 </Knockout>

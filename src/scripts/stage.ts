@@ -26,6 +26,7 @@ type Scene = {
   legend: HTMLElement | null;
   side: HTMLElement | null;
   dot: HTMLElement | null;
+  fill: HTMLElement | null;
   fimg: (HTMLElement & { __f0?: [number, number]; __fs?: string }) | null;
   exp: number;
   cx: number;
@@ -219,6 +220,7 @@ export function initStage(root: ParentNode = document) {
         el,
         left: el.offsetLeft,
         width: el.offsetWidth,
+        fill: el.querySelector<HTMLElement>('[data-fill]'),
         media: el.querySelector<HTMLElement>('[data-media]'),
         legend: el.querySelector<HTMLElement>('[data-legend]'),
         side: el.querySelector<HTMLElement>('[data-side]'),
@@ -238,6 +240,7 @@ export function initStage(root: ParentNode = document) {
     // `el.style.*` iz JS-a politika ne dira.
     if (seams) {
       seams.textContent = '';
+      seams.style.zIndex = '5';
       for (let k = 1; k < scenes.length; k++) {
         const x = scenes[k].left;
         for (const [at, bg] of [
@@ -358,7 +361,15 @@ export function initStage(root: ParentNode = document) {
       else if (u < G) r = c.r0 + (cover(sx, c.cy) - c.r0) * Math.pow((u - e0) / (G - e0), c.exp);
       else if (u < G + D) r = cover(sx, c.cy);
       else r = cover(c.cx - c.left - G - D, c.cy);
-      c.dot.style.transform = `scale(${r / c.r0})`;
+
+      // Krug crta `clip-path` preko plohe pune veličine, a ne `scale()` na
+      // samoj točki. Skaliranje 6 px točke na dijagonalu ekrana znači
+      // uvećanje od par stotina puta - preglednik rasterizira rub jednom pa
+      // ga razvlači, i rub postane nazubljen. `clip-path` se računa
+      // analitički svaki frame, pa je rub oštar na svakoj veličini.
+      if (c.fill) {
+        c.fill.style.clipPath = `circle(${r.toFixed(2)}px at ${(c.cx - c.left).toFixed(2)}px ${c.cy.toFixed(2)}px)`;
+      }
 
       if (c.fimg) {
         const q = reduced ? 1 : u <= e0 ? 0 : Math.min(1, (u - e0) / (G * 0.8 - e0));

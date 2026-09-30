@@ -2,13 +2,13 @@
 /**
  * 08 Kontakt.
  *
- * Dizajn na ovom ekranu ima i `mailto:hello@tquilo.com`, označen u handoffu
- * kao placeholder. Namjerno je izostavljen: adresa ne postoji, a uputa je
- * bila da e-mail ne stoji nigdje na stranici. Forma je kanal; kad prava
- * adresa postoji, dodaje se ovdje i u `SITE`.
+ * Forma ide na Web3Forms. Radi i bez JavaScripta (obični POST), a sa
+ * skriptom se šalje u pozadini i javi status - inače bi posjetitelj ispao
+ * iz vodoravne prezentacije i vratio se na prvi ekran.
  *
- * Forma radi i bez JavaScripta (obični POST na PHP endpoint). Sa skriptom
- * se šalje u pozadini i javlja toast, bez napuštanja ekrana.
+ * `mailto:` adresa iz dizajna je izostavljena: ranija uputa bila je da
+ * e-mail ne stoji nigdje na stranici. Kad prava adresa postoji, vraća se
+ * ovdje, iznad reda „Sun. Silence. T'quilo."
  */
 import Icon from '../Icon.astro';
 import { SITE } from '../../data/site';
@@ -21,43 +21,49 @@ const c = t(lang);
 <section
   data-scene="kontakt"
   data-bg="#0B1622"
-  class="relative flex h-full w-screen shrink-0 -mr-[4px] overflow-hidden bg-abyss px-[8vw] pt-[calc(76px+4vh)] pb-[calc(56px+3vh+52px)] md:pb-[calc(56px+4vh)]"
+  class="relative -mr-[4px] h-full w-screen flex-none overflow-hidden bg-abyss"
 >
-  <div class="grid w-full gap-[6vw] max-md:content-start md:grid-cols-[1fr_1.1fr] md:items-center">
-    <div>
-      <p class="m-0 text-label font-medium tracking-[0.16em] text-champagne uppercase">{c.fLabel}</p>
-      <h2 data-head class="m-0 mt-4 font-display font-normal text-[min(6vw,13vh)] leading-[1.02] text-salt">
-        {c.fHead}
-      </h2>
-      <p class="mt-6 mb-0 font-display text-[22px] text-mist">
+  <div
+    class="grid h-full grid-cols-[minmax(0,1fr)] content-start gap-[2.5vh] px-[6vw] pt-[calc(76px+2vh)] pb-[calc(56px+3vh+52px)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:items-center md:gap-[6vw] md:px-[8vw] md:pt-[calc(76px+6vh)] md:pb-[calc(56px+5vh)]"
+  >
+    <div class="grid content-start gap-2 md:content-center md:gap-[18px]">
+      <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.fLabel}</span>
+      <span
+        data-head
+        class="font-display text-[11vw] leading-[0.98] tracking-[-0.01em] text-balance md:text-[min(6vw,13vh)]"
+      >
+        <span class="hidden md:inline">{c.fHead}</span>
+        <span class="md:hidden"
+          >{c.mh.fHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
+        >
+      </span>
+      <span class="mt-[1vh] font-display text-[20px] leading-[1.2] text-mist md:mt-[5vh] md:text-[22px]">
         Sun. Silence. <span class="text-champagne">T’quilo.</span>
-      </p>
-      <p
-        class="m-0 mt-[3vh] grid gap-[2px] text-[12px] leading-[1.5] text-mist max-md:absolute max-md:bottom-[calc(56px+3vh)] max-md:left-[8vw] max-md:mt-0"
+      </span>
+      <span
+        class="grid gap-[2px] text-[12px] leading-[1.5] text-mist max-md:absolute max-md:bottom-[calc(56px+3vh)] max-md:left-[6vw] md:mt-[3vh]"
       >
         <span>{SITE.legal.name}</span>
         <span class="tabular-nums">OIB {SITE.legal.oib}</span>
-      </p>
+      </span>
     </div>
 
     <form
       data-contact
-      method="post"
-      action="/api/kontakt.php"
-      class="grid w-full max-w-[560px] gap-3 md:gap-4"
+      method="POST"
+      action="https://api.web3forms.com/submit"
+      class="grid content-start gap-[10px] md:max-w-[560px] md:content-center md:gap-[clamp(12px,2.2vh,22px)]"
     >
+      <input type="hidden" name="access_key" value="7ca9e87d-718a-4615-9228-af3c22de6727" />
+      <input type="hidden" name="subject" value="tquilo.com - upit s weba" />
+      <input type="hidden" name="from_name" value="tquilo.com" />
       <input type="hidden" name="lang" value={lang} />
-      {/* Honeypot: pravi posjetitelj ga ne vidi, bot ga popuni. */}
-      <p class="absolute -left-[9999px] h-0 w-0 overflow-hidden" aria-hidden="true">
-        <label>
-          Website
-          <input type="text" name="website" tabindex="-1" autocomplete="off" />
-        </label>
-      </p>
+      {/* Web3Forms honeypot: pravi posjetitelj ga ne vidi, bot ga popuni. */}
+      <input type="checkbox" name="botcheck" class="hidden" tabindex="-1" autocomplete="off" />
 
-      <div class="grid gap-3 md:grid-cols-2 md:gap-4">
+      <div class="grid grid-cols-[minmax(0,1fr)] gap-[10px] md:grid-cols-2 md:gap-4">
         <label class="grid gap-2">
-          <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fName}</span>
+          <span class="text-[12px] font-medium tracking-[0.16em] text-mist uppercase">{c.fName}</span>
           <input
             type="text"
             name="name"
@@ -67,7 +73,7 @@ const c = t(lang);
           />
         </label>
         <label class="grid gap-2">
-          <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fMail}</span>
+          <span class="text-[12px] font-medium tracking-[0.16em] text-mist uppercase">{c.fMail}</span>
           <input
             type="email"
             name="email"
@@ -79,7 +85,7 @@ const c = t(lang);
       </div>
 
       <label class="grid gap-2">
-        <span class="text-label font-medium tracking-[0.16em] text-mist uppercase">{c.fMsg}</span>
+        <span class="text-[12px] font-medium tracking-[0.16em] text-mist uppercase">{c.fMsg}</span>
         <textarea
           name="message"
           rows="2"
@@ -99,7 +105,13 @@ const c = t(lang);
       </div>
 
       {/* Prostor za poruku je rezerviran da se layout ne trza kad se pojavi. */}
-      <p data-form-status role="status" aria-live="polite" class="m-0 min-h-[36px] text-[14px] leading-[1.5] md:min-h-[64px]"></p>
+      <p
+        data-form-status
+        role="status"
+        aria-live="polite"
+        class="m-0 min-h-[36px] text-[14px] leading-[1.5] md:min-h-[64px]"
+      >
+      </p>
     </form>
   </div>
 </section>

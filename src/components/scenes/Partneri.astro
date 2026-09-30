@@ -3,8 +3,8 @@
  * 04 Za partnere - jedini svijetli ekran.
  *
  * Obrnuta knockout logika: bijela ploha, crni naslov, `screen` + `darken`.
- * Champagne se ovdje NE koristi za tekst (kontrast 1,6:1 na Saltu) - umjesto
- * njega ide Brass ink.
+ * Champagne se ovdje ne koristi za tekst (kontrast 1,6:1 na Saltu) - umjesto
+ * njega Brass ink, kako propisuje design system.
  */
 import Knockout from '../Knockout.astro';
 import Headline from '../Headline.astro';
@@ -17,44 +17,43 @@ const c = t(lang);
 ---
 
 <Knockout scene="partneri" tone="light" image={img} position="partneri" alt={c.g4}>
-  <Headline lines={c.mh.l3} tone="light" />
+  <Headline a={c.l3a} b={c.l3b} lines={c.mh.l3} tone="light" />
 
   <div
     slot="legend"
     data-legend
-    class="absolute left-[8vw] z-20 flex w-[84vw] flex-wrap items-end justify-between gap-x-[56px] gap-y-6"
+    class="absolute left-[8vw] z-20 flex w-[84vw] flex-wrap items-start gap-x-[56px] gap-y-4 text-abyss"
   >
-    <div class="max-w-[480px]">
-      <p class="m-0 text-label font-medium tracking-[0.16em] text-brass-ink uppercase">{c.g4label}</p>
-      <p class="mt-3 mb-0 text-[15px] leading-[1.6] text-slate-ink">{c.g4}</p>
-
-      <p class="mt-6 mb-0 flex flex-wrap items-center gap-x-8 gap-y-3 text-[15px]">
-        <a
-          href="#kontakt"
-          data-go="7"
-          class="hidden border-b border-abyss pb-px text-abyss transition-colors duration-[90ms] hover:text-brass-ink md:inline"
-          >{c.quote}</a
-        >
-        {/* PDF specifikacije još nije isporučen - vidi README, otvorene stavke. */}
-        <a
-          href="#"
-          aria-disabled="true"
-          class="inline-flex items-center gap-2 border-b border-shell pb-px text-slate-ink transition-colors duration-[90ms] hover:text-abyss"
-        >
-          <Icon name="download" size={20} />
-          {c.spec}
-        </a>
-      </p>
+    <div class="grid max-w-[480px] gap-[10px]">
+      <span class="text-[12px] font-medium tracking-[0.16em] text-brass-ink uppercase">{c.g4label}</span>
+      <span class="text-[15px] leading-[1.6] text-slate-ink">{c.g4}</span>
     </div>
 
-    <p class="m-0 max-md:mt-[5vh] max-md:w-full max-md:text-center">
+    <div class="grid content-start gap-[10px] text-[15px]">
+      <a
+        href="#kontakt"
+        data-go="7"
+        class="hidden justify-self-start border-b border-abyss pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink md:inline"
+        >{c.quote}</a
+      >
+      {/* PDF specifikacije nije isporučen - vidi README, otvorene stavke. */}
+      <a
+        href="#"
+        class="flex items-center justify-self-start gap-2 border-b border-shell pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink"
+      >
+        <Icon name="download" size={20} />
+        {c.spec}
+      </a>
+    </div>
+
+    <div class="self-end max-md:mt-[5vh] max-md:ml-0 max-md:flex max-md:basis-full max-md:justify-center md:ml-auto">
       <a
         href={localePath(lang, 'konfigurator')}
         class="inline-flex items-center gap-3 border-2 border-abyss px-6 py-[14px] text-[15px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:bg-abyss hover:text-salt active:translate-y-px"
       >
-        {c.config}
+        {c.configurator}
         <Icon name="arrow-right" size={20} />
       </a>
-    </p>
+    </div>
   </div>
 </Knockout>

@@ -36,6 +36,7 @@ export type ModelHandle = {
   set(cfg: Partial<ModelConfig>): void;
   reset(): void;
   setAutoRotate(on: boolean): void;
+  /** PNG za ispis, uvijek u istom omjeru - neovisno o veličini prikaza. */
   snapshot(): string;
   dispose(): void;
 };
@@ -51,7 +52,7 @@ const HALF_L = 1.15; // duljina 2,3 m
 const DECK = 0.24;
 const RUB = 0.14; // gumena letva (spoj donjeg i gornjeg trupa)
 const SEAT = 0.62; // sjedna ploha
-const BACK = 1.16; // vrh naslona (s fotografija - puni, kosi naslon)
+const BACK = 1.04; // vrh pramčanog zida (naslon)
 const POST_TOP = 2.35; // tenda iznad vodne linije
 
 /* ------------------------------------------------------------------ alati */
@@ -378,7 +379,11 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   // se na pramčani zid, donji izlazi naprijed nad sjedalo.
   // Uži od pramčanog zida (1,92 naspram 2,36 m): nakošen naslon pokriva mjesto
   // gdje su stajali zvučnici, pa oni idu u uglove zida pokraj njega.
-  add(roundedBox(1.92, 0.16, 0.31, 0.05), mats.cushion, 0, 0.93, 0.8, { x: 0.26 });
+  //
+  // Visina i z prate `BACK`: donji rub ostaje utonuo u jastuk sjedala (0,726),
+  // gornji staje 3 cm ispod vrha zida, a stražnja ploha pod nagibom od 15°
+  // ne smije proći kroz zid (prednje lice zida je na z = 0,922).
+  add(roundedBox(1.92, 0.16, 0.18, 0.05), mats.cushion, 0, 0.868, 0.79, { x: 0.26 });
   // Ukrasnih jastučića nema: u ovoj razini detalja čitaju se kao lebdeće
   // kutije, a ionako nisu dio konfiguracije.
 
@@ -394,15 +399,34 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   top.geometry.rotateX(-Math.PI / 2);
 
   /* ------------------------------------------------------------ LOGOTIP */
-  // Mono logotip kao decal na pramčanom zidu, u boji koja se vidi na bilo
-  // kojoj boji trupa. Učitava se asinkrono; ako padne, ploha se ne doda -
-  // model je i bez oznake ispravan.
-  const decal = new THREE.Mesh(
-    new THREE.PlaneGeometry(1.18, 0.26),
-    new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false }),
-  );
-  decal.position.set(0, BACK - 0.42, 1.145);
-  boat.add(decal);
+  /**
+   * Mono logotip kao decal: jedan na pramcu (~100 cm) i po jedan na svakom
+   * boku (~40 cm), simetricno.
+   *
+   * ⚠ Pramcani je ranije bio na z = 1,145, a vanjsko lice pramcanog zida je na
+   * 1,158 (0,2 m debljine + 2 x 0,018 bevela koje `roundedBox` doda) - decal je
+   * dakle stajao UNUTAR zida i nije se vidio nigdje. Sve tri plohe sada stoje
+   * 4 mm ispred svoje stijenke.
+   *
+   * Tekstura se ucitava asinkrono; ako padne, plohe ostaju prozirne - model je
+   * i bez oznake ispravan.
+   */
+  const LOGO_AR = 454.34 / 99.97;
+  const logoMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+
+  const addDecal = (w: number, x: number, y: number, z: number, ry = 0) => {
+    const m = new THREE.Mesh(new THREE.PlaneGeometry(w, w / LOGO_AR), logoMat);
+    m.position.set(x, y, z);
+    m.rotation.y = ry;
+    boat.add(m);
+  };
+
+  // Pramac: 1,00 m, na sredini vanjskog lica zida.
+  addDecal(1.0, 0, (RUB + BACK) / 2, 1.162);
+  // Bokovi: 0,40 m, ista visina i isti z s obje strane.
+  addDecal(0.4, 1.184, 0.4, -0.45, Math.PI / 2);
+  addDecal(0.4, -1.184, 0.4, -0.45, -Math.PI / 2);
+
   void (async () => {
     try {
       const svg = await (await fetch('/logo/tquilo-primary-mono.svg')).text();
@@ -415,10 +439,10 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
       cv.getContext('2d')!.drawImage(img, 0, 0, cv.width, cv.height);
       const tex = new THREE.CanvasTexture(cv);
       tex.colorSpace = THREE.SRGBColorSpace;
-      const m = decal.material as THREE.MeshBasicMaterial;
-      m.map = tex;
-      m.opacity = 0.9;
-      m.needsUpdate = true;
+      tex.anisotropy = 8;
+      logoMat.map = tex;
+      logoMat.opacity = 0.9;
+      logoMat.needsUpdate = true;
     } catch {
       /* bez logotipa - model ostaje ispravan */
     }
@@ -437,11 +461,13 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   // izgubi u njemu i iz modela viri samo patrljak.
   const COAM_TOP = SEAT + 0.11 + 0.13;
   const RAIL_Y = COAM_TOP + 0.13;
-  const RAIL_Z0 = -0.12;
-  const RAIL_LEN = 0.52;
+  const RAIL_Z0 = 0.25;
+  // Ograda, ne ručka: ide gotovo cijelom dužinom coaminga (1,5 m), na tri
+  // nogice. Kratki komad od 0,52 m čitao se kao zaboravljeni štap.
+  const RAIL_LEN = 1.1;
   for (const x of [-1.16, 1.16]) {
     add(new THREE.CylinderGeometry(0.014, 0.014, RAIL_LEN, 12), inox, x, RAIL_Y, RAIL_Z0, { x: Math.PI / 2 });
-    for (const dz of [-RAIL_LEN / 2 + 0.05, RAIL_LEN / 2 - 0.05]) {
+    for (const dz of [-RAIL_LEN / 2 + 0.05, 0, RAIL_LEN / 2 - 0.05]) {
       add(
         new THREE.CylinderGeometry(0.012, 0.012, RAIL_Y - COAM_TOP, 10),
         inox,
@@ -450,6 +476,11 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
         RAIL_Z0 + dz,
       );
     }
+  }
+
+  // Tikova kapa po vrhu coaminga, ispod ograde - to je ploha koju ruka hvata.
+  for (const x of [-1.16, 1.16]) {
+    add(roundedBox(0.12, 1.5, 0.028, 0.03), mats.teak, x, COAM_TOP + 0.014, 0.3);
   }
 
   /* ------------------------------------------------------ STUPOVI I TENDA */
@@ -476,7 +507,9 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   // zavjesa centrirana na stup donjom trećinom ulazila u trup i tamo nestajala.
   // Zato se središte pomakne prema van po dijagonali ugla (`OUT`), toliko da
   // cijeli panel padne izvan gabarita gumene letve (2,5 x 2,3 m).
-  const OUT = 0.22;
+  // 0,14 m je najbliže što ide: izmjereno, panel tada ima jos ~2 cm zraka do
+  // zaobljenog ugla gumene letve. Na 0,10 bi ulazio u trup.
+  const OUT = 0.14;
   const cTop = POST_TOP - 0.03;
   const cBottom = 0.07; // do vodne linije, kao na fotografijama
   const cGeo = curtainGeometry(cTop - cBottom);
@@ -558,8 +591,41 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
       controls.autoRotate = on;
     },
     snapshot() {
+      // Prikaz je visok i uzak na mobitelu, a širok na desktopu - snimka bi
+      // onda u PDF-u bila čas pruga, čas panorama. Zato se za snimku platno
+      // nakratko postavi na omjer okvira u ispisu (178 x 108 mm), snimi, pa
+      // vrati. `updateStyle = false`: CSS veličina platna se ne dira, pa na
+      // ekranu nema ni trzaja.
+      const PW = 1760;
+      const PH = 1068;
+      const size = new THREE.Vector2();
+      renderer.getSize(size);
+      const pr = renderer.getPixelRatio();
+
+      // Kut gledanja ostaje korisnikov, ali se udaljenost postavi tako da
+      // platforma uvijek ispuni kadar jednako. Bez toga PDF nosi i korisnikov
+      // zum, pa je model čas sitan u praznoj vodi, čas odrezan.
+      const camPos = camera.position.clone();
+      const dir = camPos.clone().sub(controls.target).normalize();
+      const FIT = new THREE.Vector3(0, 1.1, 0);
+      camera.position.copy(FIT).addScaledVector(dir, 7.0);
+      camera.lookAt(FIT);
+
+      renderer.setPixelRatio(1);
+      renderer.setSize(PW, PH, false);
+      camera.aspect = PW / PH;
+      camera.updateProjectionMatrix();
       renderer.render(scene, camera);
-      return renderer.domElement.toDataURL('image/png');
+      const url = renderer.domElement.toDataURL('image/png');
+
+      camera.position.copy(camPos);
+      camera.lookAt(controls.target);
+      renderer.setPixelRatio(pr);
+      renderer.setSize(size.x, size.y, false);
+      camera.aspect = size.x / size.y;
+      camera.updateProjectionMatrix();
+      renderer.render(scene, camera);
+      return url;
     },
     dispose() {
       cancelAnimationFrame(raf);

@@ -6,14 +6,15 @@
  * vrijednosti - zamijeniti stvarnima (ili obrisati ako alias još ne postoji;
  * prazan niz se nigdje ne renderira).
  *
- * Kontakt e-mail je namjerno uklonjen: stranica ga ne prikazuje, ne spominje
- * ga u structured dataju ni u llms.txt. Ako se jednom vrati, dodaje se ovdje
- * i referencira iz `Seo.astro` (`Organization.email`) i `llms.txt.ts`.
+ * Kontakt e-mail (`SITE.email`) prikazuje se na ekranu Kontakt i u politici
+ * privatnosti. U structured data i llms.txt NE ide - ondje bi ga ubirali
+ * skupljači adresa, a ovdje je dovoljno da ga vidi čovjek.
  */
 
 export const SITE = {
   url: 'https://tquilo.com',
   name: 'T’quilo',
+  email: 'aboard@tquilo.com',
   /** Tehnički zapis imena - domena, e-mail, handle, hashtag (readme §2). */
   slug: 'tquilo',
   locale: 'en',

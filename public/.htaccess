@@ -49,18 +49,12 @@ ErrorDocument 404 /404.html
   # kao default i eksplicitna dopuštenja. Vanjske domene su samo dvije:
   #   api.web3forms.com     - primatelj kontakt forme
   #   googletagmanager.com  - gtag.js (GA4), učita se TEK na pristanak
-  #   *.hcaptcha.com        - zaštita forme, učita se TEK na dodir forme
-  # hCaptcha traži sve četiri direktive (script/frame/style/connect) i NE
-  # traži 'unsafe-inline' - widget je u iframeu, pa su njegovi stilovi izvan
-  # našeg CSP-a. Poddomene se po njihovoj uputi ne zakucavaju poimence.
-  # `frame-src` ovdje prije nije postojao: s `default-src 'none'` svaki je
-  # iframe bio blokiran.
   # GA4 šalje mjerenja na google-analytics.com, a regionalni endpoint je
   # poddomena (region1...), odatle zvjezdica. analytics.google.com ide za
   # DebugView. Bez ovih unosa GA tiho ne šalje ništa - pogreška se vidi samo
   # u konzoli, pa se na to lako nasjedne.
   # NIKAD ne dodavati 'unsafe-inline' ni 'unsafe-eval' - gtag ih ne treba.
-  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'self' https://api.web3forms.com; frame-ancestors 'none'; frame-src https://hcaptcha.com https://*.hcaptcha.com; object-src 'none'; script-src 'self' https://www.googletagmanager.com https://hcaptcha.com https://*.hcaptcha.com; style-src 'self' https://hcaptcha.com https://*.hcaptcha.com; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self'; connect-src 'self' https://api.web3forms.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com https://hcaptcha.com https://*.hcaptcha.com; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
+  Header always set Content-Security-Policy "default-src 'none'; base-uri 'self'; form-action 'self' https://api.web3forms.com; frame-ancestors 'none'; frame-src 'none'; object-src 'none'; script-src 'self' https://www.googletagmanager.com; style-src 'self'; img-src 'self' data: https://www.google-analytics.com https://www.googletagmanager.com; font-src 'self'; connect-src 'self' https://api.web3forms.com https://www.google-analytics.com https://*.google-analytics.com https://*.analytics.google.com https://www.googletagmanager.com; media-src 'self'; worker-src 'self'; upgrade-insecure-requests"
 
   # --- Transport -----------------------------------------------------------
   # HSTS: 2 godine + subdomene + preload. Uključiti tek kad je HTTPS siguran

@@ -237,6 +237,14 @@
    kao PDF". Sve ostalo se sakrije.
    ========================================================================== */
 @media print {
+  /* Bez ovoga preglednik po zadanom izbacuje pozadine i vraća sliku u sivo -
+     render platforme i mrlje boja izgube upravo ono zbog čega su u ispisu. */
+  [data-print],
+  [data-print] * {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
   body > *:not([data-print]) {
     display: none !important;
   }
@@ -246,51 +254,126 @@
     color: #0b1622;
     background: #fff;
     font-family: var(--font-body);
-    padding: 12mm;
+    font-size: 10pt;
+    line-height: 1.5;
+    padding: 16mm 16mm 14mm;
+  }
+
+  /* --- zaglavlje: logotip lijevo, datum desno, tanka crta ispod --- */
+  [data-print] .p-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8mm;
+    border-bottom: 0.4mm solid #0b1622;
+    padding-bottom: 4mm;
+  }
+
+  [data-print] .p-head img {
+    width: 42mm;
+    height: auto;
+  }
+
+  [data-print] .p-date {
+    font-size: 8.5pt;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #6e7681;
+    white-space: nowrap;
   }
 
   [data-print] h1 {
     font-family: var(--font-display);
-    font-size: 24pt;
+    font-size: 26pt;
     font-weight: 400;
-    margin: 8mm 0 2mm;
+    line-height: 1.1;
+    letter-spacing: -0.01em;
+    margin: 9mm 0 0;
   }
 
-  [data-print] > img:first-child {
-    width: 46mm;
-    height: auto;
+  [data-print] .p-sub {
+    font-size: 9.5pt;
+    color: #6e7681;
+    margin: 2mm 0 0;
   }
 
+  /* --- render --- */
+  /* `contain`, ne `cover`: platno prati omjer preglednika (oko 1,2), a ovaj
+     okvir je širi - `cover` bi odrezao tendu. Tamna podloga je boja same
+     scene, pa prazne trake uz rub izgledaju kao dio snimke. */
   [data-print] img[data-print-shot] {
+    display: block;
     width: 100%;
-    max-height: 110mm;
+    height: 108mm;
     object-fit: contain;
-    margin: 6mm 0;
+    object-position: center;
     background: #0b1622;
+    margin: 8mm 0 10mm;
   }
 
-  [data-print] dl {
+  /* --- specifikacija: dvostupčana tablica s tankim linijama --- */
+  [data-print] .p-spec {
     display: grid;
-    grid-template-columns: 55mm 1fr;
-    gap: 2mm 4mm;
-    font-size: 10.5pt;
-    margin: 0 0 6mm;
-  }
-
-  [data-print] dt {
-    color: #6e7681;
-  }
-
-  [data-print] dd {
+    grid-template-columns: 1fr 1fr;
+    column-gap: 10mm;
     margin: 0;
-    font-variant-numeric: tabular-nums;
   }
 
-  [data-print] p {
-    font-size: 9pt;
+  [data-print] .p-row {
+    display: grid;
+    grid-template-columns: 34mm 1fr;
+    align-items: baseline;
+    gap: 4mm;
+    border-bottom: 0.2mm solid #e4e6e9;
+    padding: 2.6mm 0;
+    break-inside: avoid;
+  }
+
+  [data-print] .p-row dt {
+    font-size: 8.5pt;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
     color: #6e7681;
-    margin: 0 0 2mm;
-    word-break: break-all;
+  }
+
+  [data-print] .p-row dd {
+    display: flex;
+    align-items: center;
+    gap: 2.5mm;
+    margin: 0;
+    font-size: 9.5pt;
+  }
+
+  /* Mrlja boje: isti jezik kao sažetak na ekranu. */
+  [data-print] .p-chip {
+    flex: none;
+    width: 4.2mm;
+    height: 4.2mm;
+    border: 0.2mm solid #b9bdc3;
+  }
+
+  [data-print] .p-val {
+    overflow-wrap: anywhere;
+  }
+
+  /* --- podnožje --- */
+  [data-print] .p-foot {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 8mm;
+    border-top: 0.2mm solid #e4e6e9;
+    margin-top: 9mm;
+    padding-top: 3mm;
+    font-size: 8.5pt;
+    color: #6e7681;
+  }
+
+  [data-print] .p-foot b {
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #0b1622;
   }
 
   @page {

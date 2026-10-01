@@ -42,14 +42,14 @@ const L =
           {
             h: 'Tko obrađuje podatke',
             p: [
-              `Voditelj obrade je ${SITE.legal.name}, OIB ${SITE.legal.oib}, Hrvatska. Za sve u vezi s ovom politikom javite se preko <a>kontakt forme</a>.`,
+              `Voditelj obrade je ${SITE.legal.name}, OIB ${SITE.legal.oib}, Hrvatska. Za sve u vezi s ovom politikom pišite na <m>${SITE.email}</m> ili preko <a>kontakt forme</a>.`,
             ],
           },
           {
             h: 'Kontakt forma',
             p: [
               'Ako nam pišete, obrađujemo ime, e-mail adresu i sadržaj poruke. Svrha je odgovoriti na upit; pravna osnova je poduzimanje radnji na vaš zahtjev prije sklapanja ugovora.',
-              'Poruku prosljeđuje Web3Forms (Agilo Softworks), a formu od automatiziranog slanja štiti hCaptcha (Intuition Machines). Oba obrađivača za tu svrhu vide sadržaj zahtjeva.',
+              'Poruku prosljeđuje Web3Forms (Agilo Softworks) i za tu svrhu vidi sadržaj zahtjeva.',
               'Upite čuvamo dok traje dopisivanje i najviše dvije godine nakon zadnje poruke.',
             ],
           },
@@ -77,7 +77,7 @@ const L =
             h: 'Vaša prava',
             p: [
               'Imate pravo na pristup, ispravak, brisanje i ograničenje obrade, pravo na prenosivost te pravo na prigovor. Privolu možete povući bez posljedica za zakonitost obrade do povlačenja.',
-              'Zahtjev šaljete preko <a>kontakt forme</a>. Pritužbu možete podnijeti Agenciji za zaštitu osobnih podataka (azop.hr).',
+              'Zahtjev šaljete na <m>' + SITE.email + '</m> ili preko <a>kontakt forme</a>. Pritužbu možete podnijeti Agenciji za zaštitu osobnih podataka (azop.hr).',
             ],
           },
           {
@@ -99,14 +99,14 @@ const L =
           {
             h: 'Who processes your data',
             p: [
-              `The controller is ${SITE.legal.name}, OIB ${SITE.legal.oib}, Croatia. For anything about this policy, reach us through the <a>contact form</a>.`,
+              `The controller is ${SITE.legal.name}, OIB ${SITE.legal.oib}, Croatia. For anything about this policy, write to <m>${SITE.email}</m> or use the <a>contact form</a>.`,
             ],
           },
           {
             h: 'Contact form',
             p: [
               'If you write to us, we process your name, email address and the content of your message. The purpose is to answer your enquiry; the legal basis is taking steps at your request before entering into a contract.',
-              'The message is delivered by Web3Forms (Agilo Softworks), and the form is protected against automated submissions by hCaptcha (Intuition Machines). Both processors see the request for that purpose.',
+              'The message is delivered by Web3Forms (Agilo Softworks), which sees the content of the request for that purpose.',
               'We keep enquiries for as long as the correspondence lasts, and at most two years after the last message.',
             ],
           },
@@ -134,7 +134,7 @@ const L =
             h: 'Your rights',
             p: [
               'You have the right of access, rectification, erasure and restriction of processing, the right to data portability and the right to object. You may withdraw consent without affecting the lawfulness of processing before withdrawal.',
-              'Send your request through the <a>contact form</a>. You may lodge a complaint with the Croatian Personal Data Protection Agency (azop.hr).',
+              'Send your request to <m>' + SITE.email + '</m> or through the <a>contact form</a>. You may lodge a complaint with the Croatian Personal Data Protection Agency (azop.hr).',
             ],
           },
           {
@@ -201,7 +201,7 @@ const contactHref = `${localePath(lang)}#kontakt`;
             {sec.p.map((html: string) => (
               <p
                 class="mt-3 mb-0 text-[15px] leading-[1.7] text-mist [&_a]:text-champagne [&_a]:underline [&_a]:underline-offset-4 [&_code]:text-salt"
-                set:html={html.replace(/<a>/g, `<a href="${contactHref}">`)}
+                set:html={html.replace(/<a>/g, `<a href="${contactHref}">`).replace(/<m>/g, `<a href="mailto:${SITE.email}">`).replace(/<\/m>/g, "</a>")}
               />
             ))}
           </section>

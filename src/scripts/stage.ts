@@ -484,12 +484,19 @@ export function initStage(root: ParentNode = document) {
       }
 
       if (c.fimg) {
+        // `q` ide 0 -> 1 kako krug raste. Na 0 (snimka vidljiva samo kroz
+        // slova) stoji obrada iz `data-filter`: smanjen kontrast i podignuta
+        // svjetlina, inače se tamni kadar u slovima ne čita.
+        //
+        // Na 1 (snimka preko cijelog ekrana) filtra NEMA. Prije je i tu
+        // ostajao pojačani kontrast/zasićenje - vidjelo se kao preljev preko
+        // videa. Puni kadar se gleda kakav je snimljen.
         const q = reduced ? 1 : u <= e0 ? 0 : Math.min(1, (u - e0) / (G * 0.8 - e0));
         const f0 = c.fimg.__f0!;
         const fs =
-          `contrast(${(f0[0] + (1.06 - f0[0]) * q).toFixed(3)}) ` +
-          `brightness(${(f0[1] + (1.03 - f0[1]) * q).toFixed(3)}) ` +
-          `saturate(${(1 + 0.18 * q).toFixed(3)})`;
+          `contrast(${(f0[0] + (1 - f0[0]) * q).toFixed(3)}) ` +
+          `brightness(${(f0[1] + (1 - f0[1]) * q).toFixed(3)}) ` +
+          `saturate(1)`;
         if (c.fimg.__fs !== fs) {
           c.fimg.__fs = fs;
           c.fimg.style.filter = fs;

@@ -123,6 +123,23 @@ export function initConfigurator() {
     writeHash();
   };
 
+  /** Vraća sve segmente na polazne vrijednosti (`DEFAULT_CONFIG` s poslužitelja). */
+  const resetColours = () => {
+    for (const k of KEYS) {
+      state[k] = defaults[k];
+      // Naziv/RAL se čita iz uzorka u paleti; polazna kombinacija je uvijek
+      // iz palete, pa `custom` otpada.
+      const sw = document.querySelector<HTMLElement>(
+        `[data-segment="${k}"] [data-pick="${defaults[k]}"]`,
+      );
+      meta[k] = sw ? { name: sw.dataset.name, ral: sw.dataset.ral, custom: false } : {};
+    }
+    for (const input of document.querySelectorAll<HTMLInputElement>('[data-custom]')) {
+      input.value = '';
+    }
+    render();
+  };
+
   /* ------------------------------------------------------------- interakcija */
 
   for (const sec of segmentEls) {
@@ -215,12 +232,14 @@ export function initConfigurator() {
       const img = document.querySelector<HTMLImageElement>('[data-print-shot]');
       if (img && shot) {
         img.src = shot;
-        // Ispis bez čekanja uhvati praznu sliku.
-        try {
-          await img.decode();
-        } catch {
-          /* slika se svejedno nacrta kad stigne */
-        }
+        // Ispis bez čekanja uhvati praznu sliku, pa se čeka dekodiranje.
+        // ALI: blok je `display: none`, a `decode()` na neprikazanoj slici u
+        // Chromiumu zna ostati vječno neriješen - tada se `print()` nikad ne
+        // pozove i gumb izgleda kao da ne radi. Zato utrka s rokom.
+        await Promise.race([
+          img.decode().catch(() => undefined),
+          new Promise((r) => setTimeout(r, 600)),
+        ]);
       }
 
       const date = document.querySelector<HTMLElement>('[data-print-date]');
@@ -230,16 +249,32 @@ export function initConfigurator() {
           new Date().toLocaleDateString(boot.lang === 'en' ? 'en-GB' : 'hr-HR');
       }
 
+      // Ispis preuzima isti jezik kao sažetak na ekranu: naziv segmenta,
+      // mrlja boje, pa vrijednost. Klase su u `@media print` bloku; stilovi
+      // se postavljaju preko `style` samo za samu boju (CSP ne dopušta
+      // inline `style` atribut u markupu, ali `element.style` iz skripte da).
       const dl = document.querySelector<HTMLElement>('[data-print-summary]');
       if (dl) {
         dl.textContent = '';
         for (const sec of segmentEls) {
           const k = sec.dataset.segment as SegmentKey;
+          const row = document.createElement('div');
+          row.className = 'p-row';
+
           const dt = document.createElement('dt');
           dt.textContent = sec.querySelector('span')?.textContent ?? k;
+
           const dd = document.createElement('dd');
-          dd.textContent = valueText(k);
-          dl.append(dt, dd);
+          const chip = document.createElement('span');
+          chip.className = 'p-chip';
+          chip.style.background = state[k];
+          const val = document.createElement('span');
+          val.className = 'p-val';
+          val.textContent = valueText(k);
+          dd.append(chip, val);
+
+          row.append(dt, dd);
+          dl.appendChild(row);
         }
       }
 
@@ -264,7 +299,13 @@ export function initConfigurator() {
         rotate.setAttribute('aria-pressed', String(on));
         model?.setAutoRotate(on);
       });
-      document.querySelector<HTMLElement>('[data-reset]')?.addEventListener('click', () => model?.reset());
+      // „Resetiraj prikaz" vraća i kut kamere I boje na polaznu liniju
+      // (Midnight). Gumb koji vraća samo kameru ostavlja korisnika s pola
+      // vraćenog stanja, a drugog puta natrag na početak nema.
+      document.querySelector<HTMLElement>('[data-reset]')?.addEventListener('click', () => {
+        model?.reset();
+        resetColours();
+      });
     } catch (e) {
       if (status) status.textContent = boot.lang === 'en'
         ? 'The 3D view could not be loaded. The colour list below still works.'

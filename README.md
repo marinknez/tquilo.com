@@ -261,6 +261,26 @@ i referencira iz `privacy.astro`.
 mjeseci), isključiti Google signals ako se ne koristi (inače CSP treba i
 `stats.g.doubleclick.net`), te potpisati Google ugovor o obradi podataka.
 
+## Konfigurator
+
+- **„Resetiraj prikaz" vraća i kut kamere I boje** na polaznu liniju
+  (Midnight), briše polja za prilagođeni RAL/HEX i miče oznaku „po narudžbi".
+  Gumb koji vraća samo kameru ostavlja korisnika s pola vraćenog stanja.
+- **PDF** nastaje iz `window.print()` nad skrivenim blokom `[data-print]`;
+  stilovi su u `@media print` u `global.css`.
+  - `print-color-adjust: exact` - bez toga preglednik izbacuje pozadine, pa
+    mrlje boja i tamna podloga renderа nestanu.
+  - **Snimka se renderira u fiksnom omjeru 1760 x 1068** (= okvir 178 x 108 mm),
+    neovisno o veličini prikaza. Prije je u PDF išlo platno kakvo je zateklo -
+    na uskom prozoru doslovno pruga 125 x 320.
+  - **Kadar je fiksiran**: kut gledanja ostaje korisnikov, udaljenost se
+    postavlja na 7 m od (0, 1.1, 0). Inače PDF nosi i korisnikov zum.
+  - ⚠ `img.decode()` na slici u `display: none` zna u Chromiumu ostati vječno
+    neriješen - zato utrka s rokom od 600 ms. Bez toga se `print()` nikad ne
+    pozove i gumb izgleda kao da ne radi.
+  - Ako slika u PDF-u ispadne siva: to je postavka **u dijalogu za ispis**
+    („Boja" / „Crno-bijelo"), ne stranica.
+
 ## Sigurnost
 
 Sve je u `public/.htaccess`:
@@ -274,63 +294,38 @@ Sve je u `public/.htaccess`:
 - COOP/COEP/CORP, Permissions-Policy, `X-Frame-Options: DENY`, `nosniff`.
 - `/.well-known/security.txt` po RFC 9116, `Expires` se pomiče na svaki build.
 
-**Vanjske domene su tri** i sve su u CSP-u poimence:
+**Vanjske domene su dvije** i obje su u CSP-u poimence:
 
 | Domena | Čemu služi | Kada se učita |
 | --- | --- | --- |
 | `api.web3forms.com` | primatelj kontakt forme | na slanje |
 | `www.googletagmanager.com` | gtag.js (GA4) | tek na pristanak |
-| `*.hcaptcha.com` | zaštita forme | tek na dodir forme |
 
 GA4 mjerenja idu na `google-analytics.com`, a regionalni endpoint je poddomena
 (`region1...`) - odatle zvjezdica u `connect-src`. Bez tog unosa GA tiho ne
 šalje ništa i pogreška se vidi samo u konzoli.
 
-hCaptcha traži **četiri** direktive (`script-src`, `frame-src`, `style-src`,
-`connect-src`) i **ne** traži `unsafe-inline` - widget je u iframeu, pa su
-njegovi stilovi izvan našeg CSP-a. `frame-src` prije nije postojao: uz
-`default-src 'none'` svaki je iframe bio blokiran. Poddomene se po uputi
-hCaptche ne zakucavaju poimence (`newassets.hcaptcha.com` i slične se mijenjaju).
+`frame-src 'none'`: stranica nema nijedan iframe i ne smije ga dobiti.
 
-## Kontakt forma i captcha
+## Kontakt forma
 
-Forma ide na **Web3Forms**, a protiv robota je **hCaptcha** (uključena u
-Web3Forms nadzornoj ploči). hCaptcha je jedini captcha koji besplatni plan
-nudi - reCaptcha i Cloudflare Turnstile su Pro.
+Forma ide na **Web3Forms**. Radi i bez JS-a (obični POST); sa skriptom se
+šalje u pozadini da posjetitelj ne ispadne iz vodoravne prezentacije.
 
-- **Sitekey `50b2fe65-b00b-4b9e-ad62-3ba471098be2`** je Web3Formsov ključ za
-  besplatni plan, iz njihove dokumentacije. Koristi se *manual setup*, pa se
-  **ne** učitava `web3forms.com/client/script.js` - jedna vanjska skripta manje.
-- **Vidljivi checkbox, ne nevidljiva izvedba.** Prva verzija bila je
-  `size: 'invisible'` + `hcaptcha.execute()` na slanje i **pala je u praksi**:
-  posjetitelj pritisne „Pošalji upit", a zagonetka iskoči niotkuda; ako je
-  zatvori, `execute()` odbije obećanje i poruka je neuspjelo slanje - a na
-  ekranu nema ničega što bi se dalo ispraviti. Gore: ako se izazov ne uspije
-  prikazati, obećanje se ne razriješi **nikad** i forma zauvijek stoji na
-  „Šaljem…". Checkbox se rješava prije slanja i ima vidljivo stanje.
-- **Učitava se tek na prvi fokus u formi**, ne pri učitavanju stranice. Zato
-  element nema klasu `h-captcha` (ona bi ga renderirala sama) nego se koristi
-  `render=explicit` i `hcaptcha.render()` iz `contact.ts`. Visina je
-  rezervirana unaprijed da widget ne gurne gumb usred tipkanja.
-- **Widget je nepromjenjivih 303 x 78 px.** Na 320 px ekranu uz margine ostaje
-  282 px, pa bi se probio van i stvorio vodoravni scroll - zato `scale(0.8)`
-  na mobitelu, s vanjskim okvirom koji drži stvarnu visinu (transform ne
-  mijenja visinu okvira).
-- **Token je jednokratan**, pa se čita pri svakom slanju i resetira u
-  `finally`. Bez reseta drugo slanje pada.
-- **Greške hCaptche nisu `Error` nego obični nizovi** (`challenge-closed`,
-  `network-error`). Prva verzija ih je provjeravala s `instanceof Error`, pa
-  je svaki pad captche završio kao generičko „Slanje nije uspjelo". Sada se
-  razlikuju: „niste označili kvadratić" nije isto što i „provjera je pala",
-  a stvarni razlog ide u `console.warn`.
-- **Kontakt na mobitelu** je morao ustupiti 62 px captchi. Pravna crta više
-  nije `absolute` uz donju traku nego teče iza forme (`max-md:contents` na
-  lijevom stupcu + `order-last`) - inače joj je status slanja ulazio u red.
-- ⚠ **Slanje bez JS-a više ne prolazi.** Web3Forms odbija zahtjev bez
-  `h-captcha-response`, a taj token može proizvesti samo skripta. To vrijedi
-  za svaku izvedbu captche, nije propust ove.
-- ⚠ **Na `localhost` hCaptcha vrati `network-error`** - sitekey je vezan uz
-  stvarne domene. Integracija se do kraja provjerava tek na `tquilo.com`.
+**Nema captche.** hCaptcha je bila ugrađena pa uklonjena: Web3Forms na
+besplatnom planu odbija zahtjev s
+`"You are trying to use a Pro feature, Please Upgrade to use reCaptcha"` -
+prekidač za captchu u njihovoj nadzornoj ploči je Pro značajka, bez obzira
+što je sama hCaptcha u njihovoj dokumentaciji opisana kao besplatna. Protiv
+robota ostaje honeypot (`botcheck`), koji Web3Forms provjerava na svom kraju.
+
+⚠ Ako se captcha jednom vrati, vraća se i `frame-src`, `style-src` i
+`script-src` za tog pružatelja - i tek nakon što se u nadzornoj ploči potvrdi
+da prekidač uopće radi na trenutnom planu.
+
+**E-mail** `aboard@tquilo.com` (`SITE.email`) stoji ispod naslova na ekranu
+Kontakt i u politici privatnosti. U structured data i `llms.txt` namjerno NE
+ide - ondje ga ubiru skupljači adresa.
 
 **Provjera e-maila:** `type=email` propušta `ime@domena` bez vršne domene -
 formalno valjano, u praksi uvijek tipfeler. Zato i `pattern` atribut (radi i
@@ -338,10 +333,6 @@ prije nego se skripta učita) i isti izraz u `contact.ts`, koji postavlja
 poruku na jeziku stranice. To hvata tipfelere **u obliku**; da je adresa
 stvarno dostavljiva dokazuje jedino potvrdni e-mail, a autoresponder je
 Web3Forms Pro.
-Forma radi i bez JavaScripta: bez njega je običan POST i Web3Forms vrati
-vlastitu potvrdu; s njim se šalje u pozadini i javi status, da posjetitelj ne
-ispadne iz vodoravne prezentacije. Web3Forms honeypot (`botcheck`) je
-uključen.
 
 ## Deploy
 

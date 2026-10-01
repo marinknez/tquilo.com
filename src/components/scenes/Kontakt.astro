@@ -52,9 +52,14 @@ const alt = t(altLang(lang));
           >{alt.mh.fHead.map((ln: string) => (<span class="block whitespace-nowrap">{ln}</span>))}</span
         >
       </span>
+      <a
+        href={`mailto:${SITE.email}`}
+        class="justify-self-start text-[clamp(15px,4.4vw,17px)] tracking-[0.01em] text-champagne underline underline-offset-[6px] transition-colors duration-[90ms] hover:text-salt md:text-[clamp(16px,1.3vw,19px)]"
+        >{SITE.email}</a
+      >
       {/* Tagline je potpis brenda - namjerno krupniji od dizajnovih 22 px. */}
       <span
-        class="font-display text-[clamp(22px,7vw,26px)] max-md:mt-0 md:mt-[1vh] leading-[1.25] text-salt md:mt-[5vh] md:text-[clamp(26px,2.3vw,36px)]"
+        class="font-display text-[clamp(22px,7vw,26px)] leading-[1.25] text-salt max-md:mt-0 md:mt-[3vh] md:text-[clamp(26px,2.3vw,36px)]"
       >
         Sun. Silence. <span class="text-champagne">T’quilo.</span>
       </span>
@@ -122,23 +127,7 @@ const alt = t(altLang(lang));
         ></textarea>
       </label>
 
-      {/* hCaptcha, vidljivi checkbox. Namjerno BEZ klase `h-captcha` - ona bi
-          ga renderirala sama čim se skripta učita; ovako ga `contact.ts`
-          renderira eksplicitno, tek kad posjetitelj dotakne formu, pa se do
-          tada s hcaptcha.com ne povlači ništa.
-
-          Visina je rezervirana unaprijed, inače bi widget pri pojavljivanju
-          gurnuo gumb prema dolje usred tipkanja.
-
-          Widget je nepromjenjivih 303 x 78 px. Na 320 px ekranu uz margine
-          ostaje 282 px, pa bi se probio van i stvorio vodoravni scroll - zato
-          `scale(0.8)` na mobitelu. Transform ne mijenja visinu okvira, pa je
-          vanjski div taj koji drži stvarnu visinu. */}
-      <div class="h-[62px] md:h-[78px]">
-        <div data-captcha-host class="origin-top-left scale-[0.8] md:scale-100"></div>
-      </div>
-
-      <div class="flex items-center justify-end gap-4">
+      <div class="flex justify-end">
         <button
           type="submit"
           class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-3 text-[15px] whitespace-nowrap md:py-[14px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px"

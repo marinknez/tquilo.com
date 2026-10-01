@@ -356,6 +356,11 @@ mjeseci), isključiti Google signals ako se ne koristi (inače CSP treba i
 - **„Resetiraj prikaz" vraća i kut kamere I boje** na polaznu liniju
   (Midnight), briše polja za prilagođeni RAL/HEX i miče oznaku „po narudžbi".
   Gumb koji vraća samo kameru ostavlja korisnika s pola vraćenog stanja.
+- **Napomena o približnosti** (`L.approx`) stoji gore lijevo u 3D prozoru i
+  ispod snimke u PDF-u. Ista rečenica na oba mjesta: PDF nosi isti približni
+  render i ide klijentu, pa napomena mora ići s njim. Oblikovanjem se razlikuje
+  od upute dolje lijevo - uputa je UI (verzal, razmaknuto, u okviru), napomena
+  je rečenica, pa se ne čitaju kao dva gumba.
 - **PDF** nastaje iz `window.print()` nad skrivenim blokom `[data-print]`;
   stilovi su u `@media print` u `global.css`.
   - `print-color-adjust: exact` - bez toga preglednik izbacuje pozadine, pa

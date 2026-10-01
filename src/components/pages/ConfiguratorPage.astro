@@ -41,6 +41,7 @@ const L = lang === 'hr'
       pdf: 'Preuzmi PDF',
       send: 'Pošalji upit',
       hint: 'Povucite za rotaciju · kotačić za zoom',
+      approx: 'Približan 3D prikaz. Stvarni proizvod može odstupati u detaljima i nijansama.',
       custom: 'RAL 7016 ili #383E42',
       invalid: 'Nepoznat RAL ili neispravan HEX.',
       byOrder: 'po narudžbi',
@@ -64,6 +65,7 @@ const L = lang === 'hr'
       pdf: 'Download PDF',
       send: 'Send enquiry',
       hint: 'Drag to rotate · scroll to zoom',
+      approx: 'Approximate 3D view. The real product may differ in detail and shade.',
       custom: 'RAL 7016 or #383E42',
       invalid: 'Unknown RAL or invalid HEX.',
       byOrder: 'on request',
@@ -129,6 +131,14 @@ const fills = FILL;---
             class="pointer-events-none absolute inset-0 grid place-items-center text-caption text-mist"
           >
             {L.loading}
+          </p>
+          {/* Napomena gore lijevo, uputa dolje lijevo. Namjerno različito
+              oblikovane: uputa je UI (verzal, razmaknuto, u okviru), napomena
+              je rečenica - tako se ne čitaju kao dva gumba. */}
+          <p
+            class="pointer-events-none absolute top-4 left-4 max-w-[min(calc(100%-2rem),38ch)] text-[11px] leading-[1.5] text-mist"
+          >
+            {L.approx}
           </p>
           <p
             class="pointer-events-none absolute bottom-4 left-4 border border-trench bg-abyss/80 px-3 py-2 text-[11px] tracking-[0.16em] text-mist uppercase"
@@ -308,6 +318,7 @@ const fills = FILL;---
       <h1>{L.head}</h1>
       <p class="p-sub">{L.summary}</p>
       <img data-print-shot alt="" />
+      <p class="p-note">{L.approx}</p>
       <dl class="p-spec" data-print-summary></dl>
       {/* Samo domena. Puni link je hash s osam boja - u ispisu nečitljiv red
           od dvjestotinjak znakova, a za dijeljenje postoji "Kopiraj link". */}

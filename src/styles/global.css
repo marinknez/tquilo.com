@@ -311,6 +311,15 @@
     margin: 8mm 0 10mm;
   }
 
+  /* Napomena o približnosti prikaza - ista rečenica koja stoji u 3D prozoru.
+     Ide odmah ispod snimke, sitno, da se ne čita kao dio specifikacije. */
+  [data-print] .p-note {
+    margin: -7mm 0 9mm;
+    font-size: 8pt;
+    line-height: 1.5;
+    color: #6e7681;
+  }
+
   /* --- specifikacija: dvostupčana tablica s tankim linijama --- */
   [data-print] .p-spec {
     display: grid;

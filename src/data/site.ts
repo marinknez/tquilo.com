@@ -61,9 +61,11 @@ export const SITE = {
   founded: '2026',
   country: 'HR',
 
-  /** Pravna osoba iza proizvoda - podnožje kontakta i JSON-LD. */
+  /** Pravna osoba iza proizvoda - podnožje kontakta, PDF i JSON-LD. */
   legal: {
+    /** Tvrtka se ne prevodi - ni naziv ni pravni oblik („d.o.o."). */
     name: 'Arba Nautika d.o.o.',
+    /** PDV broj = HR + OIB. Vrijedi samo ako je tvrtka u sustavu PDV-a. */
     vatId: 'HR00720431425',
     oib: '00720431425',
   },
@@ -96,6 +98,21 @@ export const OG_LOCALE: Record<Lang, string> = {
   hr: 'hr_HR',
   en: 'en_US',
 };
+
+/**
+ * Pravna crta u dva retka, po jeziku.
+ *
+ * OIB i PDV broj su isti broj: PDV je OIB s prefiksom države. Hrvatskom
+ * posjetitelju je OIB ono što prepoznaje, stranom partneru PDV broj ono s
+ * čime može provjeriti tvrtku u VIES-u - zato različita oznaka, a ne prijevod
+ * iste.
+ *
+ * Država se prevodi („Croatia"), tvrtka ne.
+ */
+export const legalLines = (lang: Lang): [string, string] =>
+  lang === 'hr'
+    ? [`${SITE.legal.name}, Hrvatska`, `OIB: ${SITE.legal.oib}`]
+    : [`${SITE.legal.name}, Croatia`, `VAT: ${SITE.legal.vatId}`];
 
 /** Apsolutni URL iz relativne putanje - meta tagovi i JSON-LD traže apsolutni. */
 export const absolute = (path: string): string => new URL(path, SITE.url).href;

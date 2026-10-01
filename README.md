@@ -213,34 +213,45 @@ Astro iz commitanih izvora gradi AVIF u četiri širine.
 čita `navigator.language`. `DEFAULT_LANG = 'en'`, `hreflang="x-default"`
 pokazuje na `/en`. HR posjetitelj bira sam, prekidačem u zaglavlju.
 
-## Pristanak na pohranu
+## Pristanak, kolačići i analitika
 
-Stranica nema kolačiće, analitiku ni piksele. Jedino što sprema je pozicija u
-vodoravnoj prezentaciji (`tquilo.D2.x`) - korisno, ali nije nužno za rad, pa
-traži pristanak.
+Uz pristanak stranica radi dvije stvari: **Google Analytics 4**
+(`G-ST8X7GLQSB`, kolačići `_ga` i `_ga_<ID>`) i pamćenje pozicije u
+vodoravnoj prezentaciji (`tquilo.D2.x`). Bez pristanka - ni jedno ni drugo.
 
-`„Samo nužno"` nije ukrasni gumb: ako se odabere, engine **prestaje pamtiti
-poziciju** i briše već spremljenu. Traka bez stvarne posljedice ne bi bila
-pristanak nego kulisa.
+`„Samo nužno"` nije ukrasni gumb: GA se **ne učita**, engine **prestaje
+pamtiti poziciju** i briše već spremljenu. Traka bez stvarne posljedice ne bi
+bila pristanak nego kulisa.
 
+- `src/scripts/analytics.ts` - GA se ne učitava dok pristanka nema. Službeni
+  gtag isječak ovdje ne ide doslovno: CSP je `script-src 'self'` bez
+  `unsafe-inline`, pa je bootstrap (`dataLayer`, `gtag()`) u paketu, a
+  vanjska skripta se ubacuje preko `createElement`.
+- `stopAnalytics()` koristi `ga-disable-G-ST8X7GLQSB` - službeni GA prekidač -
+  i **briše `_ga` kolačiće**. Bez toga bi „Samo nužno" nakon „Prihvaćam" bio
+  prazan gumb: skripta je tada već u stranici i ne može se odučitati.
 - `src/scripts/consent.ts` - `canStore()` je jedino mjesto koje ostatak koda
-  pita smije li spremati. Ako se doda analitika, provjerava se **ondje**, a
-  domena se dodaje u CSP - ne obrnuto.
+  pita smije li spremati. Nova domena uvijek ide i u CSP - ne obrnuto.
 - Odluka je u `localStorage` pod `tquilo.consent` (`all` | `essential`).
 - Traka se ne renderira dok skripta ne provjeri postoji li već odluka, pa ne
   bljesne posjetitelju koji se vraća.
 - Pozicija: dolje desno (kao DS `Toast`), iznad fiksne donje trake. Na
   mobitelu se razvlači preko obje margine jer bi inače bila pretijesna.
 - **× skuplja traku u kap** (brandov znak, 44 × 44). To **nije** pristanak:
-  do izbora se ponaša kao „samo nužno", a kap ostaje na ekranu da se odluka
-  može donijeti kasnije. Sakriti je posve značilo bi da pristanka nema, a
-  nema ni načina da se da. Stanje trake je u `tquilo.consent.ui` - dio
-  mehanizma pristanka, pa se sprema bez obzira na odluku.
+  do izbora se ponaša kao „samo nužno". Stanje trake je u `tquilo.consent.ui`.
+- **Kap ostaje i nakon izbora.** Dok nije bilo analitike to je bilo svejedno;
+  s njom nije - povlačenje pristanka mora biti jednako dostupno kao davanje.
+  Otvorena traka ispisuje trenutno stanje (`[data-consent-state]`).
 - Blokirana pohrana (privatni prozor) tretira se kao „samo nužno".
 
-⚠ **Nedostaje stranica o privatnosti.** Traka je točna i minimalna, ali bez
-poveznice na politiku privatnosti jer ta stranica još ne postoji. Kad nastane,
-dodaje se poveznica u `Consent.astro`.
+⚠ **Nedostaje stranica o privatnosti, a sada je obavezna.** S GA-om na
+stranici treba politika privatnosti koja navodi voditelja obrade, svrhu,
+rok čuvanja i prava ispitanika, plus poveznica na nju iz `Consent.astro`.
+Dok je nema, traka je točna u opisu, ali dokumentacija iza nje ne postoji.
+
+⚠ **Provjeriti postavke GA property-ja:** rok čuvanja podataka (zadano 14
+mjeseci), isključiti Google signals ako se ne koristi (inače CSP treba i
+`stats.g.doubleclick.net`), te potpisati Google ugovor o obradi podataka.
 
 ## Sigurnost
 
@@ -250,14 +261,16 @@ Sve je u `public/.htaccess`:
   atributa u markupu ni inline skripti: boje se postavljaju iz JS-a preko
   `element.style`, a podaci za konfigurator idu kroz
   `<script type="application/json">` (podatkovni blok, preglednik ga ne
-  izvršava). **Ako se doda analitika, mijenja se ovdje - ne dodavati
-  `unsafe-inline`.**
+  izvršava). **Nikad ne dodavati `unsafe-inline`** - ni gtag ga ne treba.
 - HSTS 2 godine, `includeSubDomains`, `preload`.
 - COOP/COEP/CORP, Permissions-Policy, `X-Frame-Options: DENY`, `nosniff`.
 - `/.well-known/security.txt` po RFC 9116, `Expires` se pomiče na svaki build.
 
-**Kontakt forma** ide na **Web3Forms**. To je jedina vanjska domena na
-stranici, pa je u CSP-u dopuštena poimence (`form-action` i `connect-src`).
+**Vanjske domene su dvije** i obje su u CSP-u poimence: **Web3Forms**
+(`form-action`, `connect-src`) za kontakt formu i **googletagmanager.com**
+(`script-src`) za GA. GA4 mjerenja idu na `google-analytics.com`, a regionalni
+endpoint je poddomena (`region1...`) - odatle zvjezdica u `connect-src`. Bez
+tog unosa GA tiho ne šalje ništa i pogreška se vidi samo u konzoli.
 Forma radi i bez JavaScripta: bez njega je običan POST i Web3Forms vrati
 vlastitu potvrdu; s njim se šalje u pozadini i javi status, da posjetitelj ne
 ispadne iz vodoravne prezentacije. Web3Forms honeypot (`botcheck`) je

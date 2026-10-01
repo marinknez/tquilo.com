@@ -1,17 +1,21 @@
 /**
- * Pristanak na lokalnu pohranu.
+ * Pristanak na kolačiće i lokalnu pohranu.
  *
- * `tquilo.consent`: `all` (smije se pamtiti i ono što nije nužno) ili
- * `essential` (samo ono bez čega stranica ne radi).
+ * `tquilo.consent`: `all` (Google Analytics + pamćenje pozicije) ili
+ * `essential` (ništa od toga).
  *
  * `tquilo.consent.ui`: je li traka skupljena u kap. To NIJE pristanak nego
  * stanje same trake - dio mehanizma pristanka, pa se sprema bez obzira na
  * odluku. Bez toga bi se traka otvarala na svakoj stranici iznova.
  *
  * `canStore()` je jedino mjesto koje ostatak koda pita smije li spremati.
- * Ako se doda analitika, provjerava se ovdje i CSP se proširuje u
- * `.htaccess` - ne obrnuto.
+ *
+ * ODLUKA SE MOŽE PROMIJENITI. Kap ostaje na ekranu i nakon izbora. Dok nije
+ * bilo analitike to je bilo svejedno; s njom nije - povlačenje pristanka mora
+ * biti jednako dostupno kao davanje, inače pristanak pravno ne stoji.
  */
+import { startAnalytics, stopAnalytics } from './analytics';
+
 const KEY = 'tquilo.consent';
 const UI_KEY = 'tquilo.consent.ui';
 
@@ -51,19 +55,31 @@ export function canStore(): boolean {
   return getConsent() === 'all';
 }
 
+function apply(value: Consent) {
+  if (value === 'all') {
+    startAnalytics();
+    return;
+  }
+  stopAnalytics();
+  try {
+    localStorage.removeItem('tquilo.D2.x');
+  } catch {
+    /* nema što obrisati */
+  }
+}
+
 function decide(value: Consent) {
   write(KEY, value);
-  if (value === 'essential') {
-    try {
-      localStorage.removeItem('tquilo.D2.x');
-    } catch {
-      /* nema što obrisati */
-    }
-  }
+  apply(value);
   document.dispatchEvent(new CustomEvent('tquilo:consent', { detail: value }));
 }
 
 export function initConsent(root: ParentNode = document) {
+  // Analitika kreće i prije nego se nađe traka: odluka je već donesena u
+  // ranijem posjetu, a traka na nekoj stranici može i ne postojati.
+  const decided = getConsent();
+  if (decided === 'all') startAnalytics();
+
   const el = root.querySelector<HTMLElement>('[data-consent]');
   if (!el) return;
 
@@ -71,8 +87,18 @@ export function initConsent(root: ParentNode = document) {
   const drop = el.querySelector<HTMLElement>('[data-consent-open]');
   if (!panel || !drop) return;
 
-  // Odluka već postoji - ni traka ni kap se ne prikazuju.
-  if (getConsent()) return;
+  const state = el.querySelector<HTMLElement>('[data-consent-state]');
+  const labels = {
+    all: state?.dataset.all ?? '',
+    essential: state?.dataset.essential ?? '',
+  };
+
+  const paintState = () => {
+    if (!state) return;
+    const v = getConsent();
+    state.hidden = !v;
+    if (v) state.textContent = labels[v];
+  };
 
   const show = (minimised: boolean) => {
     el.hidden = false;
@@ -80,7 +106,10 @@ export function initConsent(root: ParentNode = document) {
     drop.hidden = !minimised;
   };
 
-  show(read(UI_KEY) === 'min');
+  paintState();
+  // S donesenom odlukom vidi se samo kap; bez nje traka, osim ako ju je
+  // posjetitelj već skupio.
+  show(decided ? true : read(UI_KEY) === 'min');
 
   el.querySelector<HTMLElement>('[data-consent-min]')?.addEventListener('click', () => {
     write(UI_KEY, 'min');
@@ -90,12 +119,15 @@ export function initConsent(root: ParentNode = document) {
 
   drop.addEventListener('click', () => {
     write(UI_KEY, 'open');
+    paintState();
     show(false);
   });
 
   const close = (value: Consent) => {
     decide(value);
-    el.hidden = true;
+    write(UI_KEY, 'min');
+    paintState();
+    show(true);
   };
 
   el.querySelector<HTMLElement>('[data-consent-accept]')?.addEventListener('click', () => close('all'));

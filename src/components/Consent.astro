@@ -2,19 +2,17 @@
 /**
  * Pristanak na lokalnu pohranu.
  *
- * Stranica nema analitiku, nema piksele i ne postavlja kolačiće. Jedino što
- * sprema je pozicija u vodoravnoj prezentaciji (`tquilo.D2.x`) - zgodno, ali
- * nije nužno za rad, pa traži pristanak. Sam zapis o odluci je nužan i
- * sprema se u svakom slučaju.
+ * Uz pristanak stranica radi dvije stvari: Google Analytics (kolačići `_ga`)
+ * i pamćenje pozicije u vodoravnoj prezentaciji (`tquilo.D2.x`). Bez njega -
+ * ni jedno ni drugo. Sam zapis o odluci je nužan i sprema se u svakom slučaju.
  *
- * Zato „Samo nužno" nije ukrasni gumb: ako se odabere, engine prestaje
- * pamtiti poziciju. Traka bez stvarne posljedice ne bi bila pristanak nego
- * kulisa.
+ * Zato „Samo nužno" nije ukrasni gumb: GA se ne učita, a ako je od ranije
+ * učitan, gasi se i briše svoje kolačiće. Traka bez stvarne posljedice ne bi
+ * bila pristanak nego kulisa.
  *
- * Zatvaranje (×) NIJE pristanak. Traka se skuplja u kap - brandov znak - i
- * do izbora se ponaša kao „samo nužno". Kap ostaje na ekranu da se odluka
- * može donijeti kasnije; sakriti je posve značilo bi da pristanka nema, a
- * nema ni načina da se da.
+ * Zatvaranje (×) NIJE pristanak. Traka se skuplja u kap - brandov znak - i do
+ * izbora se ponaša kao „samo nužno". Kap ostaje i NAKON izbora, jer povlačenje
+ * pristanka mora biti jednako dostupno kao davanje.
  */
 import { type Lang } from '../data/site';
 
@@ -29,20 +27,28 @@ const { lang, raised = false } = Astro.props;
 const L =
   lang === 'hr'
     ? {
-        text: 'Pamtimo samo gdje ste stali na stranici. Nema kolačića, analitike ni praćenja.',
+        text:
+          'Uz vaš pristanak koristimo Google Analytics i pamtimo gdje ste stali na ' +
+          'stranici. Bez pristanka se ne postavlja ništa.',
         accept: 'Prihvaćam',
         reject: 'Samo nužno',
-        label: 'Pristanak na lokalnu pohranu',
+        label: 'Postavke privatnosti',
         close: 'Smanji',
-        open: 'Otvori postavke pohrane',
+        open: 'Postavke privatnosti',
+        stateAll: 'Trenutno: analitika uključena.',
+        stateEssential: 'Trenutno: samo nužno.',
       }
     : {
-        text: 'We only remember where you left off. No cookies, no analytics, no tracking.',
+        text:
+          'With your consent we use Google Analytics and remember where you left off. ' +
+          'Without it, nothing is set.',
         accept: 'Accept',
         reject: 'Essential only',
-        label: 'Local storage consent',
+        label: 'Privacy settings',
         close: 'Minimise',
-        open: 'Open storage settings',
+        open: 'Privacy settings',
+        stateAll: 'Currently: analytics on.',
+        stateEssential: 'Currently: essential only.',
       };
 
 const bottom = raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4';
@@ -84,6 +90,16 @@ const bottom = raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4';
     </button>
 
     <p class="m-0 pr-8 text-[14px] leading-[1.6] text-mist">{L.text}</p>
+    {/* Vidljivo tek kad odluka postoji - inače bi traka tvrdila stanje koje
+        posjetitelj nije odabrao. Tekst upisuje `consent.ts` iz `data-*`. */}
+    <p
+      data-consent-state
+      data-all={L.stateAll}
+      data-essential={L.stateEssential}
+      hidden
+      class="m-0 mt-2 text-[13px] leading-[1.6] text-champagne"
+    >
+    </p>
     <p class="m-0 mt-4 flex flex-wrap gap-3">
       <button
         type="button"

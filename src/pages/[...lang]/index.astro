@@ -15,14 +15,16 @@ import Boje from '../../components/scenes/Boje.astro';
 import Izvedbe from '../../components/scenes/Izvedbe.astro';
 import Fjaka from '../../components/scenes/Fjaka.astro';
 import Kontakt from '../../components/scenes/Kontakt.astro';
-import { LANGS, type Lang } from '../../data/site';
+import { LANGS, DEFAULT_LANG, type Lang } from '../../data/site';
 import { t } from '../../i18n';
 
 export function getStaticPaths() {
-  return LANGS.map((lang) => ({ params: { lang } }));
+  // Primarni jezik (EN) nema prefiks: `lang: undefined` u rest parametru
+  // znači da se stranica gradi na korijenu (`/`, `/konfigurator`, …).
+  return LANGS.map((lang) => ({ params: { lang: lang === DEFAULT_LANG ? undefined : lang } }));
 }
 
-const lang = Astro.params.lang as Lang;
+const lang = (Astro.params.lang as Lang | undefined) ?? DEFAULT_LANG;
 const c = t(lang);
 ---
 

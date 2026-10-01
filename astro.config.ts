@@ -3,7 +3,7 @@ import { defineConfig } from 'astro/config';
 import sitemap from '@astrojs/sitemap';
 import tailwindcss from '@tailwindcss/vite';
 
-import { SITE, LAUNCHED, LANGS } from './src/data/site';
+import { SITE, LAUNCHED } from './src/data/site';
 
 // https://astro.build/config
 export default defineConfig({
@@ -23,10 +23,8 @@ export default defineConfig({
       changefreq: 'weekly',
       priority: 1,
       lastmod: new Date(),
-      // 404 nikad ne ide u sitemap; jezične rute tek nakon lansiranja.
-      filter: (page) =>
-        !page.includes('/404') &&
-        (LAUNCHED || !LANGS.some((l) => page.includes(`/${l}/`) || page.endsWith(`/${l}`))),
+      // 404 nikad ne ide u sitemap, a dok site nije lansiran - ništa.
+      filter: (page) => LAUNCHED && !page.includes('/404'),
     }),
   ],
 

@@ -165,11 +165,11 @@ async function buildOgImage() {
   <rect width="${W}" height="4" fill="${brandColors.champagne}"/>
   <rect x="80" y="150" width="2" height="330" fill="${brandColors.trench}"/>
   <g transform="translate(80,66) scale(0.34)">${wordmark.replace(/^<svg[^>]*>/, '<g>').replace(/<\/svg>$/, '</g>')}</g>
-  <text class="label" x="124" y="196" fill="${brandColors.champagne}">Something new is taking shape. Launching October 2026</text>
-  <text class="display" x="124" y="300" fill="${brandColors.champagne}">Coming soon.</text>
-  <text class="display" x="124" y="386" fill="${brandColors.salt}">Your tranquilo place</text>
-  <text class="display" x="124" y="462" fill="${brandColors.salt}">on water.</text>
-  <text class="lede" x="124" y="540" fill="${brandColors.mist}">A floating sunbed for two. No crew, no schedule.</text>
+  <text class="label" x="124" y="196" fill="${brandColors.champagne}">Floating luxury platform · Made in Croatia</text>
+  <text class="display" x="124" y="300" fill="${brandColors.salt}">Your tranquilo place</text>
+  <text class="display" x="124" y="386" fill="${brandColors.champagne}">on water.</text>
+  <text class="lede" x="124" y="462" fill="${brandColors.mist}">A floating sunbed for two. No licence, no registration.</text>
+  <text class="lede" x="124" y="506" fill="${brandColors.mist}">Shade, a shower and a cold drink within reach.</text>
   <rect x="0" y="${H - 4}" width="${W}" height="4" fill="${brandColors.deepSea}"/>
 </svg>`;
 

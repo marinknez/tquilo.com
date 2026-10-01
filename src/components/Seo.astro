@@ -9,7 +9,8 @@
  *      Graf je jedan `<script>`, povezan preko @id-jeva: tako Google i LLM
  *      crawleri dobiju jednu koherentnu tvrdnju o brendu, a ne tri odvojene.
  */
-import { SITE, absolute, LAUNCHED, LANGS, OG_LOCALE, type Lang } from '../data/site';
+import { SITE, absolute, LAUNCHED, LANGS, DEFAULT_LANG, OG_LOCALE, type Lang } from '../data/site';
+import { localePath } from '../i18n';
 
 interface Props {
   title: string;
@@ -26,20 +27,22 @@ interface Props {
 
 const { title, description = SITE.description, path = '/', lang, page = '' } = Astro.props;
 
-// Dok je LAUNCHED false, puni site postoji samo za pregled: gradi se, ali
-// ne smije u indeks. Coming soon stranica (bez `lang`) ostaje indeksabilna.
-const noindex = Astro.props.noindex || (!!lang && !LAUNCHED);
+// Dok je LAUNCHED false, site postoji samo za pregled: gradi se, ali ne smije
+// u indeks.
+const noindex = Astro.props.noindex || !LAUNCHED;
 
 const canonical = absolute(path);
 const ogImage = absolute(SITE.og.image);
 const ogLocale = lang ? OG_LOCALE[lang] : SITE.localeOg;
 const inLanguage = lang ?? SITE.locale;
 
+// Putanje računa `localePath`, pa hreflang automatski prati to što primarni
+// jezik (EN) nema prefiks: `/konfigurator` i `/hr/konfigurator`.
 const hreflang = lang
   ? [
-      ...LANGS.map((l) => ({ l, href: absolute(page ? `/${l}/${page}` : `/${l}`) })),
+      ...LANGS.map((l) => ({ l, href: absolute(localePath(l, page)) })),
       // x-default je EN - primarni jezik stranice.
-      { l: 'x-default', href: absolute(page ? `/en/${page}` : '/en') },
+      { l: 'x-default', href: absolute(localePath(DEFAULT_LANG, page)) },
     ]
   : [];
 

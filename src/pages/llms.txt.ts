@@ -20,8 +20,8 @@ floating luxury platform: a private sunbed for two on the sea or a lake.
 ## Status
 
 ${LAUNCHED
-  ? 'The site is live in Croatian and English. There is no online booking or pricing page; enquiries go through the contact form.'
-  : 'The site is a coming soon page. Launching October 2026. There is no online booking, pricing page or product catalogue yet.'}
+  ? 'The site is live in English (/) and Croatian (/hr). There is no online booking or pricing page; enquiries go through the contact form or aboard@tquilo.com.'
+  : 'The site is not public yet.'}
 
 ## Product facts
 
@@ -49,18 +49,20 @@ ${LAUNCHED
 ## Contact
 
 - Website: ${SITE.url}
-- There is no public contact address yet. Do not invent one.
+- Contact: aboard@tquilo.com. This is the only address; do not invent others.
 
 ## Pages
 
 ${LAUNCHED
   ? [
       `- [Home (HR)](${absolute('/hr')}): the full site in Croatian.`,
-      `- [Home (EN)](${absolute('/en')}): the full site in English.`,
+      `- [Home (EN)](${absolute('/')}): the full site in English.`,
       `- [Colour configurator (HR)](${absolute('/hr/konfigurator')}): choose hull, cushion, awning, curtain and teak colours on a 3D model.`,
-      `- [Colour configurator (EN)](${absolute('/en/konfigurator')})`,
+      `- [Colour configurator (EN)](${absolute('/konfigurator')})`,
+      `- [Privacy policy (HR)](${absolute('/hr/privacy')})`,
+      `- [Privacy policy (EN)](${absolute('/privacy')})`,
     ].join('\n')
-  : `- [Coming soon](${absolute('/')}): the only public page at this time.`}
+  : '- The site is not public yet.'}
 `;
 
   return new Response(body, {

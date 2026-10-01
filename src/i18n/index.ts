@@ -22,9 +22,19 @@ export const t = (lang: Lang): Copy => DICT[lang] ?? DICT[DEFAULT_LANG];
  */
 export const altLang = (lang: Lang): Lang => (lang === 'hr' ? 'en' : 'hr');
 
-/** Putanja stranice za dani jezik. `page` je bez vodeće kose crte. */
-export const localePath = (lang: Lang, page = ''): string =>
-  page ? `/${lang}/${page}` : `/${lang}`;
+/**
+ * Putanja stranice za dani jezik. `page` je bez vodeće kose crte.
+ *
+ * PRIMARNI JEZIK NEMA PREFIKS. EN je `/`, `/konfigurator`, `/privacy`;
+ * HR je `/hr`, `/hr/konfigurator`, `/hr/privacy`. Jedno mjesto odlučuje -
+ * rute, hreflang, sitemap, prekidač jezika i poveznice sve čitaju odavde.
+ *
+ * Stare adrese `/en/...` i dalje postoje kao 301 u `.htaccess`.
+ */
+export const localePath = (lang: Lang, page = ''): string => {
+  const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
+  return page ? `${prefix}/${page}` : prefix || '/';
+};
 
 /** Sve jezične varijante jedne stranice - za hreflang i jezični prekidač. */
 export const alternates = (page = ''): { lang: Lang; path: string }[] =>

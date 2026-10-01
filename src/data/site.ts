@@ -21,13 +21,13 @@ export const SITE = {
   localeOg: 'en_US',
   themeColor: '#0B1622',
 
-  title: 'T’quilo - Coming soon',
+  title: 'T’quilo - Your tranquilo place on water',
   titleTemplate: '%s - T’quilo',
   tagline: 'Your tranquilo place on water.',
   description:
-    'T’quilo is a floating sunbed for two - a private 6 m² room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Launching October 2026.',
+    'T’quilo is a floating sunbed for two - a private 6 m² room on the water, with no crew and no schedule. No boating licence and no vessel registration required.',
   /** Kratki opis za Twitter card (≤ 120 znakova). */
-  descriptionShort: 'A floating sunbed for two. No crew, no schedule. Launching October 2026.',
+  descriptionShort: 'A floating sunbed for two. No licence, no registration. Shade, a shower and a cold drink within reach.',
 
   keywords: [
     'floating sunbed',
@@ -49,13 +49,12 @@ export const SITE = {
     image: '/og/tquilo-og.png',
     width: 1200,
     height: 630,
-    alt: 'T’quilo - Coming soon. Your tranquilo place on water.',
+    alt: 'T’quilo - a floating sunbed for two, on calm water.',
     type: 'image/png',
   },
 
+  /** ISO datum lansiranja - samo za structured data. */
   launch: {
-    label: 'Something new is taking shape. Launching October 2026',
-    /** ISO datum za structured data; dan je namjerno prvi u mjesecu. */
     date: '2026-10-01',
   },
 
@@ -75,15 +74,14 @@ export const SITE = {
 /**
  * ⚠ PREKIDAČ LANSIRANJA.
  *
- * `false` - javni korijen je coming soon stranica. Puni site se i dalje gradi
- * na /hr/ i /en/ da ga se može pregledati i pokazati klijentu, ali nosi
- * `noindex`, izostaje iz sitemapa i robots.txt ga zabranjuje.
+ * `false` - site se gradi i može se pokazati klijentu, ali ne smije u indeks:
+ * sve nosi `noindex`, izostaje iz sitemapa i robots.txt ga zabranjuje.
  *
- * `true` - korijen vodi na /hr/, coming soon se povlači, sve ide u indeks.
+ * `true` - sve ide u indeks, sitemap i llms.txt.
  *
  * Mijenja se SAMO ovdje. Sve ostalo (rute, meta, sitemap, robots) to prati.
  */
-export const LAUNCHED = false;
+export const LAUNCHED = true;
 
 export const LANGS = ['hr', 'en'] as const;
 export type Lang = (typeof LANGS)[number];

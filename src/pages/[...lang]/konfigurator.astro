@@ -7,15 +7,17 @@ import '../../styles/global.css';
 import Seo from '../../components/Seo.astro';
 import Icon from '../../components/Icon.astro';
 import Consent from '../../components/Consent.astro';
-import { SITE, LANGS, type Lang } from '../../data/site';
+import { SITE, LANGS, DEFAULT_LANG, type Lang } from '../../data/site';
 import { t, localePath, alternates } from '../../i18n';
 import { SEGMENTS, LINES, SCHEMES, TEAK, FILL, DEFAULT_CONFIG } from '../../data/palette';
 
 export function getStaticPaths() {
-  return LANGS.map((lang) => ({ params: { lang } }));
+  // Primarni jezik (EN) nema prefiks: `lang: undefined` u rest parametru
+  // znači da se stranica gradi na korijenu (`/`, `/konfigurator`, …).
+  return LANGS.map((lang) => ({ params: { lang: lang === DEFAULT_LANG ? undefined : lang } }));
 }
 
-const lang = Astro.params.lang as Lang;
+const lang = (Astro.params.lang as Lang | undefined) ?? DEFAULT_LANG;
 const c = t(lang);
 const alts = alternates('konfigurator');
 

@@ -18,7 +18,7 @@ import '../../styles/global.css';
 import Seo from '../../components/Seo.astro';
 import Consent from '../../components/Consent.astro';
 import { SITE, LANGS, DEFAULT_LANG, legalLines, type Lang } from '../../data/site';
-import { localePath } from '../../i18n';
+import { localePath, sceneHash } from '../../i18n';
 
 export function getStaticPaths() {
   // Primarni jezik (EN) nema prefiks: `lang: undefined` u rest parametru
@@ -148,7 +148,7 @@ const L =
         ],
       };
 
-const contactHref = `${localePath(lang)}#kontakt`;
+const contactHref = `${localePath(lang)}${sceneHash(lang, 'kontakt')}`;
 ---
 
 <!doctype html>

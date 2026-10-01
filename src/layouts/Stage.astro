@@ -7,7 +7,7 @@ import '../styles/global.css';
 import Seo from '../components/Seo.astro';
 import Icon from '../components/Icon.astro';
 import Consent from '../components/Consent.astro';
-import { t, localePath, alternates, type Lang } from '../i18n';
+import { t, localePath, alternates, sceneSlugs, sceneSlugsByLang, type Lang } from '../i18n';
 import { SITE, LANGS } from '../data/site';
 
 interface Props {
@@ -24,7 +24,10 @@ const alts = alternates();
 
 /** ID-evi ekrana za hash u adresi. Namjerno jezično neutralni, da ista
  *  adresa vrijedi i nakon prebacivanja jezika. */
-const SCENE_IDS = ['mir', 'voda', 'kvaliteta', 'partneri', 'boje', 'izvedbe', 'fjaka', 'kontakt'];
+// Sidra u adresi su na jeziku stranice (`/#water` na EN, `/#voda` na HR).
+// `data-scene` atributi ostaju na unutarnjim ključevima - v. i18n/index.ts.
+const SCENE_IDS = sceneSlugs(lang);
+const SCENE_SLUGS_BY_LANG = sceneSlugsByLang();
 ---
 
 <!doctype html>
@@ -113,6 +116,7 @@ const SCENE_IDS = ['mir', 'voda', 'kvaliteta', 'partneri', 'boje', 'izvedbe', 'f
       data-loop={String(loop)}
       data-scenes={JSON.stringify(c.scenes)}
       data-scene-ids={JSON.stringify(SCENE_IDS)}
+      data-lang-hashes={JSON.stringify(SCENE_SLUGS_BY_LANG)}
       class="fixed inset-0 overflow-hidden"
     >
       <div data-track class="relative flex h-full will-change-transform">

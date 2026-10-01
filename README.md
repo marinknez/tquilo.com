@@ -227,6 +227,30 @@ promjena sheme je promjena te funkcije, ne pretraživanje po projektu.
 Tehnički: stranice su `src/pages/[...lang]/*.astro`, a `getStaticPaths` za EN
 vraća `lang: undefined` - rest parametar tada gradi datoteku na korijenu.
 
+### Sidra ekrana
+
+Vodoravna prezentacija ima osam ekrana i svaki ima svoje sidro u adresi.
+**Sidra su na jeziku stranice** - `/#water` na engleskoj, `/#voda` na
+hrvatskoj. Prije su obje verzije imale hrvatska sidra, pa je adresna traka na
+engleskoj stranici govorila hrvatski.
+
+Razlikuju se dvije stvari i ne smiju se pobrkati:
+
+- **`SCENE_KEYS`** (`mir`, `voda`, …) su unutarnji ključevi. Njima su
+  imenovani `data-scene` atributi i selektori u CSS-u i JS-u. **Ne prevode se.**
+- **`SCENE_SLUGS`** je ono što posjetitelj vidi u adresi.
+
+Oboje je u `src/i18n/index.ts`; `sceneHash(lang, 'kontakt')` je jedini način
+na koji se u markupu piše sidro.
+
+**Jezični prekidač prevodi sidro.** S `/#water` vodi na `/hr#voda`, ne na
+`/hr#water` - to drugo sidro u hrvatskoj verziji ne postoji. Engine za to
+dobiva `data-lang-hashes` sa slugovima svih jezika.
+
+⚠ Stara engleska sidra (`/#mir`) više ne postoje. Nisu 301-ana jer se
+fragment **ne šalje poslužitelju** - preusmjeriti ga može samo JavaScript.
+Posjetitelj s takvim linkom završi na prvom ekranu, bez greške.
+
 ⚠ **Stare `/en/...` adrese 301-aju** na nove (`.htaccess`). Ne brisati: to je
 ono što tražilica već zna i što je možda negdje podijeljeno.
 

@@ -48,6 +48,8 @@ export function initStage(root: ParentNode = document) {
   const sceneNames: string[] = JSON.parse(stage.dataset.scenes || '[]');
   /** Jezično neutralni ID-evi ekrana - hash u adresi i veza između jezika. */
   const sceneIds: string[] = JSON.parse(stage.dataset.sceneIds || '[]');
+  // Sidra po jezicima: isti ekran ima drugo ime u drugom jeziku.
+  const langHashes: Record<string, string[]> = JSON.parse(stage.dataset.langHashes || '{}');
   const navLinks = Array.from(root.querySelectorAll<HTMLElement>('[data-nav]'));
   const langLinks = Array.from(root.querySelectorAll<HTMLAnchorElement>('[data-lang-link]'));
   const loop = stage.dataset.loop !== 'false';
@@ -79,9 +81,12 @@ export function initStage(root: ParentNode = document) {
    * `ease-in-out`: mekano kreće, mekano staje, a trajanje raste s udaljenošću.
    */
   let tween: { from: number; to: number; t0: number; dur: number } | null = null;
+  /** Je li se posjetitelj već pomaknuo - v. `pinHash` niže. */
+  let moved = false;
   const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
 
   function glideTo(x: number) {
+    moved = true;
     if (reduced) {
       cur = target = x;
       tween = null;
@@ -526,8 +531,12 @@ export function initStage(root: ParentNode = document) {
       }
       // Prebacivanje jezika je puni odlazak na drugu rutu, pa mora ponijeti
       // ekran sa sobom - inače posjetitelj uvijek ispadne na naslovnici.
+      // Sidro se prevodi: s `/#water` se ide na `/hr#voda`, ne na `/hr#water`,
+      // jer to drugo sidro u hrvatskoj verziji ne postoji.
       if (id) {
-        for (const a of langLinks) a.hash = id;
+        for (const a of langLinks) {
+          a.hash = langHashes[a.dataset.langLink || '']?.[sc] || id;
+        }
         history.replaceState(null, '', '#' + id);
       }
     }
@@ -541,6 +550,7 @@ export function initStage(root: ParentNode = document) {
   }
 
   const setTarget = (x: number) => {
+    moved = true;
     target = loop ? x : Math.max(0, Math.min(max, x));
   };
 
@@ -640,20 +650,47 @@ export function initStage(root: ParentNode = document) {
   root.querySelector<HTMLElement>('[data-next]')?.addEventListener('click', () => step(1));
   root.querySelector<HTMLElement>('[data-prev]')?.addEventListener('click', () => step(-1));
 
-  measure();
-  if (hashScene >= 0 && scenes[hashScene]) {
+  /**
+   * Postavi traku na ekran iz adrese.
+   *
+   * ⚠ MORA SE PONOVITI. Prva izmjera ide prije nego fontovi slegnu, pa su
+   * sekcije još uske: `scenes[7].left` je tada 644 px umjesto 15392. Pin na
+   * tu vrijednost završi natrag na prvom ekranu, pa je `/#kontakt` vodio na
+   * naslovnicu. Zato se ponavlja nakon odgođene izmjere i nakon što fontovi
+   * budu spremni - ali samo ako se posjetitelj u međuvremenu nije pomaknuo.
+   */
+  const pinHash = () => {
+    if (hashScene < 0 || !scenes[hashScene]) return;
     cur = target = scenes[hashScene].left;
-  }
+    tween = null;
+  };
+
+  measure();
+  pinHash();
   // Odmah nacrtaj zatečeno stanje. Bez ovoga traka pri dolasku na #ekran
   // krene s nule i vidljivo otklizi do cilja.
   tick();
-  setTimeout(measure, 300);
+
+  /**
+   * Izmjeri pa, ako se posjetitelj još nije pomaknuo, ponovo postavi traku na
+   * ekran iz adrese. Širina sekcija ovisi o veličini naslova, a ta se slegne
+   * tek kad fontovi stignu - do tada je `scenes[i].left` premali.
+   */
+  const settle = () => {
+    measure();
+    if (!moved) {
+      pinHash();
+      tick();
+    }
+  };
+  setTimeout(settle, 300);
+  document.fonts?.ready.then(settle).catch(() => undefined);
 
   if (window.ResizeObserver) {
     let t: ReturnType<typeof setTimeout>;
     const ro = new ResizeObserver(() => {
       clearTimeout(t);
-      t = setTimeout(measure, 50);
+      t = setTimeout(settle, 50);
     });
     for (const el of track.querySelectorAll('[data-fit] > *, [data-legend], [data-text]')) ro.observe(el);
   }

@@ -8,7 +8,7 @@ import Seo from '../../components/Seo.astro';
 import Icon from '../../components/Icon.astro';
 import Consent from '../../components/Consent.astro';
 import { SITE, LANGS, DEFAULT_LANG, type Lang } from '../../data/site';
-import { t, localePath, alternates } from '../../i18n';
+import { t, localePath, alternates, sceneHash } from '../../i18n';
 import { SEGMENTS, LINES, SCHEMES, TEAK, FILL, DEFAULT_CONFIG } from '../../data/palette';
 
 export function getStaticPaths() {
@@ -279,7 +279,7 @@ const fills = FILL;
             <dl data-summary class="mt-4 grid gap-3 text-[14px]"></dl>
 
             <p class="mt-8 mb-0 flex flex-wrap gap-3">
-              <a href={`${localePath(lang)}#kontakt`} class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-[14px] text-[15px] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px">
+              <a href={`${localePath(lang)}${sceneHash(lang, 'kontakt')}`} class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-[14px] text-[15px] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px">
                 {L.send}
                 <Icon name="arrow-right" size={20} />
               </a>

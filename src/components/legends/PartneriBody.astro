@@ -1,6 +1,6 @@
 ---
 import Icon from '../Icon.astro';
-import { localePath, type Lang } from '../../i18n';
+import { localePath, sceneHash, type Lang } from '../../i18n';
 import type { Copy } from '../../i18n';
 const { c, lang } = Astro.props as { c: Copy; lang: Lang };
 ---
@@ -12,7 +12,7 @@ const { c, lang } = Astro.props as { c: Copy; lang: Lang };
 
   <div class="grid content-start gap-[10px] text-[15px]">
     <a
-      href="#kontakt"
+      href={sceneHash(lang, 'kontakt')}
       data-go="7"
       class="hidden justify-self-start border-b border-abyss pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink md:inline"
       >{c.quote}</a

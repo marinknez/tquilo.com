@@ -36,6 +36,68 @@ export const localePath = (lang: Lang, page = ''): string => {
   return page ? `${prefix}/${page}` : prefix || '/';
 };
 
+/**
+ * Ekrani vodoravne prezentacije.
+ *
+ * `SCENE_KEYS` su UNUTARNJI ključevi - njima su imenovani `data-scene`
+ * atributi i CSS/JS selektori, i oni se NE prevode. Mijenjati ih znači
+ * mijenjati selektore po cijelom projektu.
+ *
+ * `SCENE_SLUGS` je ono što posjetitelj vidi u adresi. Engleska verzija je
+ * imala hrvatske sidrene linkove (`/#mir`, `/#kontakt`) - adresna traka je
+ * govorila hrvatski na engleskoj stranici.
+ */
+export const SCENE_KEYS = [
+  'mir',
+  'voda',
+  'kvaliteta',
+  'partneri',
+  'boje',
+  'izvedbe',
+  'fjaka',
+  'kontakt',
+] as const;
+
+export type SceneKey = (typeof SCENE_KEYS)[number];
+
+const SCENE_SLUGS: Record<Lang, Record<SceneKey, string>> = {
+  hr: {
+    mir: 'mir',
+    voda: 'voda',
+    kvaliteta: 'kvaliteta',
+    partneri: 'partneri',
+    boje: 'boje',
+    izvedbe: 'izvedbe',
+    fjaka: 'fjaka',
+    kontakt: 'kontakt',
+  },
+  en: {
+    mir: 'quiet',
+    voda: 'water',
+    kvaliteta: 'quality',
+    partneri: 'partners',
+    boje: 'colours',
+    izvedbe: 'versions',
+    // „Fjaka" ostaje fjaka - to je brendirani pojam, ne riječ za prijevod.
+    fjaka: 'fjaka',
+    kontakt: 'contact',
+  },
+};
+
+/** Slugovi svih ekrana, redoslijedom, za dani jezik. */
+export const sceneSlugs = (lang: Lang): string[] => SCENE_KEYS.map((k) => SCENE_SLUGS[lang][k]);
+
+/** Sidro jednog ekrana, npr. `#kontakt` / `#contact`. */
+export const sceneHash = (lang: Lang, key: SceneKey): string => `#${SCENE_SLUGS[lang][key]}`;
+
+/**
+ * Slugovi po jezicima - treba jezičnom prekidaču. Prekidač nosi trenutni
+ * ekran sa sobom, pa mora znati kako se taj ekran zove u DRUGOM jeziku;
+ * inače bi s `/#water` odveo na `/hr#water`, sidro koje ne postoji.
+ */
+export const sceneSlugsByLang = (): Record<Lang, string[]> =>
+  Object.fromEntries(LANGS.map((l) => [l, sceneSlugs(l)])) as Record<Lang, string[]>;
+
 /** Sve jezične varijante jedne stranice - za hreflang i jezični prekidač. */
 export const alternates = (page = ''): { lang: Lang; path: string }[] =>
   LANGS.map((lang) => ({ lang, path: localePath(lang, page) }));

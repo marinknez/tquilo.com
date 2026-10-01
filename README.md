@@ -81,6 +81,13 @@ Stranica se ne skrola - `body` je fiksan, a traka se pomiče transformom.
   vrijedi na obje rute.
 - Pri dolasku na `#ekran` engine jednom pozove `tick()` odmah nakon
   `measure()` - inače traka krene s nule i vidljivo otklizi do cilja.
+- **Klik u izborniku ne juri kao kotačić.** Obično pomicanje je
+  eksponencijalno dotjerivanje (`cur += (target-cur)*0.08`): kreće naglo i
+  dugo se smiruje - dobro za kotačić, ružno za skok preko pola stranice.
+  Zato `goScene()` koristi vremenski tween s `ease-in-out`, 1,2-2,6 s ovisno
+  o udaljenosti. Svaki korisnikov unos (kotačić, dodir, tipke) ga prekida,
+  inače bi se borili za istu vrijednost. `prefers-reduced-motion` skače bez
+  animacije.
 
 ### Zamke na koje sam naletio
 

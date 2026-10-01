@@ -70,6 +70,33 @@ export function initStage(root: ParentNode = document) {
 
   const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
+  /**
+   * Klik u izborniku ne juri kao kotačić.
+   *
+   * Obično pomicanje je eksponencijalno dotjerivanje (`cur += (target-cur)*0.08`):
+   * kreće naglo i dugo se smiruje - dobro za kotačić, ružno za skok preko
+   * pola stranice. Zato klik na stavku izbornika ide vremenskim tweenom s
+   * `ease-in-out`: mekano kreće, mekano staje, a trajanje raste s udaljenošću.
+   */
+  let tween: { from: number; to: number; t0: number; dur: number } | null = null;
+  const easeInOut = (p: number) => (p < 0.5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2);
+
+  function glideTo(x: number) {
+    if (reduced) {
+      cur = target = x;
+      tween = null;
+      return;
+    }
+    const dist = Math.abs(x - cur);
+    tween = {
+      from: cur,
+      to: x,
+      t0: performance.now(),
+      dur: Math.min(2600, Math.max(1200, 950 + dist * 0.3)),
+    };
+    target = x;
+  }
+
   // Ekran iz adrese ima prednost pred zapamćenom pozicijom: tako prebacivanje
   // jezika, dijeljenje linka i izbornik vode na točan ekran, a ne na početak.
   const hashScene = sceneIds.indexOf(location.hash.replace(/^#/, ''));
@@ -392,8 +419,17 @@ export function initStage(root: ParentNode = document) {
 
   function tick() {
     if (!W) return;
-    const diff = target - cur;
-    cur = Math.abs(diff) < 0.3 ? target : cur + diff * 0.08;
+    if (tween) {
+      const p = Math.min(1, (performance.now() - tween.t0) / tween.dur);
+      cur = tween.from + (tween.to - tween.from) * easeInOut(p);
+      if (p >= 1) {
+        cur = target = tween.to;
+        tween = null;
+      }
+    } else {
+      const diff = target - cur;
+      cur = Math.abs(diff) < 0.3 ? target : cur + diff * 0.08;
+    }
 
     if (loop && L) {
       if (cur >= L) {
@@ -502,6 +538,7 @@ export function initStage(root: ParentNode = document) {
   };
 
   function step(dir: number) {
+    tween = null;
     if (!loop) {
       if (dir > 0) {
         const next = stops.find((v) => v > target + 8);
@@ -526,8 +563,8 @@ export function initStage(root: ParentNode = document) {
   function goScene(k: number) {
     const c = scenes[k];
     if (!c) return;
-    if (loop) target = Math.floor(target / L) * L + c.left;
-    else setTarget(c.left);
+    const to = loop ? Math.floor(target / L) * L + c.left : Math.max(0, Math.min(max, c.left));
+    glideTo(to);
   }
 
   /* ------------------------------------------------------------- unos */
@@ -535,6 +572,7 @@ export function initStage(root: ParentNode = document) {
   const onWheel = (e: WheelEvent) => {
     if (e.ctrlKey) return; // zoom prstima na trackpadu ostaje zoom
     e.preventDefault();
+    tween = null;
     const d = Math.abs(e.deltaY) >= Math.abs(e.deltaX) ? e.deltaY : e.deltaX;
     setTarget(target + d * (e.deltaMode === 1 ? 32 : 1) * 1.7);
   };
@@ -558,6 +596,7 @@ export function initStage(root: ParentNode = document) {
   let ty = 0;
   let t0: number | undefined;
   const onTS = (e: TouchEvent) => {
+    tween = null;
     tx = e.touches[0].clientX;
     ty = e.touches[0].clientY;
     t0 = target;

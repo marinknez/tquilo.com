@@ -61,11 +61,11 @@ const SCENE_IDS = ['mir', 'voda', 'kvaliteta', 'partneri', 'boje', 'izvedbe', 'f
         <img src="/logo/tquilo-primary-dark.svg" alt={SITE.name} width="454" height="100" class="h-[22px] w-auto" />
       </a>
 
-      <nav class="flex items-center gap-[clamp(16px,2.5vw,32px)]">
+      <nav class="flex items-baseline gap-[clamp(28px,4.5vw,64px)]">
         {/* Svi ekrani u izborniku (desktop). Klik vodi na ekran preko
             engineovog `data-go`; `href` s hashem drži smisao i bez JS-a i
             daje adresu koja se može podijeliti. */}
-        <ul class="hidden list-none items-center gap-[clamp(10px,1.4vw,22px)] p-0 md:flex">
+        <ul class="hidden list-none items-baseline gap-[clamp(14px,1.8vw,28px)] p-0 md:flex">
           {
             c.scenes.map((name: string, i: number) => (
               <li>
@@ -82,7 +82,7 @@ const SCENE_IDS = ['mir', 'voda', 'kvaliteta', 'partneri', 'boje', 'izvedbe', 'f
           }
         </ul>
 
-        <p class="flex items-center gap-2 text-label font-medium tracking-[0.16em] uppercase">
+        <p class="flex items-baseline gap-2 text-label font-medium tracking-[0.16em] uppercase">
           {
             alts.map((a, i) => (
               <>

@@ -63,7 +63,7 @@ export const SITE = {
 
   /** Pravna osoba iza proizvoda - podnožje kontakta i JSON-LD. */
   legal: {
-    name: 'Arba Nautika d.o.o. za proizvodnju i trgovinu',
+    name: 'Arba Nautika d.o.o.',
     vatId: 'HR00720431425',
     oib: '00720431425',
   },

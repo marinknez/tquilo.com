@@ -23,17 +23,36 @@ export const t = (lang: Lang): Copy => DICT[lang] ?? DICT[DEFAULT_LANG];
 export const altLang = (lang: Lang): Lang => (lang === 'hr' ? 'en' : 'hr');
 
 /**
- * Putanja stranice za dani jezik. `page` je bez vodeće kose crte.
+ * Podstranice.
  *
- * PRIMARNI JEZIK NEMA PREFIKS. EN je `/`, `/konfigurator`, `/privacy`;
- * HR je `/hr`, `/hr/konfigurator`, `/hr/privacy`. Jedno mjesto odlučuje -
- * rute, hreflang, sitemap, prekidač jezika i poveznice sve čitaju odavde.
- *
- * Stare adrese `/en/...` i dalje postoje kao 301 u `.htaccess`.
+ * `PAGE_KEYS` su UNUTARNJI ključevi - njima se stranica traži u kodu i oni se
+ * ne prevode. `PAGE_SLUGS` je ono što posjetitelj vidi u adresi, na jeziku
+ * stranice: engleska verzija je imala `/konfigurator`, hrvatsku riječ.
  */
-export const localePath = (lang: Lang, page = ''): string => {
+export const PAGE_KEYS = ['konfigurator', 'privacy'] as const;
+export type PageKey = (typeof PAGE_KEYS)[number];
+
+const PAGE_SLUGS: Record<Lang, Record<PageKey, string>> = {
+  hr: { konfigurator: 'konfigurator', privacy: 'privatnost' },
+  en: { konfigurator: 'configurator', privacy: 'privacy' },
+};
+
+/** Slug podstranice za dani jezik - treba datotekama u `src/pages/`. */
+export const pageSlug = (lang: Lang, page: PageKey): string => PAGE_SLUGS[lang][page];
+
+/**
+ * Putanja stranice za dani jezik.
+ *
+ * PRIMARNI JEZIK NEMA PREFIKS, a slug je na jeziku stranice:
+ *   EN  `/`   `/configurator`      `/privacy`
+ *   HR  `/hr` `/hr/konfigurator`   `/hr/privatnost`
+ *
+ * Jedno mjesto odlučuje - rute, hreflang, sitemap, prekidač jezika i sve
+ * poveznice čitaju odavde.
+ */
+export const localePath = (lang: Lang, page?: PageKey): string => {
   const prefix = lang === DEFAULT_LANG ? '' : `/${lang}`;
-  return page ? `${prefix}/${page}` : prefix || '/';
+  return page ? `${prefix}/${PAGE_SLUGS[lang][page]}` : prefix || '/';
 };
 
 /**
@@ -99,7 +118,7 @@ export const sceneSlugsByLang = (): Record<Lang, string[]> =>
   Object.fromEntries(LANGS.map((l) => [l, sceneSlugs(l)])) as Record<Lang, string[]>;
 
 /** Sve jezične varijante jedne stranice - za hreflang i jezični prekidač. */
-export const alternates = (page = ''): { lang: Lang; path: string }[] =>
+export const alternates = (page?: PageKey): { lang: Lang; path: string }[] =>
   LANGS.map((lang) => ({ lang, path: localePath(lang, page) }));
 
 export { LANGS, DEFAULT_LANG };

@@ -1,0 +1,13 @@
+---
+/**
+ * `/configurator` - tanka ruta. Sadržaj je u `ConfiguratorPage.astro`.
+ *
+ * Svaki jezik ima svoju datoteku jer se slug razlikuje po jeziku, a rutiranje
+ * po datotekama ne može jednoj datoteci dati dva imena. Slugovi se NE pišu
+ * ovdje nego u `localePath()` - ova putanja mora odgovarati onome što ta
+ * funkcija vrati, inače poveznice vode u 404.
+ */
+import ConfiguratorPage from '../components/pages/ConfiguratorPage.astro';
+---
+
+<ConfiguratorPage lang="en" />

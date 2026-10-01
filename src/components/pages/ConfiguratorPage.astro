@@ -1,23 +1,25 @@
 ---
 /**
- * Konfigurator boja. Za razliku od naslovnice, ova se stranica skrola
- * normalno - vodoravni engine ovdje nema smisla jer panel je dugačak.
+ * Konfigurator boja - tijelo stranice.
+ *
+ * Komponenta, a ne stranica, jer se slug razlikuje po jeziku
+ * (`/configurator` i `/hr/konfigurator`). Rutiranje po datotekama ne može
+ * jednoj datoteci dati dva imena, pa svaka jezična ruta ima svoju tanku
+ * datoteku u `src/pages/` koja uvozi ovo.
+ *
+ * Za razliku od naslovnice, ova se stranica skrola normalno - vodoravni
+ * engine ovdje nema smisla jer je panel dugačak.
  */
 import '../../styles/global.css';
-import Seo from '../../components/Seo.astro';
-import Icon from '../../components/Icon.astro';
-import Consent from '../../components/Consent.astro';
-import { SITE, LANGS, DEFAULT_LANG, type Lang } from '../../data/site';
+import Seo from '../Seo.astro';
+import Icon from '../Icon.astro';
+import Consent from '../Consent.astro';
+import { SITE, type Lang } from '../../data/site';
 import { t, localePath, alternates, sceneHash } from '../../i18n';
 import { SEGMENTS, LINES, SCHEMES, TEAK, FILL, DEFAULT_CONFIG } from '../../data/palette';
 
-export function getStaticPaths() {
-  // Primarni jezik (EN) nema prefiks: `lang: undefined` u rest parametru
-  // znači da se stranica gradi na korijenu (`/`, `/konfigurator`, …).
-  return LANGS.map((lang) => ({ params: { lang: lang === DEFAULT_LANG ? undefined : lang } }));
-}
 
-const lang = (Astro.params.lang as Lang | undefined) ?? DEFAULT_LANG;
+const { lang } = Astro.props as { lang: Lang };
 const c = t(lang);
 const alts = alternates('konfigurator');
 
@@ -70,8 +72,7 @@ const L = lang === 'hr'
     };
 
 const teakDecors = TEAK;
-const fills = FILL;
----
+const fills = FILL;---
 
 <!doctype html>
 <html lang={lang} data-theme="dark" class="scroll-smooth">

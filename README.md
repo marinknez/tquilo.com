@@ -214,18 +214,43 @@ Astro iz commitanih izvora gradi AVIF u četiri širine.
 
 **Primarni jezik nema prefiks u adresi:**
 
+**I slug je na jeziku stranice** - ne samo prefiks:
+
 | | EN | HR |
 | --- | --- | --- |
 | naslovnica | `/` | `/hr` |
-| konfigurator | `/konfigurator` | `/hr/konfigurator` |
-| privatnost | `/privacy` | `/hr/privacy` |
+| konfigurator | `/configurator` | `/hr/konfigurator` |
+| privatnost | `/privacy` | `/hr/privatnost` |
 
 Odlučuje **jedno mjesto** - `localePath()` u `src/i18n/index.ts`. Rute,
 `hreflang`, canonical, sitemap, prekidač jezika i sve poveznice čitaju odande;
 promjena sheme je promjena te funkcije, ne pretraživanje po projektu.
 
-Tehnički: stranice su `src/pages/[...lang]/*.astro`, a `getStaticPaths` za EN
-vraća `lang: undefined` - rest parametar tada gradi datoteku na korijenu.
+Kao i kod sidara, razdvojeni su **ključ** i **slug**: u kodu se stranica traži
+po `PageKey` (`'konfigurator'`, `'privacy'`), a `PAGE_SLUGS` određuje što
+posjetitelj vidi. `localePath(lang, 'konfigurator')` je jedini ispravan način
+da se napiše poveznica na konfigurator.
+
+### Kako su složene datoteke
+
+Naslovnica je `src/pages/[...lang]/index.astro`; `getStaticPaths` za EN vraća
+`lang: undefined`, pa rest parametar gradi datoteku na korijenu.
+
+Podstranice to ne mogu: **rutiranje po datotekama ne može jednoj datoteci dati
+dva imena**, a slug se razlikuje po jeziku. Zato je sadržaj u komponentama, a
+svaka jezična ruta je tanka datoteka od tri retka:
+
+```
+src/components/pages/ConfiguratorPage.astro   sadržaj
+src/components/pages/PrivacyPage.astro        sadržaj
+src/pages/configurator.astro                  <ConfiguratorPage lang="en" />
+src/pages/privacy.astro                       <PrivacyPage lang="en" />
+src/pages/hr/konfigurator.astro               <ConfiguratorPage lang="hr" />
+src/pages/hr/privatnost.astro                 <PrivacyPage lang="hr" />
+```
+
+⚠ Putanja datoteke mora odgovarati onome što `localePath()` vrati. Dodaje li
+se jezik ili stranica, mijenjaju se **oba** - inače poveznice vode u 404.
 
 ### Sidra ekrana
 
@@ -251,8 +276,9 @@ dobiva `data-lang-hashes` sa slugovima svih jezika.
 fragment **ne šalje poslužitelju** - preusmjeriti ga može samo JavaScript.
 Posjetitelj s takvim linkom završi na prvom ekranu, bez greške.
 
-⚠ **Stare `/en/...` adrese 301-aju** na nove (`.htaccess`). Ne brisati: to je
-ono što tražilica već zna i što je možda negdje podijeljeno.
+⚠ `/en` 301-a na `/` (`.htaccess`). Starije adrese podstranica
+(`/en/konfigurator`, `/konfigurator`, `/hr/privacy`) **ne preusmjeravaju** -
+po dogovoru, site je bio javan nekoliko sati i vanjskih poveznica nema.
 
 ### Trailing slash
 

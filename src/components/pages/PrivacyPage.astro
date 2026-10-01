@@ -1,32 +1,26 @@
 ---
 /**
- * Politika privatnosti.
+ * Politika privatnosti - tijelo stranice.
+ *
+ * Komponenta, a ne stranica, jer se slug razlikuje po jeziku (`/privacy` i
+ * `/hr/privatnost`) - v. `ConfiguratorPage.astro`.
  *
  * Namjerno kratka: stranica stvarno obrađuje malo podataka, pa bi dugačak
  * tekst bio prepisivanje tuđih predložaka, a ne opis onoga što se događa.
  * Svaka stavka ovdje odgovara nečemu što u kodu postoji - ako se doda nova
- * vanjska usluga, dodaje se i red u tablici obrađivača.
+ * vanjska usluga, dodaje se i odlomak.
  *
  * Jedina poveznica na ovu stranicu je u traci za pristanak (`Consent.astro`),
  * po izričitoj uputi: ne ide u navigaciju ni u podnožje.
- *
- * ⚠ Nema e-mail adrese jer je stranica nigdje ne prikazuje (ranija uputa).
- * Prava se ostvaruju preko kontakt forme. Ako se jednom uvede adresa za
- * privatnost, dodaje se u `SITE` i referencira odavde.
  */
 import '../../styles/global.css';
-import Seo from '../../components/Seo.astro';
-import Consent from '../../components/Consent.astro';
-import { SITE, LANGS, DEFAULT_LANG, legalLines, type Lang } from '../../data/site';
+import Seo from '../Seo.astro';
+import Consent from '../Consent.astro';
+import { SITE, legalLines, type Lang } from '../../data/site';
 import { localePath, sceneHash } from '../../i18n';
 
-export function getStaticPaths() {
-  // Primarni jezik (EN) nema prefiks: `lang: undefined` u rest parametru
-  // znači da se stranica gradi na korijenu (`/`, `/konfigurator`, …).
-  return LANGS.map((lang) => ({ params: { lang: lang === DEFAULT_LANG ? undefined : lang } }));
-}
 
-const lang = (Astro.params.lang as Lang | undefined) ?? DEFAULT_LANG;
+const { lang } = Astro.props as { lang: Lang };
 const legal = legalLines(lang);
 const year = new Date().getFullYear();
 const updated = lang === 'hr' ? '1. listopada 2026.' : '1 October 2026';
@@ -148,8 +142,7 @@ const L =
         ],
       };
 
-const contactHref = `${localePath(lang)}${sceneHash(lang, 'kontakt')}`;
----
+const contactHref = `${localePath(lang)}${sceneHash(lang, 'kontakt')}`;---
 
 <!doctype html>
 <html lang={lang} data-theme="dark" class="scroll-smooth">

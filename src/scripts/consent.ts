@@ -132,4 +132,44 @@ export function initConsent(root: ParentNode = document) {
 
   el.querySelector<HTMLElement>('[data-consent-accept]')?.addEventListener('click', () => close('all'));
   el.querySelector<HTMLElement>('[data-consent-reject]')?.addEventListener('click', () => close('essential'));
+
+  /**
+   * Prvi pomak skuplja traku u kap.
+   *
+   * Tko krene gledati stranicu, traku je pročitao ili ju je odlučio
+   * preskočiti - u oba slučaja mu smeta. To NIJE odluka o pristanku: kap
+   * ostaje, do izbora vrijedi „samo nužno", i sprema se isto što i klik na ×
+   * (`tquilo.consent.ui`), pa se traka ne otvara ponovo na svakoj stranici.
+   *
+   * Naslovnica je vodoravna prezentacija i ne skrola se, pa `scroll` na njoj
+   * nikad ne okine - otuda `wheel`, `touchmove` i tipke. Podstranice se
+   * skrolaju normalno, pa ondje radi `scroll`.
+   *
+   * `setTimeout` prije prijave: preglednik pri učitavanju zna sam okinuti
+   * `scroll` (vraćanje pozicije, skok na sidro), a to nije pomak posjetitelja.
+   */
+  const NAV_KEYS = ['ArrowDown', 'ArrowUp', 'ArrowLeft', 'ArrowRight', 'PageDown', 'PageUp', 'Home', 'End', ' '];
+  const EVENTS = ['scroll', 'wheel', 'touchmove'] as const;
+
+  const minimise = () => {
+    off();
+    if (panel.hidden) return;
+    write(UI_KEY, 'min');
+    show(true);
+  };
+
+  const onKey = (e: KeyboardEvent) => {
+    if (NAV_KEYS.includes(e.key)) minimise();
+  };
+
+  function off() {
+    for (const type of EVENTS) window.removeEventListener(type, minimise);
+    window.removeEventListener('keydown', onKey);
+  }
+
+  setTimeout(() => {
+    if (panel.hidden) return;
+    for (const type of EVENTS) window.addEventListener(type, minimise, { passive: true });
+    window.addEventListener('keydown', onKey);
+  }, 400);
 }

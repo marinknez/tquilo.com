@@ -537,7 +537,12 @@ export function initStage(root: ParentNode = document) {
         for (const a of langLinks) {
           a.hash = langHashes[a.dataset.langLink || '']?.[sc] || id;
         }
-        history.replaceState(null, '', '#' + id);
+        // Tko dođe na golu adresu, neka je takvu i vidi. Prije se već na
+        // prvom kadru upisivalo `#mir` / `#quiet`, pa je adresa koju
+        // posjetitelj kopira ili podijeli nosila sidro koje nije tražio.
+        // Sidro se upisuje tek kad ode s prvog ekrana - ili ako ga je
+        // donio sam.
+        if (sc !== 0 || location.hash) history.replaceState(null, '', '#' + id);
       }
     }
 

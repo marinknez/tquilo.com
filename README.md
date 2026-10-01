@@ -268,6 +268,11 @@ Razlikuju se dvije stvari i ne smiju se pobrkati:
 Oboje je u `src/i18n/index.ts`; `sceneHash(lang, 'kontakt')` je jedini način
 na koji se u markupu piše sidro.
 
+**Gola adresa ostaje gola.** Sidro se u adresu upisuje tek kad posjetitelj
+ode s prvog ekrana - ili ako ga je donio sam. Prije se već na prvom kadru
+upisivalo `#quiet`, pa je adresa koju posjetitelj kopira ili podijeli nosila
+sidro koje nije tražio.
+
 **Jezični prekidač prevodi sidro.** S `/#water` vodi na `/hr#voda`, ne na
 `/hr#water` - to drugo sidro u hrvatskoj verziji ne postoji. Engine za to
 dobiva `data-lang-hashes` sa slugovima svih jezika.
@@ -318,6 +323,12 @@ bila pristanak nego kulisa.
   mobitelu se razvlači preko obje margine jer bi inače bila pretijesna.
 - **× skuplja traku u kap** (brandov znak, 44 × 44). To **nije** pristanak:
   do izbora se ponaša kao „samo nužno". Stanje trake je u `tquilo.consent.ui`.
+- **Prvi pomak skuplja traku u kap** (kotačić, dodir, strelice ili scroll).
+  Tko krene gledati stranicu, traku je pročitao ili ju je odlučio preskočiti.
+  To NIJE odluka o pristanku - sprema se isto što i klik na × (`consent.ui`),
+  do izbora vrijedi „samo nužno", a kap ostaje. Prijava osluškivača kasni
+  400 ms jer preglednik pri učitavanju zna sam okinuti `scroll` (vraćanje
+  pozicije, skok na sidro), a to nije pomak posjetitelja.
 - **Kap ostaje i nakon izbora.** Dok nije bilo analitike to je bilo svejedno;
   s njom nije - povlačenje pristanka mora biti jednako dostupno kao davanje.
   Otvorena traka ispisuje trenutno stanje (`[data-consent-state]`).

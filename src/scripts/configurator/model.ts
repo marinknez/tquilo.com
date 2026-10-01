@@ -19,6 +19,7 @@
  */
 import * as THREE from 'three';
 import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/examples/jsm/environments/RoomEnvironment.js';
 
 export type ModelConfig = {
   lower: string;
@@ -46,7 +47,7 @@ const HALF_L = 1.15; // duljina 2,3 m
 const DECK = 0.2; // gornja ploha tikovine iznad vodne linije
 const RUB = 0.14; // gumena letva (spoj donjeg i gornjeg trupa)
 const SEAT = 0.62; // sjedna ploha
-const BACK = 0.98; // vrh naslona
+const BACK = 1.16; // vrh naslona (s fotografija - puni, kosi naslon)
 const POST_TOP = 2.35; // tenda iznad vodne linije
 
 /* ------------------------------------------------------------------ alati */
@@ -121,6 +122,8 @@ function teakTexture(decor: string, fill: string) {
 
   const t = new THREE.CanvasTexture(c);
   t.wrapS = t.wrapT = THREE.RepeatWrapping;
+  // 8 fuga po tileu; 1,5 tilea po metru -> letvica ~8 cm, kao na palubi.
+  t.repeat.set(1.5, 1.5);
   t.anisotropy = 8;
   t.colorSpace = THREE.SRGBColorSpace;
   return t;
@@ -186,6 +189,13 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   controls.autoRotate = true;
   controls.autoRotateSpeed = 0.8;
 
+  // Inox je metal; metal bez okoline nema što reflektirati i ispadne CRN.
+  // Zato mala proceduralna soba kao `environment` - ne kao pozadina, i
+  // prigušena, da scena ostane tamna kako brand traži.
+  const pmrem = new THREE.PMREMGenerator(renderer);
+  scene.environment = pmrem.fromScene(new RoomEnvironment(), 0.04).texture;
+  scene.environmentIntensity = 0.14;
+
   scene.add(new THREE.HemisphereLight(0xdfeaf5, 0x14324c, 1.15));
   const sun = new THREE.DirectionalLight(0xfff2e0, 2.1);
   sun.position.set(4.5, 7.5, 3.5);
@@ -234,7 +244,7 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
       roughness: 0.6,
     }),
   };
-  const inox = new THREE.MeshStandardMaterial({ color: '#C9CDD2', roughness: 0.22, metalness: 0.92 });
+  const inox = new THREE.MeshStandardMaterial({ color: '#D2D6DA', roughness: 0.28, metalness: 0.78 });
   const dark = new THREE.MeshStandardMaterial({ color: '#2A2E33', roughness: 0.5 });
   const glass = new THREE.MeshStandardMaterial({ color: '#0E1A24', roughness: 0.15, metalness: 0.4 });
 
@@ -304,15 +314,15 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   ];
   const portP: [number, number][] = [
     [-1.18, 0.52],
-    [-0.5, 0.52],
-    [-0.5, -0.4],
+    [-0.42, 0.52],
+    [-0.42, -0.4],
     [-0.86, -1.13],
     [-1.18, -1.13],
   ];
   const stbdP: [number, number][] = [
     [1.18, 0.52],
-    [0.5, 0.52],
-    [0.5, -0.4],
+    [0.42, 0.52],
+    [0.42, -0.4],
     [0.86, -1.13],
     [1.18, -1.13],
   ];
@@ -320,10 +330,13 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   slab(portP, RUB, SEAT - RUB, mats.upper);
   slab(stbdP, RUB, SEAT - RUB, mats.upper);
 
-  // Naslon: puni pramčani zid + niski coaming po bokovima.
+  // Naslon: puni pramčani zid, viši nego prije, s tikovom kapom na vrhu -
+  // na fotografijama je gornji rub obrubljen drvom.
   add(roundedBox(2.36, 0.2, BACK - RUB, 0.05), mats.upper, 0, (BACK + RUB) / 2, 1.04);
-  add(roundedBox(0.09, 1.5, 0.3, 0.04), mats.upper, -1.16, SEAT + 0.13, 0.32);
-  add(roundedBox(0.09, 1.5, 0.3, 0.04), mats.upper, 1.16, SEAT + 0.13, 0.32);
+  add(roundedBox(2.36, 0.22, 0.035, 0.05), mats.teak, 0, BACK + 0.015, 1.04);
+  // Bočni coaming, niži od naslona.
+  add(roundedBox(0.09, 1.5, 0.26, 0.04), mats.upper, -1.16, SEAT + 0.11, 0.3);
+  add(roundedBox(0.09, 1.5, 0.26, 0.04), mats.upper, 1.16, SEAT + 0.11, 0.3);
 
   // Vrata hladnjaka pod klupom (Signature) - bijela ploha s inox ručkom.
   add(roundedBox(0.52, 0.03, 0.3, 0.02), new THREE.MeshStandardMaterial({ color: '#F4F4F2', roughness: 0.3 }), 0.62, 0.42, 0.5);
@@ -338,15 +351,15 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   ];
   const portC: [number, number][] = [
     [-1.14, 0.56],
-    [-0.54, 0.56],
-    [-0.54, -0.38],
+    [-0.46, 0.56],
+    [-0.46, -0.38],
     [-0.84, -1.09],
     [-1.14, -1.09],
   ];
   const stbdC: [number, number][] = [
     [1.14, 0.56],
-    [0.54, 0.56],
-    [0.54, -0.38],
+    [0.46, 0.56],
+    [0.46, -0.38],
     [0.84, -1.09],
     [1.14, -1.09],
   ];
@@ -354,16 +367,16 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   slab(portC, SEAT, 0.14, mats.cushion);
   slab(stbdC, SEAT, 0.14, mats.cushion);
   // Naslon za leđa uz pramčani zid.
-  add(roundedBox(2.24, 0.15, BACK - SEAT - 0.1, 0.05), mats.cushion, 0, (BACK + SEAT) / 2 + 0.02, 0.96);
-  // Ukrasni jastučići - na svim fotografijama ih ima.
-  add(roundedBox(0.42, 0.16, 0.42, 0.08), mats.cushion, -0.72, SEAT + 0.34, 0.84, { x: -0.22 });
-  add(roundedBox(0.42, 0.16, 0.42, 0.08), mats.cushion, 0.5, SEAT + 0.34, 0.84, { x: -0.22 });
+  add(roundedBox(2.24, 0.16, BACK - SEAT - 0.14, 0.05), mats.cushion, 0, (BACK + SEAT) / 2, 0.955);
+  // Ukrasnih jastučića nema: u ovoj razini detalja čitaju se kao lebdeće
+  // kutije, a ionako nisu dio konfiguracije.
 
   /* ---------------------------------------------------------------- STOL */
-  const TT = SEAT + 0.16;
+  const TT = SEAT + 0.3; // iznad jastuka (jastuk završava na SEAT + 0,14)
   add(new THREE.CylinderGeometry(0.035, 0.042, TT - DECK, 20), inox, 0, DECK + (TT - DECK) / 2, -0.12);
   add(new THREE.CylinderGeometry(0.13, 0.15, 0.02, 24), inox, 0, DECK, -0.12);
-  const top = add(new THREE.ExtrudeGeometry(roundedRect(0.92, 0.5, 0.1), {
+  // Duža os ide UZDUŽ broda - na fotografijama stol stoji paralelno s bokom.
+  const top = add(new THREE.ExtrudeGeometry(roundedRect(0.52, 0.94, 0.12), {
     depth: 0.04, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2, steps: 1, curveSegments: 10,
   }), mats.teak, 0, TT, -0.12);
   top.geometry.rotateX(-Math.PI / 2);
@@ -406,12 +419,16 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   }
 
   /* -------------------------------------------------------------- RUKOHVAT */
-  const railGeo = new THREE.TorusGeometry(0.3, 0.018, 10, 24, Math.PI);
-  for (const [x, ry] of [
-    [-1.2, Math.PI / 2],
-    [1.2, -Math.PI / 2],
-  ] as [number, number][]) {
-    add(railGeo, inox, x, SEAT + 0.3, -0.62, { y: ry, z: Math.PI / 2 });
+  // Tanka inox cijev uzduž boka, na dvije kratke nogice - kao na fotkama.
+  // (Prije polukružni luk; čitao se kao crni luk koji strši iz klupe.)
+  const RAIL_Y = SEAT + 0.2;
+  const RAIL_Z0 = -0.15;
+  const RAIL_LEN = 0.86;
+  for (const x of [-1.2, 1.2]) {
+    add(new THREE.CylinderGeometry(0.014, 0.014, RAIL_LEN, 12), inox, x, RAIL_Y, RAIL_Z0, { x: Math.PI / 2 });
+    for (const dz of [-RAIL_LEN / 2 + 0.06, RAIL_LEN / 2 - 0.06]) {
+      add(new THREE.CylinderGeometry(0.012, 0.012, 0.16, 10), inox, x, RAIL_Y - 0.08, RAIL_Z0 + dz);
+    }
   }
 
   /* ------------------------------------------------------ STUPOVI I TENDA */
@@ -456,12 +473,13 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   add(roundedBox(0.2, 0.22, 0.26, 0.05), dark, 0, 0.16, -0.14, undefined, stern);
   add(new THREE.CylinderGeometry(0.035, 0.035, 0.5, 14), dark, 0, -0.14, -0.14, undefined, stern);
   add(new THREE.CylinderGeometry(0.07, 0.05, 0.14, 16), dark, 0, -0.4, -0.12, { x: Math.PI / 2 }, stern);
-  // Ljestvica za izlazak iz vode.
-  for (const x of [-0.2, 0.2]) {
-    add(new THREE.CylinderGeometry(0.016, 0.016, 0.9, 12), inox, x, -0.1, 0.16, { x: 0.25 }, stern);
+  // Ljestvica za izlazak iz vode. Drži se unutar gabarita trupa - ranija je
+  // verzija rukohvatima probijala bok i izgledala kao zaboravljeni štap.
+  for (const x of [-0.17, 0.17]) {
+    add(new THREE.CylinderGeometry(0.013, 0.013, 0.42, 10), inox, x, -0.12, 0.1, { x: 0.3 }, stern);
   }
-  for (let i = 0; i < 3; i++) {
-    add(new THREE.BoxGeometry(0.42, 0.02, 0.07), inox, 0, -0.06 - i * 0.24, 0.24 + i * 0.06, undefined, stern);
+  for (let i = 0; i < 2; i++) {
+    add(new THREE.BoxGeometry(0.36, 0.018, 0.06), inox, 0, -0.04 - i * 0.18, 0.16 + i * 0.05, undefined, stern);
   }
 
   /* --------------------------------------------------------------- render */

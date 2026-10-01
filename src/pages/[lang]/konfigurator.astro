@@ -141,7 +141,9 @@ const fills = FILL;
             <button type="button" data-copy class="inline-flex items-center gap-2 px-3 py-2 text-caption text-mist transition-colors duration-[90ms] hover:text-champagne">
               <Icon name="arrow-right" size={18} />{L.copy}
             </button>
-            <button type="button" data-pdf class="inline-flex items-center gap-2 px-3 py-2 text-caption text-mist transition-colors duration-[90ms] hover:text-champagne">
+            {/* Na mobitelu bi „Preuzmi PDF" ovdje prelomio red; isti gumb
+                ionako stoji uz sažetak na dnu panela. */}
+            <button type="button" data-pdf class="hidden items-center gap-2 px-3 py-2 text-caption text-mist transition-colors duration-[90ms] hover:text-champagne lg:inline-flex">
               <Icon name="download" size={18} />{L.pdf}
             </button>
           </span>

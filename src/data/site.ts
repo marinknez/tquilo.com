@@ -102,17 +102,15 @@ export const OG_LOCALE: Record<Lang, string> = {
 /**
  * Pravna crta u dva retka, po jeziku.
  *
- * OIB i PDV broj su isti broj: PDV je OIB s prefiksom države. Hrvatskom
- * posjetitelju je OIB ono što prepoznaje, stranom partneru PDV broj ono s
- * čime može provjeriti tvrtku u VIES-u - zato različita oznaka, a ne prijevod
- * iste.
- *
- * Država se prevodi („Croatia"), tvrtka ne.
+ * Razlikuje se samo naziv države - tvrtka i pravni oblik se ne prevode, a
+ * oznaka broja ostaje OIB u oba jezika. (PDV broj je isti broj s prefiksom
+ * `HR`; stoji u `SITE.legal.vatId` i ide u structured data, ali se na
+ * stranici ne prikazuje.)
  */
-export const legalLines = (lang: Lang): [string, string] =>
-  lang === 'hr'
-    ? [`${SITE.legal.name}, Hrvatska`, `OIB: ${SITE.legal.oib}`]
-    : [`${SITE.legal.name}, Croatia`, `VAT: ${SITE.legal.vatId}`];
+export const legalLines = (lang: Lang): [string, string] => [
+  `${SITE.legal.name}, ${lang === 'hr' ? 'Hrvatska' : 'Croatia'}`,
+  `OIB: ${SITE.legal.oib}`,
+];
 
 /** Apsolutni URL iz relativne putanje - meta tagovi i JSON-LD traže apsolutni. */
 export const absolute = (path: string): string => new URL(path, SITE.url).href;

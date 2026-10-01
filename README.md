@@ -244,10 +244,18 @@ bila pristanak nego kulisa.
   Otvorena traka ispisuje trenutno stanje (`[data-consent-state]`).
 - Blokirana pohrana (privatni prozor) tretira se kao „samo nužno".
 
-⚠ **Nedostaje stranica o privatnosti, a sada je obavezna.** S GA-om na
-stranici treba politika privatnosti koja navodi voditelja obrade, svrhu,
-rok čuvanja i prava ispitanika, plus poveznica na nju iz `Consent.astro`.
-Dok je nema, traka je točna u opisu, ali dokumentacija iza nje ne postoji.
+### Politika privatnosti
+
+`src/pages/[lang]/privacy.astro` -> `/hr/privacy` i `/en/privacy`. Namjerno
+kratka: svaka stavka odgovara nečemu što u kodu postoji. **Ako se doda nova
+vanjska usluga, dodaje se i odlomak ondje.**
+
+**Jedina poveznica na nju je u traci za pristanak** - ne u navigaciji ni u
+podnožju, po izričitoj uputi.
+
+⚠ Stranica nema e-mail adresu (ranija uputa), pa se prava ostvaruju preko
+kontakt forme. Ako se jednom uvede adresa za privatnost, dodaje se u `SITE`
+i referencira iz `privacy.astro`.
 
 ⚠ **Provjeriti postavke GA property-ja:** rok čuvanja podataka (zadano 14
 mjeseci), isključiti Google signals ako se ne koristi (inače CSP treba i
@@ -266,11 +274,53 @@ Sve je u `public/.htaccess`:
 - COOP/COEP/CORP, Permissions-Policy, `X-Frame-Options: DENY`, `nosniff`.
 - `/.well-known/security.txt` po RFC 9116, `Expires` se pomiče na svaki build.
 
-**Vanjske domene su dvije** i obje su u CSP-u poimence: **Web3Forms**
-(`form-action`, `connect-src`) za kontakt formu i **googletagmanager.com**
-(`script-src`) za GA. GA4 mjerenja idu na `google-analytics.com`, a regionalni
-endpoint je poddomena (`region1...`) - odatle zvjezdica u `connect-src`. Bez
-tog unosa GA tiho ne šalje ništa i pogreška se vidi samo u konzoli.
+**Vanjske domene su tri** i sve su u CSP-u poimence:
+
+| Domena | Čemu služi | Kada se učita |
+| --- | --- | --- |
+| `api.web3forms.com` | primatelj kontakt forme | na slanje |
+| `www.googletagmanager.com` | gtag.js (GA4) | tek na pristanak |
+| `*.hcaptcha.com` | zaštita forme | tek na dodir forme |
+
+GA4 mjerenja idu na `google-analytics.com`, a regionalni endpoint je poddomena
+(`region1...`) - odatle zvjezdica u `connect-src`. Bez tog unosa GA tiho ne
+šalje ništa i pogreška se vidi samo u konzoli.
+
+hCaptcha traži **četiri** direktive (`script-src`, `frame-src`, `style-src`,
+`connect-src`) i **ne** traži `unsafe-inline` - widget je u iframeu, pa su
+njegovi stilovi izvan našeg CSP-a. `frame-src` prije nije postojao: uz
+`default-src 'none'` svaki je iframe bio blokiran. Poddomene se po uputi
+hCaptche ne zakucavaju poimence (`newassets.hcaptcha.com` i slične se mijenjaju).
+
+## Kontakt forma i captcha
+
+Forma ide na **Web3Forms**, a protiv robota je **hCaptcha** (uključena u
+Web3Forms nadzornoj ploči). hCaptcha je jedini captcha koji besplatni plan
+nudi - reCaptcha i Cloudflare Turnstile su Pro.
+
+- **Sitekey `50b2fe65-b00b-4b9e-ad62-3ba471098be2`** je Web3Formsov ključ za
+  besplatni plan, iz njihove dokumentacije. Koristi se *manual setup*, pa se
+  **ne** učitava `web3forms.com/client/script.js` - jedna vanjska skripta manje.
+- **Nevidljiva izvedba** (`size: 'invisible'`): ne zauzima prostor u rasporedu
+  - Kontakt je najtjesnji ekran na mobitelu - i izazov se pojavi samo kad ga
+  hCaptcha zatraži.
+- **Učitava se tek na prvi fokus u formi**, ne pri učitavanju stranice. Zato
+  element nema klasu `h-captcha` (ona bi ga renderirala sama) nego se koristi
+  `render=explicit` i `hcaptcha.render()` iz `contact.ts`.
+- **Token je jednokratan**, pa se traži pri svakom slanju i resetira u
+  `finally`. Bez reseta drugo slanje pada.
+- ⚠ **Slanje bez JS-a više ne prolazi.** Web3Forms odbija zahtjev bez
+  `h-captcha-response`, a taj token može proizvesti samo skripta. To vrijedi
+  za svaku izvedbu captche, nije propust ove.
+- ⚠ **Na `localhost` hCaptcha vrati `network-error`** - sitekey je vezan uz
+  stvarne domene. Integracija se do kraja provjerava tek na `tquilo.com`.
+
+**Provjera e-maila:** `type=email` propušta `ime@domena` bez vršne domene -
+formalno valjano, u praksi uvijek tipfeler. Zato i `pattern` atribut (radi i
+prije nego se skripta učita) i isti izraz u `contact.ts`, koji postavlja
+poruku na jeziku stranice. To hvata tipfelere **u obliku**; da je adresa
+stvarno dostavljiva dokazuje jedino potvrdni e-mail, a autoresponder je
+Web3Forms Pro.
 Forma radi i bez JavaScripta: bez njega je običan POST i Web3Forms vrati
 vlastitu potvrdu; s njim se šalje u pozadini i javi status, da posjetitelj ne
 ispadne iz vodoravne prezentacije. Web3Forms honeypot (`botcheck`) je

@@ -91,11 +91,18 @@ const alt = t(altLang(lang));
         </label>
         <label class="grid gap-1.5 md:gap-2">
           <span class="text-[12px] font-medium tracking-[0.16em] text-mist uppercase">{c.fMail}</span>
+          {/* `type=email` propušta `ime@domena` bez točke - formalno valjano,
+              u praksi gotovo uvijek tipfeler. `pattern` traži i vršnu domenu,
+              a poruku o grešci na hrvatskom/engleskom postavlja `contact.ts`. */}
           <input
             type="email"
             name="email"
             required
             autocomplete="email"
+            inputmode="email"
+            spellcheck="false"
+            autocapitalize="none"
+            pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}"
             class="w-full border border-trench bg-transparent px-4 py-[11px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
           />
         </label>
@@ -111,7 +118,22 @@ const alt = t(altLang(lang));
         ></textarea>
       </label>
 
-      <div class="flex justify-end">
+      {/* hCaptcha, nevidljiva izvedba: widget ne zauzima prostor i izazov se
+          pojavi samo kad ga hCaptcha zatraži. Namjerno BEZ klase `h-captcha` -
+          tako se ne renderira sam pri učitavanju skripte, nego ga `contact.ts`
+          renderira eksplicitno, tek kad posjetitelj dotakne formu. Do tada se
+          s hcaptcha.com ne povlači ništa. */}
+      <div data-captcha-host></div>
+
+      <div class="flex items-end justify-between gap-4">
+        {/* Nevidljiva izvedba nema vidljivi bedž, pa hCaptchini uvjeti traže
+            ovu napomenu uz formu. */}
+        <span class="text-[11px] leading-[1.5] text-mist/70 [&_a]:underline [&_a]:underline-offset-2">
+          {c.fCaptcha}
+          <a href="https://hcaptcha.com/privacy" target="_blank" rel="noopener noreferrer">{c.fCaptchaPriv}</a>
+          ·
+          <a href="https://hcaptcha.com/terms" target="_blank" rel="noopener noreferrer">{c.fCaptchaTerms}</a>
+        </span>
         <button
           type="submit"
           class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-3 text-[15px] whitespace-nowrap md:py-[14px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px"

@@ -1,0 +1,225 @@
+---
+/**
+ * Politika privatnosti.
+ *
+ * Namjerno kratka: stranica stvarno obrađuje malo podataka, pa bi dugačak
+ * tekst bio prepisivanje tuđih predložaka, a ne opis onoga što se događa.
+ * Svaka stavka ovdje odgovara nečemu što u kodu postoji - ako se doda nova
+ * vanjska usluga, dodaje se i red u tablici obrađivača.
+ *
+ * Jedina poveznica na ovu stranicu je u traci za pristanak (`Consent.astro`),
+ * po izričitoj uputi: ne ide u navigaciju ni u podnožje.
+ *
+ * ⚠ Nema e-mail adrese jer je stranica nigdje ne prikazuje (ranija uputa).
+ * Prava se ostvaruju preko kontakt forme. Ako se jednom uvede adresa za
+ * privatnost, dodaje se u `SITE` i referencira odavde.
+ */
+import '../../styles/global.css';
+import Seo from '../../components/Seo.astro';
+import Consent from '../../components/Consent.astro';
+import { SITE, LANGS, legalLines, type Lang } from '../../data/site';
+import { localePath } from '../../i18n';
+
+export function getStaticPaths() {
+  return LANGS.map((lang) => ({ params: { lang } }));
+}
+
+const lang = Astro.params.lang as Lang;
+const legal = legalLines(lang);
+const year = new Date().getFullYear();
+const updated = lang === 'hr' ? '1. listopada 2026.' : '1 October 2026';
+
+const L =
+  lang === 'hr'
+    ? {
+        label: 'Pravno',
+        head: 'Politika privatnosti',
+        sub: 'Kratko, jer je i obrada kratka. Ovdje piše samo ono što stranica stvarno radi.',
+        back: 'Natrag na početnu',
+        updatedLabel: 'Zadnja izmjena',
+        contactLink: 'kontakt forme',
+        sections: [
+          {
+            h: 'Tko obrađuje podatke',
+            p: [
+              `Voditelj obrade je ${SITE.legal.name}, OIB ${SITE.legal.oib}, Hrvatska. Za sve u vezi s ovom politikom javite se preko <a>kontakt forme</a>.`,
+            ],
+          },
+          {
+            h: 'Kontakt forma',
+            p: [
+              'Ako nam pišete, obrađujemo ime, e-mail adresu i sadržaj poruke. Svrha je odgovoriti na upit; pravna osnova je poduzimanje radnji na vaš zahtjev prije sklapanja ugovora.',
+              'Poruku prosljeđuje Web3Forms (Agilo Softworks), a formu od automatiziranog slanja štiti hCaptcha (Intuition Machines). Oba obrađivača za tu svrhu vide sadržaj zahtjeva.',
+              'Upite čuvamo dok traje dopisivanje i najviše dvije godine nakon zadnje poruke.',
+            ],
+          },
+          {
+            h: 'Analitika',
+            p: [
+              'Uz vašu privolu koristimo Google Analytics 4 (Google Ireland Limited) da vidimo koje se stranice gledaju i odakle posjetitelji dolaze. Postavlja kolačiće <code>_ga</code> i <code>_ga_&lt;ID&gt;</code>.',
+              'Bez privole se ne učitava i ne postavlja ništa. Privolu možete povući u svakom trenutku — klik na kap u donjem desnom kutu. Tada se analitika gasi, a njezini kolačići brišu.',
+            ],
+          },
+          {
+            h: 'Lokalna pohrana',
+            p: [
+              'Uz privolu stranica pamti gdje ste stali u vodoravnoj prezentaciji (<code>tquilo.D2.x</code>). To ostaje u vašem pregledniku i nama se ne šalje.',
+              'Vašu odluku o privoli bilježimo u svakom slučaju (<code>tquilo.consent</code>) — bez toga bismo je morali tražiti na svakoj stranici iznova.',
+            ],
+          },
+          {
+            h: 'Hosting i zapisi',
+            p: [
+              'Stranicu poslužuje Hostinger International. Poslužitelj vodi uobičajene tehničke zapise pristupa (IP adresa, vrijeme, tražena adresa), koji služe sigurnosti i otklanjanju kvarova.',
+            ],
+          },
+          {
+            h: 'Vaša prava',
+            p: [
+              'Imate pravo na pristup, ispravak, brisanje i ograničenje obrade, pravo na prenosivost te pravo na prigovor. Privolu možete povući bez posljedica za zakonitost obrade do povlačenja.',
+              'Zahtjev šaljete preko <a>kontakt forme</a>. Pritužbu možete podnijeti Agenciji za zaštitu osobnih podataka (azop.hr).',
+            ],
+          },
+          {
+            h: 'Izmjene',
+            p: [
+              'Ako se obrada promijeni — nova usluga, nova svrha — mijenja se i ovaj tekst, a datum izmjene gore se pomiče.',
+            ],
+          },
+        ],
+      }
+    : {
+        label: 'Legal',
+        head: 'Privacy policy',
+        sub: 'Short, because the processing is short. This describes only what the site actually does.',
+        back: 'Back to home',
+        updatedLabel: 'Last updated',
+        contactLink: 'contact form',
+        sections: [
+          {
+            h: 'Who processes your data',
+            p: [
+              `The controller is ${SITE.legal.name}, OIB ${SITE.legal.oib}, Croatia. For anything about this policy, reach us through the <a>contact form</a>.`,
+            ],
+          },
+          {
+            h: 'Contact form',
+            p: [
+              'If you write to us, we process your name, email address and the content of your message. The purpose is to answer your enquiry; the legal basis is taking steps at your request before entering into a contract.',
+              'The message is delivered by Web3Forms (Agilo Softworks), and the form is protected against automated submissions by hCaptcha (Intuition Machines). Both processors see the request for that purpose.',
+              'We keep enquiries for as long as the correspondence lasts, and at most two years after the last message.',
+            ],
+          },
+          {
+            h: 'Analytics',
+            p: [
+              'With your consent we use Google Analytics 4 (Google Ireland Limited) to see which pages are viewed and where visitors come from. It sets the cookies <code>_ga</code> and <code>_ga_&lt;ID&gt;</code>.',
+              'Without consent it is not loaded and nothing is set. You can withdraw consent at any time — click the drop in the bottom right corner. Analytics then stops and its cookies are deleted.',
+            ],
+          },
+          {
+            h: 'Local storage',
+            p: [
+              'With your consent the site remembers where you left off in the horizontal presentation (<code>tquilo.D2.x</code>). It stays in your browser and is never sent to us.',
+              'Your consent decision is recorded either way (<code>tquilo.consent</code>) — without it we would have to ask again on every page.',
+            ],
+          },
+          {
+            h: 'Hosting and logs',
+            p: [
+              'The site is served by Hostinger International. The server keeps ordinary technical access logs (IP address, time, requested address) for security and troubleshooting.',
+            ],
+          },
+          {
+            h: 'Your rights',
+            p: [
+              'You have the right of access, rectification, erasure and restriction of processing, the right to data portability and the right to object. You may withdraw consent without affecting the lawfulness of processing before withdrawal.',
+              'Send your request through the <a>contact form</a>. You may lodge a complaint with the Croatian Personal Data Protection Agency (azop.hr).',
+            ],
+          },
+          {
+            h: 'Changes',
+            p: [
+              'If the processing changes — a new service, a new purpose — this text changes with it, and the date above moves.',
+            ],
+          },
+        ],
+      };
+
+const contactHref = `${localePath(lang)}#kontakt`;
+---
+
+<!doctype html>
+<html lang={lang} data-theme="dark" class="scroll-smooth">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="generator" content={Astro.generator} />
+    <Seo
+      title={`${L.head} - T’quilo`}
+      description={L.sub}
+      path={localePath(lang, 'privacy')}
+      lang={lang}
+      page="privacy"
+    />
+    <link rel="preload" href="/fonts/marcellus-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content={SITE.themeColor} />
+    <meta name="color-scheme" content="dark" />
+  </head>
+
+  <body class="bg-abyss text-salt">
+    <header
+      class="sticky top-0 z-40 flex h-[76px] items-center justify-between gap-4 border-b border-trench bg-abyss px-[clamp(20px,3vw,48px)]"
+    >
+      <p class="flex items-center gap-4">
+        <a href={localePath(lang)} aria-label={SITE.name} class="inline-flex">
+          <img src="/logo/tquilo-primary-dark.svg" alt={SITE.name} width="454" height="100" class="h-[22px] w-auto" />
+        </a>
+        <span class="hidden text-[12px] tracking-[0.16em] text-mist uppercase sm:inline">{L.label}</span>
+      </p>
+      <a
+        href={localePath(lang)}
+        class="text-[13px] text-mist transition-colors duration-[90ms] hover:text-champagne"
+        >{L.back}</a
+      >
+    </header>
+
+    <main class="mx-auto w-full max-w-[72ch] px-[clamp(20px,6vw,48px)] py-[clamp(40px,8vh,88px)]">
+      <h1 class="m-0 font-display text-[clamp(32px,6vw,52px)] leading-[1.1] tracking-[-0.01em]">{L.head}</h1>
+      <p class="mt-4 mb-0 text-[16px] leading-[1.6] text-mist">{L.sub}</p>
+      <p class="mt-2 mb-0 text-[13px] text-mist">
+        {L.updatedLabel}: <span class="tabular-nums">{updated}</span>
+      </p>
+
+      {
+        L.sections.map((sec) => (
+          <section class="mt-[clamp(28px,5vh,44px)]">
+            <h2 class="m-0 font-display text-[clamp(20px,3vw,26px)] leading-[1.25] text-salt">{sec.h}</h2>
+            {sec.p.map((html: string) => (
+              <p
+                class="mt-3 mb-0 text-[15px] leading-[1.7] text-mist [&_a]:text-champagne [&_a]:underline [&_a]:underline-offset-4 [&_code]:text-salt"
+                set:html={html.replace(/<a>/g, `<a href="${contactHref}">`)}
+              />
+            ))}
+          </section>
+        ))
+      }
+
+      <p class="mt-[clamp(36px,7vh,64px)] mb-0 grid gap-[2px] border-t border-trench pt-6 text-[12px] leading-[1.5] text-mist">
+        <span>{legal[0]}</span>
+        <span class="tabular-nums">{legal[1]}</span>
+        <span class="mt-2">© {year} {SITE.name}</span>
+      </p>
+    </main>
+
+    <Consent lang={lang} />
+
+    <script>
+      import { initConsent } from '../../scripts/consent';
+      initConsent();
+    </script>
+  </body>
+</html>

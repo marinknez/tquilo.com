@@ -15,6 +15,7 @@
  * pristanka mora biti jednako dostupno kao davanje.
  */
 import { type Lang } from '../data/site';
+import { localePath } from '../i18n';
 
 interface Props {
   lang: Lang;
@@ -37,6 +38,7 @@ const L =
         open: 'Postavke privatnosti',
         stateAll: 'Trenutno: analitika uključena.',
         stateEssential: 'Trenutno: samo nužno.',
+        policy: 'Politika privatnosti',
       }
     : {
         text:
@@ -49,6 +51,7 @@ const L =
         open: 'Privacy settings',
         stateAll: 'Currently: analytics on.',
         stateEssential: 'Currently: essential only.',
+        policy: 'Privacy policy',
       };
 
 const bottom = raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4';
@@ -100,6 +103,11 @@ const bottom = raised ? 'bottom-[calc(56px+16px)]' : 'bottom-4';
       class="m-0 mt-2 text-[13px] leading-[1.6] text-champagne"
     >
     </p>
+    <a
+      href={localePath(lang, 'privacy')}
+      class="mt-2 inline-block text-[13px] text-mist underline underline-offset-4 transition-colors duration-[90ms] hover:text-champagne"
+      >{L.policy}</a
+    >
     <p class="m-0 mt-4 flex flex-wrap gap-3">
       <button
         type="button"

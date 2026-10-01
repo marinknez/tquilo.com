@@ -78,6 +78,18 @@ export const SITE = {
  */
 export const LAUNCHED = true;
 
+/**
+ * Specifikacija u PDF-u.
+ *
+ * `null` dok dokument ne postoji - poveznica se tada uopće ne renderira.
+ * Ranije je stajala s `href="#"`: izgledala je kao poveznica, a klik nije
+ * vodio nikamo, što je gore od toga da je nema.
+ *
+ * Kad dokument nastane: datoteka u `public/`, putanja ovdje (npr.
+ * `'/dokumenti/tquilo-specifikacija.pdf'`) i poveznica se vrati sama.
+ */
+export const SPEC_PDF: string | null = null;
+
 export const LANGS = ['hr', 'en'] as const;
 export type Lang = (typeof LANGS)[number];
 

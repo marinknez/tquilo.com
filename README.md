@@ -478,6 +478,10 @@ obrisana (`src/pages/index.astro`), korijen je EN verzija.
 
 ### Još otvoreno
 
+- [ ] **PDF specifikacije** (`SPEC_PDF` u `src/data/site.ts`). Dok je `null`,
+      stavka „Specifikacija (PDF)" na ekranu 04 stoji **posivljena i nije
+      poveznica** - `<span>`, ne `<a href="#">`. Kad dokument nastane:
+      datoteka u `public/`, putanja u `SPEC_PDF`, poveznica se vrati sama.
 - [ ] Web3Forms: poslati jedan testni upit sa živog sitea.
 - [ ] **Tuđe oznake s fotografija**: narančasti vanbrodski motor na
       `fjaka-detail-3.jpg` i `partneri.jpg`. Brand pravila to traže.

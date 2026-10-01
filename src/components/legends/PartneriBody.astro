@@ -1,6 +1,7 @@
 ---
 import Icon from '../Icon.astro';
 import { localePath, sceneHash, type Lang } from '../../i18n';
+import { SPEC_PDF } from '../../data/site';
 import type { Copy } from '../../i18n';
 const { c, lang } = Astro.props as { c: Copy; lang: Lang };
 ---
@@ -17,14 +18,24 @@ const { c, lang } = Astro.props as { c: Copy; lang: Lang };
       class="hidden justify-self-start border-b border-abyss pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink md:inline"
       >{c.quote}</a
     >
-    {/* PDF specifikacije nije isporučen - vidi README, otvorene stavke. */}
-    <a
-      href="#"
-      class="flex items-center justify-self-start gap-2 border-b border-shell pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink"
-    >
-      <Icon name="download" size={20} />
-      {c.spec}
-    </a>
+    {/* Dok dokumenta nema (`SPEC_PDF === null`), stavka ostaje vidljiva ali
+        posivljena i NIJE poveznica - `<span>`, ne `<a href="#">`. Mrtva
+        poveznica izgleda kao živa, prima fokus i klik ne vodi nikamo; ovako
+        se odmah vidi da stavka postoji, ali još nije dostupna. */}
+    {SPEC_PDF ? (
+      <a
+        href={SPEC_PDF}
+        class="flex items-center justify-self-start gap-2 border-b border-shell pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink"
+      >
+        <Icon name="download" size={20} />
+        {c.spec}
+      </a>
+    ) : (
+      <span class="flex cursor-default items-center justify-self-start gap-2 border-b border-shell/50 pb-[2px] text-slate opacity-60 select-none">
+        <Icon name="download" size={20} />
+        {c.spec}
+      </span>
+    )}
   </div>
 
   <div class="self-end max-md:mt-[5vh] max-md:ml-0 max-md:flex max-md:basis-full max-md:justify-center md:ml-auto">

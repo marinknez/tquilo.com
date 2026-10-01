@@ -141,6 +141,13 @@ async function buildIcons() {
  * podloga, 2 px Champagne linija gore, wordmark, Marcellus naslov.
  * Tekst je renderiran kroz sharp/pango iz self-hostanog Marcellusa - nema
  * ovisnosti o fontovima na stroju koji radi build.
+ *
+ * ⚠ SVE JE CENTRIRANO I STANE U SREDIŠNJI KVADRAT (630 × 630 px).
+ * Dio aplikacija (WhatsApp, Signal, Slack) ne prikazuje široku karticu nego
+ * malu kvadratnu sličicu - i sam izreže 1200 × 630 na 1:1. Raniji raspored
+ * bio je poravnat lijevo preko cijele širine, pa je u izrezu ostajalo
+ * „tranquilo place / water" - komadi riječi. Sadržaj zato mora stati između
+ * x = 285 i x = 915. Tko mijenja ovu sliku, mjeri to prije commita.
  */
 async function buildOgImage() {
   console.log('OG slika:');
@@ -156,26 +163,37 @@ async function buildOgImage() {
     <style>
       @font-face{font-family:"Marcellus";src:url(data:font/woff2;base64,${marcellus}) format("woff2");font-weight:400}
       @font-face{font-family:"Archivo";src:url(data:font/woff2;base64,${archivo}) format("woff2");font-weight:300 600}
-      .display{font-family:"Marcellus",Georgia,serif;font-size:76px;letter-spacing:0.01em}
-      .lede{font-family:"Archivo",Arial,sans-serif;font-size:26px;font-weight:400}
-      .label{font-family:"Archivo",Arial,sans-serif;font-size:18px;font-weight:500;letter-spacing:3.4px;text-transform:uppercase}
+      .display{font-family:"Marcellus",Georgia,serif;font-size:58px;letter-spacing:0.01em;text-anchor:middle}
+      .lede{font-family:"Archivo",Arial,sans-serif;font-size:24px;font-weight:400;text-anchor:middle}
+      .label{font-family:"Archivo",Arial,sans-serif;font-size:17px;font-weight:500;letter-spacing:3.2px;text-transform:uppercase;text-anchor:middle}
     </style>
   </defs>
   <rect width="${W}" height="${H}" fill="${brandColors.abyss}"/>
   <rect width="${W}" height="4" fill="${brandColors.champagne}"/>
-  <rect x="80" y="150" width="2" height="330" fill="${brandColors.trench}"/>
-  <g transform="translate(80,66) scale(0.34)">${wordmark.replace(/^<svg[^>]*>/, '<g>').replace(/<\/svg>$/, '</g>')}</g>
-  <text class="label" x="124" y="196" fill="${brandColors.champagne}">Floating luxury platform · Made in Croatia</text>
-  <text class="display" x="124" y="300" fill="${brandColors.salt}">Your tranquilo place</text>
-  <text class="display" x="124" y="386" fill="${brandColors.champagne}">on water.</text>
-  <text class="lede" x="124" y="462" fill="${brandColors.mist}">A floating sunbed for two. No licence, no registration.</text>
-  <text class="lede" x="124" y="506" fill="${brandColors.mist}">Shade, a shower and a cold drink within reach.</text>
+  <g transform="translate(405,118) scale(0.86)">${wordmark.replace(/^<svg[^>]*>/, '<g>').replace(/<\/svg>$/, '</g>')}</g>
+  <rect x="540" y="262" width="120" height="2" fill="${brandColors.trench}"/>
+  <text class="display" x="600" y="352" fill="${brandColors.salt}">Your tranquilo</text>
+  <text class="display" x="600" y="422" fill="${brandColors.champagne}">place on water.</text>
+  <text class="label" x="600" y="500" fill="${brandColors.mist}">A floating sunbed for two</text>
   <rect x="0" y="${H - 4}" width="${W}" height="4" fill="${brandColors.deepSea}"/>
 </svg>`;
 
-  const png = await sharp(Buffer.from(svg), { density: 96 }).png({ compressionLevel: 9 }).toBuffer();
+  // ⚠ `.resize(W, H)` NIJE ukras. Bez njega sharp renderira SVG na 96 dpi, pa
+  // 1200 × 630 ispadne 1600 × 840 - a `og:image:width/height` u <head> i dalje
+  // tvrde 1200 × 630. Scraperi koji vjeruju deklariranim mjerama dobiju sliku
+  // koja im ne odgovara i neki zbog toga odustanu od velike kartice.
+  // Render na 96 dpi pa smanjivanje ostaje: slika je supersamplirana, dakle
+  // oštrija nego da je odmah renderirana u ciljnoj veličini.
+  const png = await sharp(Buffer.from(svg), { density: 96 })
+    .resize(W, H)
+    .png({ compressionLevel: 9 })
+    .toBuffer();
+  const meta = await sharp(png).metadata();
+  if (meta.width !== W || meta.height !== H) {
+    throw new Error(`OG slika je ${meta.width}×${meta.height}, a <head> tvrdi ${W}×${H}.`);
+  }
   await writeFile(out('og', 'tquilo-og.png'), png);
-  console.log(`  og    og/tquilo-og.png (${W}×${H}, ${(png.length / 1024).toFixed(1)} kB)`);
+  console.log(`  og    og/tquilo-og.png (${meta.width}×${meta.height}, ${(png.length / 1024).toFixed(1)} kB)`);
 }
 
 /* ------------------------------------------------------------------------- */

@@ -28,7 +28,11 @@ const lang = (Astro.params.lang as Lang | undefined) ?? DEFAULT_LANG;
 const c = t(lang);
 ---
 
-<Stage lang={lang} title={`T’quilo - ${c.g5head}`} description={c.g0}>
+{/* Naslov dokumenta = naslov PRVOG ekrana. Ovdje je dugo stajao `g5head`
+    („U bojama vašeg brenda") - naslov petog ekrana, Boje. To je i u kartici
+    preglednika i u svakoj podijeljenoj poveznici predstavljalo cijelu
+    stranicu jednim njezinim dijelom. */}
+<Stage lang={lang} title={`T’quilo - ${c.mh.l0.join(' ')}.`} description={c.g0}>
   <Hero lang={lang} />
   <Voda lang={lang} />
   <Kvaliteta lang={lang} />

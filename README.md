@@ -207,11 +207,40 @@ Astro iz commitanih izvora gradi AVIF u četiri širine.
 - `robots.txt` s poimence dopuštenim AI crawlerima; `llms.txt` sa strojno
   čitljivim sažetkom proizvoda.
 
-## Jezik
+## Jezik i rute
 
 **Primarni jezik je EN** i ne ovisi o postavkama preglednika - nigdje se ne
-čita `navigator.language`. `DEFAULT_LANG = 'en'`, `hreflang="x-default"`
-pokazuje na `/en`. HR posjetitelj bira sam, prekidačem u zaglavlju.
+čita `navigator.language`. HR posjetitelj bira sam, prekidačem u zaglavlju.
+
+**Primarni jezik nema prefiks u adresi:**
+
+| | EN | HR |
+| --- | --- | --- |
+| naslovnica | `/` | `/hr` |
+| konfigurator | `/konfigurator` | `/hr/konfigurator` |
+| privatnost | `/privacy` | `/hr/privacy` |
+
+Odlučuje **jedno mjesto** - `localePath()` u `src/i18n/index.ts`. Rute,
+`hreflang`, canonical, sitemap, prekidač jezika i sve poveznice čitaju odande;
+promjena sheme je promjena te funkcije, ne pretraživanje po projektu.
+
+Tehnički: stranice su `src/pages/[...lang]/*.astro`, a `getStaticPaths` za EN
+vraća `lang: undefined` - rest parametar tada gradi datoteku na korijenu.
+
+⚠ **Stare `/en/...` adrese 301-aju** na nove (`.htaccess`). Ne brisati: to je
+ono što tražilica već zna i što je možda negdje podijeljeno.
+
+### Trailing slash
+
+Astro je `trailingSlash: 'never'`, pa canonical glasi `/konfigurator`. Ali
+build pravi `konfigurator/index.html`, dakle **direktorij** - a Apache uz
+zadani `DirectorySlash` na `/konfigurator` odgovara 301-om na
+`/konfigurator/`. Posljedica je bila da svaka stranica osim korijena živi na
+adresi koja se ne poklapa s vlastitim canonicalom.
+
+Zato je u `.htaccess` **`DirectorySlash Off`**, a mapiranje na `index.html`
+radi `RewriteRule` - na `mod_dir` se ne oslanjamo. Provjereno na produkciji:
+`/hr/` → 301 → `/hr` → 200, bez petlje.
 
 ## Pristanak, kolačići i analitika
 
@@ -347,19 +376,40 @@ inače GitHub ne pošalje webhook.
 
 Hostinger: repo `marinknez/tquilo.com`, grana **`deploy`**, web root = korijen.
 
-## ⚠ Prije lansiranja
+## Lansiranje
 
-- [ ] `LAUNCHED = true` u `src/data/site.ts`.
-- [ ] Web3Forms: provjeriti da je `access_key` vezan na pravu primateljsku
-      adresu i poslati testni upit.
-- [ ] `SITE.securityEmail` - jedino mjesto gdje stranica navodi e-mail
-      (RFC 9116 traži kontakt, inače je security.txt nevažeći).
+**Site je javan od 1. 10. 2026.** `LAUNCHED = true`, coming soon stranica je
+obrisana (`src/pages/index.astro`), korijen je EN verzija.
+
+### Provjereno na produkciji
+
+- Zaglavlja: CSP `default-src 'none'` bez `unsafe-inline`, HSTS 2 g s
+  `preload`, COOP/COEP/CORP, `X-Frame-Options: DENY`, `nosniff`,
+  Permissions-Policy, Referrer-Policy. Brotli uključen.
+- Rute: svih 6 stranica 200 na **točno onoj adresi koju tvrdi canonical**.
+  `/en/...` 301, `/hr/` 301, `www` i `http` 301. Nema petlji.
+- Keš: hashirani assetovi `immutable, 1 g`; HTML `max-age=0, must-revalidate`.
+- GA se ne učitava bez pristanka (0 zahtjeva prema Googleu).
+- 404 vraća status 404, nosi `noindex`.
+- Naslovnica: 12 zahtjeva, DOMContentLoaded ~0,21 s, load ~0,35 s.
+
+### Još otvoreno
+
+- [ ] **`SITE.securityEmail` = `security@tquilo.com`** - nije potvrđeno da
+      sandučić postoji. RFC 9116 traži kontakt koji radi; ako ne postoji,
+      staviti `aboard@tquilo.com`.
+- [ ] Web3Forms: poslati jedan testni upit sa živog sitea.
 - [ ] **Tuđe oznake s fotografija**: narančasti vanbrodski motor na
       `fjaka-detail-3.jpg` i `partneri.jpg`. Brand pravila to traže.
-- [ ] **PDF specifikacije** - nije isporučen; link na ekranu 04 je mrtav.
 - [ ] `SITE.social` - `sameAs` se pojavi u JSON-LD-u kad profili postoje.
-- [ ] HSTS `preload` - samo ako HTTPS radi na svim subdomenama.
-- [ ] Search Console + Bing: prijaviti sitemap.
+- [ ] HSTS `preload`: zaglavlje je postavljeno, ali domena se mora i prijaviti
+      na hstspreload.org - inače `preload` ništa ne znači.
+- [ ] Search Console + Bing: prijaviti `sitemap-index.xml`.
+- [ ] GA property: rok čuvanja podataka (zadano 14 mj.), Google signals,
+      ugovor o obradi podataka.
+- [ ] Hero video je 0,94 MB (webm) uz `preload="auto"` - najteža stavka na
+      naslovnici. Ako se želi lakši prvi dojam, `preload="metadata"`, uz
+      rizik od trzaja na početku petlje.
 
 ## Odstupanja od handoffa (i zašto)
 
@@ -369,8 +419,9 @@ Hostinger: repo `marinknez/tquilo.com`, grana **`deploy`**, web root = korijen.
 2. **RAL 1013** je u izvornoj tablici bio `#ea9a5` - pet znamenki, nevažeći
    hex, boja je tiho padala na crnu. Ispravljeno na `#E3D9C6`.
 3. **3D model je parametarski, ne GLB** - obrazloženo gore.
-4. **`mailto:hello@tquilo.com`** s ekrana 08 je izostavljen: adresa ne postoji,
-   a uputa je bila da e-mail ne stoji na stranici. Forma je kanal.
+4. **`mailto:hello@tquilo.com`** s ekrana 08 zamijenjen je stvarnom adresom
+   `aboard@tquilo.com` (`SITE.email`), koja stoji ispod naslova na ekranu 08
+   i u politici privatnosti.
 5. **`fWho` i `fSub`** postoje u copyju, ali ih finalni dizajn ne renderira -
    nisu implementirani.
 

@@ -205,12 +205,22 @@ export function initConfigurator() {
    * Za pravi PDF s prijeloma bi trebao server - vidi README.
    */
   for (const b of document.querySelectorAll<HTMLElement>('[data-pdf]')) {
-    b.addEventListener('click', () => {
+    b.addEventListener('click', async () => {
+      // 3D se učitava tek kad uđe u vidno polje. Gumb uz sažetak je niže na
+      // stranici i zna biti kliknut prije toga - bez ovoga bi isti PDF iz
+      // jednog gumba imao sliku, a iz drugog ne.
+      await loadModel();
+
       const shot = model?.snapshot();
       const img = document.querySelector<HTMLImageElement>('[data-print-shot]');
-      if (img) {
-        if (shot) img.src = shot;
-        else img.remove();
+      if (img && shot) {
+        img.src = shot;
+        // Ispis bez čekanja uhvati praznu sliku.
+        try {
+          await img.decode();
+        } catch {
+          /* slika se svejedno nacrta kad stigne */
+        }
       }
 
       const date = document.querySelector<HTMLElement>('[data-print-date]');
@@ -219,9 +229,6 @@ export function initConfigurator() {
           (boot.lang === 'en' ? 'Configuration · ' : 'Konfiguracija · ') +
           new Date().toLocaleDateString(boot.lang === 'en' ? 'en-GB' : 'hr-HR');
       }
-
-      const url = document.querySelector<HTMLElement>('[data-print-url]');
-      if (url) url.textContent = location.href;
 
       const dl = document.querySelector<HTMLElement>('[data-print-summary]');
       if (dl) {

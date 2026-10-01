@@ -134,18 +134,21 @@ function teakTexture(decor: string, fill: string) {
 }
 
 /** Zavjesa: ravnina s naborima i strukom na mjestu veza. */
+const CURTAIN_W = 0.5;
+
 function curtainGeometry(height: number) {
-  const g = new THREE.PlaneGeometry(0.34, height, 36, 30);
+  const g = new THREE.PlaneGeometry(CURTAIN_W, height, 48, 36);
   const p = g.attributes.position;
+  const half = CURTAIN_W / 2;
   for (let i = 0; i < p.count; i++) {
     const vx = p.getX(i);
     const vy = p.getY(i);
     const t = (vy + height / 2) / height;
     // Struk: zavjesa je vezana malo ispod sredine.
     const ty = vy + height * 0.08;
-    const pinch = 1 - 0.62 * Math.exp(-(ty * ty) / 0.035);
-    const folds = (Math.sin(vx * 42) * 0.028 + Math.sin(vx * 19 + 0.6) * 0.017) * (0.5 + 0.5 * pinch);
-    const bulge = 0.05 * (1 - Math.min(1, Math.abs(vx) / 0.17)) * (0.45 + 0.55 * t);
+    const pinch = 1 - 0.52 * Math.exp(-(ty * ty) / 0.045);
+    const folds = (Math.sin(vx * 30) * 0.036 + Math.sin(vx * 13 + 0.6) * 0.022) * (0.5 + 0.5 * pinch);
+    const bulge = 0.075 * (1 - Math.min(1, Math.abs(vx) / half)) * (0.45 + 0.55 * t);
     p.setX(i, vx * pinch);
     p.setZ(i, folds + bulge);
   }
@@ -312,22 +315,25 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
 
   /* ---------------------------------------------------------- GORNJI TRUP */
   // U-klupa: pramčani modul + dva kraka, koso rezana prema krmi.
+  // BOW_F je prednji rub pramčane ležaljke. Bila je na 0,52 - dubina sjedala
+  // 0,52 m, dakle klupa. Na 0,26 je dubina 0,87 m, što je ležaljka.
+  const BOW_F = 0.26;
   const bowP: [number, number][] = [
     [-1.18, 1.13],
     [1.18, 1.13],
-    [1.18, 0.52],
-    [-1.18, 0.52],
+    [1.18, BOW_F],
+    [-1.18, BOW_F],
   ];
   const portP: [number, number][] = [
-    [-1.18, 0.52],
-    [-0.42, 0.52],
+    [-1.18, BOW_F],
+    [-0.42, BOW_F],
     [-0.42, -0.4],
     [-0.86, -1.13],
     [-1.18, -1.13],
   ];
   const stbdP: [number, number][] = [
-    [1.18, 0.52],
-    [0.42, 0.52],
+    [1.18, BOW_F],
+    [0.42, BOW_F],
     [0.42, -0.4],
     [0.86, -1.13],
     [1.18, -1.13],
@@ -347,19 +353,19 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   const bowC: [number, number][] = [
     [-1.14, 1.09],
     [1.14, 1.09],
-    [1.14, 0.56],
-    [-1.14, 0.56],
+    [1.14, BOW_F + 0.04],
+    [-1.14, BOW_F + 0.04],
   ];
   const portC: [number, number][] = [
-    [-1.14, 0.56],
-    [-0.46, 0.56],
+    [-1.14, BOW_F + 0.04],
+    [-0.46, BOW_F + 0.04],
     [-0.46, -0.38],
     [-0.84, -1.09],
     [-1.14, -1.09],
   ];
   const stbdC: [number, number][] = [
-    [1.14, 0.56],
-    [0.46, 0.56],
+    [1.14, BOW_F + 0.04],
+    [0.46, BOW_F + 0.04],
     [0.46, -0.38],
     [0.84, -1.09],
     [1.14, -1.09],
@@ -367,19 +373,24 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   slab(bowC, SEAT, 0.14, mats.cushion);
   slab(portC, SEAT, 0.14, mats.cushion);
   slab(stbdC, SEAT, 0.14, mats.cushion);
-  // Naslon za leđa uz pramčani zid.
-  add(roundedBox(2.24, 0.16, BACK - SEAT - 0.14, 0.05), mats.cushion, 0, (BACK + SEAT) / 2, 0.955);
+  // Naslon za leđa: nakošen unatrag ~15 stupnjeva. Uspravan naslon je ono
+  // što je ovo činilo klupom; nakošen ga čini ležaljkom. Gornji rub naslanja
+  // se na pramčani zid, donji izlazi naprijed nad sjedalo.
+  // Uži od pramčanog zida (1,92 naspram 2,36 m): nakošen naslon pokriva mjesto
+  // gdje su stajali zvučnici, pa oni idu u uglove zida pokraj njega.
+  add(roundedBox(1.92, 0.16, 0.31, 0.05), mats.cushion, 0, 0.93, 0.8, { x: 0.26 });
   // Ukrasnih jastučića nema: u ovoj razini detalja čitaju se kao lebdeće
   // kutije, a ionako nisu dio konfiguracije.
 
   /* ---------------------------------------------------------------- STOL */
   const TT = SEAT + 0.3; // iznad jastuka (jastuk završava na SEAT + 0,14)
-  add(new THREE.CylinderGeometry(0.035, 0.042, TT - DECK, 20), inox, 0, DECK + (TT - DECK) / 2, -0.12);
-  add(new THREE.CylinderGeometry(0.13, 0.15, 0.02, 24), inox, 0, DECK + 0.01, -0.12);
+  const TABLE_Z = -0.22; // dalje od pramca - ležaljka je sada dublja
+  add(new THREE.CylinderGeometry(0.035, 0.042, TT - DECK, 20), inox, 0, DECK + (TT - DECK) / 2, TABLE_Z);
+  add(new THREE.CylinderGeometry(0.13, 0.15, 0.02, 24), inox, 0, DECK + 0.01, TABLE_Z);
   // Duža os ide UZDUŽ broda - na fotografijama stol stoji paralelno s bokom.
-  const top = add(new THREE.ExtrudeGeometry(roundedRect(0.52, 0.94, 0.12), {
+  const top = add(new THREE.ExtrudeGeometry(roundedRect(0.44, 0.76, 0.1), {
     depth: 0.04, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2, steps: 1, curveSegments: 10,
-  }), mats.teak, 0, TT, -0.12);
+  }), mats.teak, 0, TT, TABLE_Z);
   top.geometry.rotateX(-Math.PI / 2);
 
   /* ------------------------------------------------------------ LOGOTIP */
@@ -414,21 +425,30 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   })();
 
   /* ------------------------------------------------------------- ZVUČNICI */
-  for (const x of [-0.78, 0.78]) {
-    add(new THREE.CylinderGeometry(0.075, 0.075, 0.03, 24), inox, x, BACK - 0.16, 0.935, { x: Math.PI / 2 });
-    add(new THREE.CylinderGeometry(0.055, 0.055, 0.032, 24), dark, x, BACK - 0.16, 0.93, { x: Math.PI / 2 });
+  for (const x of [-1.06, 1.06]) {
+    add(new THREE.CylinderGeometry(0.07, 0.07, 0.03, 24), inox, x, BACK - 0.16, 0.935, { x: Math.PI / 2 });
+    add(new THREE.CylinderGeometry(0.052, 0.052, 0.032, 24), dark, x, BACK - 0.16, 0.93, { x: Math.PI / 2 });
   }
 
   /* -------------------------------------------------------------- RUKOHVAT */
   // Tanka inox cijev uzduž boka, na dvije kratke nogice - kao na fotkama.
   // (Prije polukružni luk; čitao se kao crni luk koji strši iz klupe.)
-  const RAIL_Y = SEAT + 0.2;
-  const RAIL_Z0 = -0.15;
-  const RAIL_LEN = 0.86;
-  for (const x of [-1.2, 1.2]) {
+  // Vrh bočnog coaminga; rukohvat mora biti IZNAD njega, inače se cijev
+  // izgubi u njemu i iz modela viri samo patrljak.
+  const COAM_TOP = SEAT + 0.11 + 0.13;
+  const RAIL_Y = COAM_TOP + 0.13;
+  const RAIL_Z0 = -0.12;
+  const RAIL_LEN = 0.52;
+  for (const x of [-1.16, 1.16]) {
     add(new THREE.CylinderGeometry(0.014, 0.014, RAIL_LEN, 12), inox, x, RAIL_Y, RAIL_Z0, { x: Math.PI / 2 });
-    for (const dz of [-RAIL_LEN / 2 + 0.06, RAIL_LEN / 2 - 0.06]) {
-      add(new THREE.CylinderGeometry(0.012, 0.012, 0.16, 10), inox, x, RAIL_Y - 0.08, RAIL_Z0 + dz);
+    for (const dz of [-RAIL_LEN / 2 + 0.05, RAIL_LEN / 2 - 0.05]) {
+      add(
+        new THREE.CylinderGeometry(0.012, 0.012, RAIL_Y - COAM_TOP, 10),
+        inox,
+        x,
+        (RAIL_Y + COAM_TOP) / 2,
+        RAIL_Z0 + dz,
+      );
     }
   }
 
@@ -452,19 +472,25 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   add(new THREE.BoxGeometry(0.025, skirtH, 2.38), mats.awning, -1.28, POST_TOP - skirtH / 2 - 0.012, 0);
 
   /* ------------------------------------------------------------- ZAVJESE */
-  const curtainBottom = RUB + 0.04;
-  const cGeo = curtainGeometry(POST_TOP - curtainBottom - 0.1);
-  const cy = (POST_TOP + curtainBottom) / 2;
-  // Svaka zavjesa gleda VAN po dijagonali svog ugla: `atan2(x, z)` je smjer
-  // od sredine prema stupu. Ranije su predznaci bili zrcaljeni, pa su dvije
-  // pramčane bile bridom prema promatraču i s prednje strane se nisu vidjele.
+  // Zavjesa visi IZVAN trupa, uz sam rub tende. Stup stoji na klupi, pa bi
+  // zavjesa centrirana na stup donjom trećinom ulazila u trup i tamo nestajala.
+  // Zato se središte pomakne prema van po dijagonali ugla (`OUT`), toliko da
+  // cijeli panel padne izvan gabarita gumene letve (2,5 x 2,3 m).
+  const OUT = 0.22;
+  const cTop = POST_TOP - 0.03;
+  const cBottom = 0.07; // do vodne linije, kao na fotografijama
+  const cGeo = curtainGeometry(cTop - cBottom);
+  const cy = (cTop + cBottom) / 2;
+  const rPost = Math.hypot(px, pz);
   for (const [x, z] of [
     [-px, pz],
     [px, pz],
     [-px, -pz],
     [px, -pz],
   ] as [number, number][]) {
-    add(cGeo, mats.curtain, x, cy, z, { y: Math.atan2(x, z) });
+    // `atan2(x, z)` je smjer od sredine prema stupu - zavjesa je okomita na
+    // njega, pa gleda van i vidi se i s pramca i s boka.
+    add(cGeo, mats.curtain, x * (1 + OUT / rPost), cy, z * (1 + OUT / rPost), { y: Math.atan2(x, z) });
   }
 
   /* -------------------------------------------------------- KRMA: motor + ljestve */

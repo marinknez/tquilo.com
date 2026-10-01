@@ -23,8 +23,9 @@ export default defineConfig({
       changefreq: 'weekly',
       priority: 1,
       lastmod: new Date(),
-      // 404 nikad ne ide u sitemap, a dok site nije lansiran - ništa.
-      filter: (page) => LAUNCHED && !page.includes('/404'),
+      // 404 nikad ne ide u sitemap, `/pregled/*` su interne stranice za
+      // odluku (nose i `noindex`), a dok site nije lansiran - ništa.
+      filter: (page) => LAUNCHED && !page.includes('/404') && !page.includes('/pregled/'),
     }),
   ],
 

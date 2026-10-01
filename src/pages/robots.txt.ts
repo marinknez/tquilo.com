@@ -45,6 +45,8 @@ export const GET: APIRoute = () => {
     '',
     'User-agent: *',
     'Allow: /',
+    // Interne stranice za odluku - nose i `noindex`, ovo je samo drugi sloj.
+    'Disallow: /pregled/',
     // Dok site nije lansiran, sve je iza `Disallow` - stranice uz to nose i
     // `noindex`, pa zabrana ne ovisi samo o robots.txt-u.
     ...(LAUNCHED ? [] : ['Disallow: /']),

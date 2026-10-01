@@ -1,0 +1,177 @@
+---
+/**
+ * SKRIVENA STRANICA ZA PREGLED - nije dio sitea.
+ *
+ * Pokazuje dvije izvedbe gumba za dijeljenje u zaglavlju, uz pravo zaglavlje
+ * (iste klase kao `Stage.astro`), da se odluka donese gledanjem a ne opisom.
+ * Oba gumba su živa: na mobitelu otvore sistemski izbornik, na desktopu
+ * kopiraju adresu.
+ *
+ * Ne vodi nikamo i nigdje nije povezana. Nosi `noindex`, izostaje iz sitemapa
+ * (`astro.config.ts`) i robots.txt je zabranjuje. Kad odluka padne, briše se
+ * zajedno s pravilom u ta dva mjesta.
+ */
+import '../../styles/global.css';
+import Seo from '../../components/Seo.astro';
+import { SITE } from '../../data/site';
+
+const L = {
+  share: 'Podijeli',
+  copied: 'Adresa je kopirana.',
+  copy: 'Kopirajte adresu',
+};
+---
+
+<!doctype html>
+<html lang="hr" data-theme="dark">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <Seo title="Pregled - gumb za dijeljenje" description="Interni pregled." path="/pregled/share" noindex />
+    <link rel="preload" href="/fonts/marcellus-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content={SITE.themeColor} />
+    <meta name="color-scheme" content="dark" />
+  </head>
+
+  <body class="bg-abyss text-salt">
+    <main class="mx-auto w-full max-w-[72ch] px-[clamp(20px,6vw,48px)] py-[clamp(32px,6vh,64px)]">
+      <p class="m-0 text-[12px] tracking-[0.16em] text-warning uppercase">Interni pregled · nije javno</p>
+      <h1 class="mt-3 mb-0 font-display text-[clamp(28px,5vw,42px)] leading-[1.1]">Gumb za dijeljenje</h1>
+      <p class="mt-4 mb-0 text-[15px] leading-[1.7] text-mist">
+        Dvije izvedbe, obje žive. Pritisnite ih - na mobitelu se otvara sistemski izbornik za
+        dijeljenje, na desktopu se adresa kopira. Dijeli se trenutna adresa, dakle i sidro ekrana
+        na kojem ste.
+      </p>
+
+      {/* ------------------------------------------------ A: tekst */}
+      <h2 class="mt-[clamp(32px,6vh,56px)] mb-0 font-display text-[22px]">A · tekstualna stavka</h2>
+      <p class="mt-2 mb-0 text-[14px] leading-[1.7] text-mist">
+        Zaglavlje je danas isključivo tekst: znak, izbornik, HR / EN. Tekstualna stavka se u taj
+        red uklapa bez ostatka i ne traži nijedan novi element brend sustava.
+      </p>
+
+      <div class="mt-5 border border-trench">
+        <header
+          class="flex h-[76px] items-center justify-between border-b border-trench bg-abyss px-[clamp(16px,3vw,28px)]"
+        >
+          <img src="/logo/tquilo-primary-dark.svg" alt={SITE.name} width="454" height="100" class="h-[22px] w-auto" />
+          <nav class="flex items-baseline gap-[clamp(18px,3vw,40px)]">
+            <ul class="hidden list-none items-baseline gap-[clamp(14px,1.8vw,28px)] p-0 lg:flex">
+              <li><span class="text-caption whitespace-nowrap text-salt">Mir</span></li>
+              <li><span class="text-caption whitespace-nowrap text-mist">Voda</span></li>
+              <li><span class="text-caption whitespace-nowrap text-mist">Kvaliteta</span></li>
+            </ul>
+            <p class="flex items-baseline gap-2 text-label font-medium tracking-[0.16em] uppercase">
+              <span class="text-salt">HR</span>
+              <span class="text-trench" aria-hidden="true">/</span>
+              <span class="text-mist">EN</span>
+              <span class="text-trench" aria-hidden="true">/</span>
+              <button
+                type="button"
+                data-share
+                class="text-mist uppercase transition-colors duration-[90ms] hover:text-champagne"
+                >{L.share}</button
+              >
+            </p>
+          </nav>
+        </header>
+      </div>
+
+      {/* ------------------------------------------------ B: ikona */}
+      <h2 class="mt-[clamp(32px,6vh,56px)] mb-0 font-display text-[22px]">B · ikona</h2>
+      <p class="mt-2 mb-0 text-[14px] leading-[1.7] text-mist">
+        Sitnija je i jezično neutralna, ali bi bila <strong class="font-medium text-salt">jedini
+        glif u zaglavlju</strong> - i tražila bi četrnaestu ikonu u brend setu, koji je zatvoren na
+        trinaest iz handoffa. Ovaj glif je nacrtan samo za ovaj pregled i nije dio seta.
+      </p>
+
+      <div class="mt-5 border border-trench">
+        <header
+          class="flex h-[76px] items-center justify-between border-b border-trench bg-abyss px-[clamp(16px,3vw,28px)]"
+        >
+          <img src="/logo/tquilo-primary-dark.svg" alt={SITE.name} width="454" height="100" class="h-[22px] w-auto" />
+          <nav class="flex items-center gap-[clamp(18px,3vw,40px)]">
+            <ul class="hidden list-none items-baseline gap-[clamp(14px,1.8vw,28px)] p-0 lg:flex">
+              <li><span class="text-caption whitespace-nowrap text-salt">Mir</span></li>
+              <li><span class="text-caption whitespace-nowrap text-mist">Voda</span></li>
+              <li><span class="text-caption whitespace-nowrap text-mist">Kvaliteta</span></li>
+            </ul>
+            <p class="flex items-center gap-3 text-label font-medium tracking-[0.16em] uppercase">
+              <span class="text-salt">HR</span>
+              <span class="text-trench" aria-hidden="true">/</span>
+              <span class="text-mist">EN</span>
+              <button
+                type="button"
+                data-share
+                aria-label={L.share}
+                title={L.share}
+                class="ml-1 inline-flex text-mist transition-colors duration-[90ms] hover:text-champagne"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  width="18"
+                  height="18"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-linecap="butt"
+                  stroke-linejoin="miter"
+                  aria-hidden="true"
+                >
+                  <path d="M12 3 V15" stroke-width="2"></path>
+                  <path d="M7 8 L12 3 L17 8" stroke-width="2"></path>
+                  <path d="M5 13 V20 H19 V13" stroke-width="1"></path>
+                </svg>
+              </button>
+            </p>
+          </nav>
+        </header>
+      </div>
+
+      {/* ------------------------------------------------ status */}
+      <p
+        data-share-status
+        role="status"
+        aria-live="polite"
+        class="mt-8 mb-0 min-h-[24px] text-[14px] text-champagne"
+      >
+      </p>
+
+      <h2 class="mt-[clamp(32px,6vh,56px)] mb-0 font-display text-[22px]">Što se dogodi na klik</h2>
+      <ul class="mt-3 mb-0 grid gap-2 pl-5 text-[14px] leading-[1.7] text-mist">
+        <li><strong class="font-medium text-salt">Mobitel</strong> - sistemski izbornik: WhatsApp, poruke, mail, AirDrop, što god posjetitelj ima.</li>
+        <li><strong class="font-medium text-salt">Chrome / Edge / Safari na desktopu</strong> - isto, sistemski izbornik.</li>
+        <li><strong class="font-medium text-salt">Firefox na desktopu</strong> - sistemskog izbornika nema, pa se adresa kopira i javi se poruka.</li>
+        <li>Nijedna vanjska skripta, nijedan kolačić, bez ikona društvenih mreža.</li>
+      </ul>
+
+      <p class="mt-8 mb-0 border-t border-trench pt-6 text-[13px] leading-[1.6] text-mist">
+        Stranica je skrivena: <code class="text-salt">noindex</code>, izvan sitemapa, zabranjena u
+        robots.txt. Briše se kad odluka padne.
+      </p>
+    </main>
+
+    <script>
+      import { initShare } from '../../scripts/share';
+
+      const status = document.querySelector<HTMLElement>('[data-share-status]');
+      let t: ReturnType<typeof setTimeout>;
+      const MSG = {
+        shared: 'Podijeljeno.',
+        copied: 'Adresa je kopirana u međuspremnik.',
+        prompted: 'Međuspremnik je blokiran - adresa je ponuđena u prozoru.',
+        cancelled: 'Dijeljenje je otkazano.',
+        failed: 'Ni izbornik ni međuspremnik nisu dostupni - adresu kopirajte iz adresne trake.',
+      };
+
+      initShare(document, { copied: MSG.copied, copy: 'Kopirajte adresu' }, (r) => {
+        if (!status) return;
+        status.textContent = MSG[r];
+        clearTimeout(t);
+        t = setTimeout(() => (status.textContent = ''), 5000);
+      });
+    </script>
+  </body>
+</html>

@@ -3,8 +3,6 @@
 
 User-agent: *
 Allow: /
-Disallow: /hr
-Disallow: /en
 
 # AI crawleri i asistenti - izričito dopušteni.
 User-agent: GPTBot

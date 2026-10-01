@@ -1,13 +1,13 @@
 # T’quilo
 
-> T’quilo is a floating sunbed for two - a private 6 m² room on the water, with no crew and no schedule. No boating licence and no vessel registration required. Launching October 2026.
+> T’quilo is a floating sunbed for two - a private 6 m² room on the water, with no crew and no schedule. No boating licence and no vessel registration required.
 
 T’quilo (written with a capital T, an apostrophe, then lowercase - never "Tquilo") is a
 floating luxury platform: a private sunbed for two on the sea or a lake.
 
 ## Status
 
-The site is a coming soon page. Launching October 2026. There is no online booking, pricing page or product catalogue yet.
+The site is live in English (/) and Croatian (/hr). There is no online booking or pricing page; enquiries go through the contact form or aboard@tquilo.com.
 
 ## Product facts
 
@@ -35,8 +35,13 @@ The site is a coming soon page. Launching October 2026. There is no online booki
 ## Contact
 
 - Website: https://tquilo.com
-- There is no public contact address yet. Do not invent one.
+- Contact: aboard@tquilo.com. This is the only address; do not invent others.
 
 ## Pages
 
-- [Coming soon](https://tquilo.com/): the only public page at this time.
+- [Home (HR)](https://tquilo.com/hr): the full site in Croatian.
+- [Home (EN)](https://tquilo.com/): the full site in English.
+- [Colour configurator (HR)](https://tquilo.com/hr/konfigurator): choose hull, cushion, awning, curtain and teak colours on a 3D model.
+- [Colour configurator (EN)](https://tquilo.com/konfigurator)
+- [Privacy policy (HR)](https://tquilo.com/hr/privacy)
+- [Privacy policy (EN)](https://tquilo.com/privacy)

@@ -44,7 +44,11 @@ export type ModelHandle = {
 
 const HALF_W = 1.25; // širina 2,5 m
 const HALF_L = 1.15; // duljina 2,3 m
-const DECK = 0.2; // gornja ploha tikovine iznad vodne linije
+// Gornja ploha tikovine. Mora biti IZNAD gumene letve: letva je puna kutija
+// 2,5 x 2,3 m, a `roundedBox` joj bevelom doda 2 x 2,6 cm visine, pa joj je
+// vrh na 0,204 - s podnicom na 0,20 letva je prekrivala cijeli pod i on je
+// ispadao crn.
+const DECK = 0.24;
 const RUB = 0.14; // gumena letva (spoj donjeg i gornjeg trupa)
 const SEAT = 0.62; // sjedna ploha
 const BACK = 1.16; // vrh naslona (s fotografija - puni, kosi naslon)
@@ -296,11 +300,13 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   add(roundedBox(2.5, 2.3, 0.075, 0.11), mats.fender, 0, RUB, 0);
 
   /* ------------------------------------------------------ PALUBA (tikovina) */
+  // Širi od samog kokpita: rubovi ulaze pod klupe, pa se ni iz jednog kuta
+  // ne vidi traka letve između podnice i boka.
   const deckPts: [number, number][] = [
-    [-0.92, 1.0],
-    [0.92, 1.0],
-    [0.92, -1.12],
-    [-0.92, -1.12],
+    [-1.1, 1.1],
+    [1.1, 1.1],
+    [1.1, -1.15],
+    [-1.1, -1.15],
   ];
   slab(deckPts, DECK - 0.03, 0.03, mats.teak);
 
@@ -330,17 +336,12 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   slab(portP, RUB, SEAT - RUB, mats.upper);
   slab(stbdP, RUB, SEAT - RUB, mats.upper);
 
-  // Naslon: puni pramčani zid, viši nego prije, s tikovom kapom na vrhu -
-  // na fotografijama je gornji rub obrubljen drvom.
+  // Naslon: puni pramčani zid. Bez drvene kape na vrhu - u ovoj razini
+  // detalja čita se kao zasebna daska položena na zid.
   add(roundedBox(2.36, 0.2, BACK - RUB, 0.05), mats.upper, 0, (BACK + RUB) / 2, 1.04);
-  add(roundedBox(2.36, 0.22, 0.035, 0.05), mats.teak, 0, BACK + 0.015, 1.04);
   // Bočni coaming, niži od naslona.
   add(roundedBox(0.09, 1.5, 0.26, 0.04), mats.upper, -1.16, SEAT + 0.11, 0.3);
   add(roundedBox(0.09, 1.5, 0.26, 0.04), mats.upper, 1.16, SEAT + 0.11, 0.3);
-
-  // Vrata hladnjaka pod klupom (Signature) - bijela ploha s inox ručkom.
-  add(roundedBox(0.52, 0.03, 0.3, 0.02), new THREE.MeshStandardMaterial({ color: '#F4F4F2', roughness: 0.3 }), 0.62, 0.42, 0.5);
-  add(new THREE.BoxGeometry(0.16, 0.02, 0.015), inox, 0.62, 0.42, 0.485);
 
   /* ------------------------------------------------------------- JASTUCI */
   const bowC: [number, number][] = [
@@ -374,7 +375,7 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   /* ---------------------------------------------------------------- STOL */
   const TT = SEAT + 0.3; // iznad jastuka (jastuk završava na SEAT + 0,14)
   add(new THREE.CylinderGeometry(0.035, 0.042, TT - DECK, 20), inox, 0, DECK + (TT - DECK) / 2, -0.12);
-  add(new THREE.CylinderGeometry(0.13, 0.15, 0.02, 24), inox, 0, DECK, -0.12);
+  add(new THREE.CylinderGeometry(0.13, 0.15, 0.02, 24), inox, 0, DECK + 0.01, -0.12);
   // Duža os ide UZDUŽ broda - na fotografijama stol stoji paralelno s bokom.
   const top = add(new THREE.ExtrudeGeometry(roundedRect(0.52, 0.94, 0.12), {
     depth: 0.04, bevelEnabled: true, bevelThickness: 0.008, bevelSize: 0.008, bevelSegments: 2, steps: 1, curveSegments: 10,
@@ -454,14 +455,16 @@ export function mount(el: HTMLElement, initial: ModelConfig): ModelHandle {
   const curtainBottom = RUB + 0.04;
   const cGeo = curtainGeometry(POST_TOP - curtainBottom - 0.1);
   const cy = (POST_TOP + curtainBottom) / 2;
-  const diag = Math.atan2(px, pz);
-  for (const [x, z, ry] of [
-    [-px, pz, diag],
-    [px, pz, -diag],
-    [-px, -pz, Math.PI - diag],
-    [px, -pz, Math.PI + diag],
-  ] as [number, number, number][]) {
-    add(cGeo, mats.curtain, x, cy, z, { y: ry });
+  // Svaka zavjesa gleda VAN po dijagonali svog ugla: `atan2(x, z)` je smjer
+  // od sredine prema stupu. Ranije su predznaci bili zrcaljeni, pa su dvije
+  // pramčane bile bridom prema promatraču i s prednje strane se nisu vidjele.
+  for (const [x, z] of [
+    [-px, pz],
+    [px, pz],
+    [-px, -pz],
+    [px, -pz],
+  ] as [number, number][]) {
+    add(cGeo, mats.curtain, x, cy, z, { y: Math.atan2(x, z) });
   }
 
   /* -------------------------------------------------------- KRMA: motor + ljestve */

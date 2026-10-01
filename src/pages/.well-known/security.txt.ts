@@ -7,6 +7,11 @@ import { SITE, absolute } from '../../data/site';
  * Generira se, a ne piše ručno, zbog `Expires`: RFC traži datum isteka, a
  * statična datoteka s ručno upisanim datumom nečujno zastari. Ovako se rok
  * pomiče na svaki build - godinu dana od zadnjeg deploya.
+ *
+ * Kontakt je obična adresa tvrtke (`SITE.email`), ne zaseban `security@`.
+ * Zaseban alias je ljepši, ali ovdje nije postojao - a security.txt koji
+ * upućuje na sandučić koji ne prima poštu gori je od nepostojećeg: prijava
+ * ranjivosti tiho propadne, a mi mislimo da kanal radi.
  */
 export const GET: APIRoute = () => {
   const expires = new Date();
@@ -15,7 +20,7 @@ export const GET: APIRoute = () => {
   const body = `# Sigurnosni kontakt za ${SITE.url}
 # https://securitytxt.org / RFC 9116
 
-Contact: mailto:${SITE.securityEmail}
+Contact: mailto:${SITE.email}
 Expires: ${expires.toISOString().replace(/\.\d{3}Z$/, 'Z')}
 Preferred-Languages: hr, en
 Canonical: ${absolute('/.well-known/security.txt')}

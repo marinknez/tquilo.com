@@ -319,7 +319,24 @@ Sve je u `public/.htaccess`:
   `element.style`, a podaci za konfigurator idu kroz
   `<script type="application/json">` (podatkovni blok, preglednik ga ne
   izvršava). **Nikad ne dodavati `unsafe-inline`** - ni gtag ga ne treba.
-- HSTS 2 godine, `includeSubDomains`, `preload`.
+- **HSTS** 2 godine, `includeSubDomains`, `preload` token.
+
+  Hostingerov „force HTTPS" je 301 s `http://` na `https://` - **prvi zahtjev
+  ipak ode u čisto**. Na tuđoj mreži se taj jedan hop presretne i odgovor
+  nikad ne stigne do redirecta (sslstrip); posjetitelj vidi stranicu na
+  `http` i ništa ne primijeti. HSTS zato nije isto što i redirect: preglednik
+  nakon prvog uspješnog posjeta sam pretvara `http` u `https` prije slanja,
+  pa čistog hopa više nema.
+
+  ⚠ `includeSubDomains` **već** veže sve buduće poddomene: posjetitelj koji je
+  bio na glavnoj stranici dvije godine neće moći otvoriti poddomenu bez
+  valjanog HTTPS-a, i to bez mogućnosti da klikne „svejedno nastavi".
+
+  `preload` token je **deklaracija namjere i sam po sebi ne radi ništa** -
+  domena se mora prijaviti na hstspreload.org. Time se zatvara i rupa prvog
+  posjeta, ali je **praktički nepovratno**: skidanje s liste traje mjesecima,
+  a stari preglednici nose staru listu. Za marketinški site to je više rizika
+  nego koristi; zaglavlje radi posao, prijava je opcija koja ostaje otvorena.
 - COOP/COEP/CORP, Permissions-Policy, `X-Frame-Options: DENY`, `nosniff`.
 - `/.well-known/security.txt` po RFC 9116, `Expires` se pomiče na svaki build.
 
@@ -395,15 +412,10 @@ obrisana (`src/pages/index.astro`), korijen je EN verzija.
 
 ### Još otvoreno
 
-- [ ] **`SITE.securityEmail` = `security@tquilo.com`** - nije potvrđeno da
-      sandučić postoji. RFC 9116 traži kontakt koji radi; ako ne postoji,
-      staviti `aboard@tquilo.com`.
 - [ ] Web3Forms: poslati jedan testni upit sa živog sitea.
 - [ ] **Tuđe oznake s fotografija**: narančasti vanbrodski motor na
       `fjaka-detail-3.jpg` i `partneri.jpg`. Brand pravila to traže.
 - [ ] `SITE.social` - `sameAs` se pojavi u JSON-LD-u kad profili postoje.
-- [ ] HSTS `preload`: zaglavlje je postavljeno, ali domena se mora i prijaviti
-      na hstspreload.org - inače `preload` ništa ne znači.
 - [ ] Search Console + Bing: prijaviti `sitemap-index.xml`.
 - [ ] GA property: rok čuvanja podataka (zadano 14 mj.), Google signals,
       ugovor o obradi podataka.

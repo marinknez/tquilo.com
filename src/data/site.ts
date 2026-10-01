@@ -2,9 +2,8 @@
  * Jedini izvor istine za sve što se ponavlja po stranici, meta tagovima,
  * structured dataju, robots.txt i llms.txt.
  *
- * ⚠ PROVJERITI PRIJE LANSIRANJA: `securityEmail` i `social` su pretpostavljene
- * vrijednosti - zamijeniti stvarnima (ili obrisati ako alias još ne postoji;
- * prazan niz se nigdje ne renderira).
+ * ⚠ `social` je i dalje pretpostavka - prazan niz se nigdje ne renderira, a
+ * `sameAs` se u JSON-LD-u pojavi tek kad profili postoje.
  *
  * Kontakt e-mail (`SITE.email`) prikazuje se na ekranu Kontakt i u politici
  * privatnosti. U structured data i llms.txt NE ide - ondje bi ga ubirali
@@ -37,10 +36,6 @@ export const SITE = {
     'resort water lounge',
     'T’quilo',
   ],
-
-  /** Samo za /.well-known/security.txt - RFC 9116 traži kontakt, inače je
-   *  datoteka nevažeća. Nigdje se ne prikazuje na stranici. */
-  securityEmail: 'security@tquilo.com',
 
   /** Prazno dok profili ne postoje - `sameAs` se tada izostavlja iz JSON-LD-a. */
   social: [] as string[],

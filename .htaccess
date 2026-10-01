@@ -11,6 +11,14 @@ Options -Indexes -MultiViews
 ServerSignature Off
 DirectoryIndex index.html
 
+# Astro gradi /konfigurator/index.html, pa je /konfigurator DIREKTORIJ. Uz
+# zadani DirectorySlash Apache na to odgovara 301-om na /konfigurator/ - a
+# canonical u HTML-u glasi /konfigurator, bez kose crte. Posljedica: svaka
+# stranica osim korijena živi na adresi koja se ne poklapa s vlastitim
+# canonicalom, uz redirect viška. Gasi se ovdje; mapiranje na index.html
+# radi RewriteRule niže, pa se na mod_dir ionako ne oslanjamo.
+DirectorySlash Off
+
 <IfModule mod_rewrite.c>
   RewriteEngine On
 
@@ -33,13 +41,14 @@ DirectoryIndex index.html
   RewriteRule ^en/?(.*)$ /$1 [R=301,L]
 
   # --- Bez trailing slasha (astro trailingSlash: 'never') ------------------
-  RewriteCond %{REQUEST_FILENAME} !-d
+  # Bez uvjeta `!-d`: upravo direktorije i treba skinuti, jer su sve stranice
+  # osim korijena direktoriji s index.html. Korijen `/` ne hvata jer `.+`
+  # traži barem jedan znak ispred kose crte.
   RewriteRule ^(.+)/$ /$1 [R=301,L]
 
   # --- Čisti URL-ovi -------------------------------------------------------
   # /nesto → /nesto/index.html, bez promjene adrese u pregledniku.
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteCond %{REQUEST_FILENAME} !-d
   RewriteCond %{DOCUMENT_ROOT}/$1/index.html -f
   RewriteRule ^(.+?)/?$ /$1/index.html [L]
 </IfModule>
@@ -81,7 +90,7 @@ ErrorDocument 404 /404.html
 
   # --- Permissions-Policy --------------------------------------------------
   # Stranica ne traži nijedan uređaj ni senzor; sve se gasi eksplicitno.
-  Header always set Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=(), battery=(), camera=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=(), interest-cohort=()"
+  Header always set Permissions-Policy "accelerometer=(), ambient-light-sensor=(), autoplay=(self), battery=(), camera=(), display-capture=(), document-domain=(), encrypted-media=(), fullscreen=(self), geolocation=(), gyroscope=(), idle-detection=(), local-fonts=(), magnetometer=(), microphone=(), midi=(), payment=(), picture-in-picture=(), publickey-credentials-get=(), screen-wake-lock=(), serial=(), usb=(), xr-spatial-tracking=(), interest-cohort=()"
 
   # --- Higijena ------------------------------------------------------------
   Header always unset X-Powered-By

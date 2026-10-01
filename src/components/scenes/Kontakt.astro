@@ -27,9 +27,13 @@ const alt = t(altLang(lang));
   class="relative -mr-[4px] h-full w-screen flex-none overflow-hidden bg-abyss"
 >
   <div
-    class="grid h-full grid-cols-[minmax(0,1fr)] content-start gap-[2.5vh] px-[6vw] pt-[calc(76px+2vh)] pb-[calc(56px+3vh+52px)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:content-center md:items-start md:gap-[6vw] md:px-[8vw] md:pt-[calc(76px+6vh)] md:pb-[calc(56px+5vh)]"
+    class="grid h-full grid-cols-[minmax(0,1fr)] content-start gap-[1vh] px-[6vw] pt-[calc(76px+2vh)] pb-[calc(56px+3vh)] md:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] md:content-center md:items-start md:gap-[6vw] md:px-[8vw] md:pt-[calc(76px+6vh)] md:pb-[calc(56px+5vh)]"
   >
-    <div class="grid content-start gap-2 md:content-center md:gap-[18px]">
+    {/* `max-md:contents` rastvara ovaj okvir na mobitelu: djeca postaju
+        izravne stavke vanjske mreže, pa pravna crta može ispod forme preko
+        `order-last`. Ranije je bila `absolute` i pribijena uz donju traku -
+        otkad forma ima captchu, status slanja joj je ulazio u red. */}
+    <div class="grid max-md:contents content-start gap-2 md:content-center md:gap-[18px]">
       <span class="text-[12px] font-medium tracking-[0.16em] text-champagne uppercase">{c.fLabel}</span>
       <span
         data-head
@@ -50,12 +54,12 @@ const alt = t(altLang(lang));
       </span>
       {/* Tagline je potpis brenda - namjerno krupniji od dizajnovih 22 px. */}
       <span
-        class="mt-[1vh] font-display text-[clamp(22px,7vw,26px)] leading-[1.25] text-salt md:mt-[5vh] md:text-[clamp(26px,2.3vw,36px)]"
+        class="font-display text-[clamp(22px,7vw,26px)] max-md:mt-0 md:mt-[1vh] leading-[1.25] text-salt md:mt-[5vh] md:text-[clamp(26px,2.3vw,36px)]"
       >
         Sun. Silence. <span class="text-champagne">T’quilo.</span>
       </span>
       <span
-        class="grid gap-[2px] text-[12px] leading-[1.5] text-mist max-md:absolute max-md:bottom-[calc(56px+3vh)] max-md:left-[6vw] md:mt-[3vh]"
+        class="grid gap-[2px] text-[12px] leading-[1.5] text-mist max-md:order-last md:mt-[3vh]"
       >
         <span>{legal[0]}</span>
         <span class="tabular-nums">{legal[1]}</span>
@@ -69,7 +73,7 @@ const alt = t(altLang(lang));
       data-contact
       method="POST"
       action="https://api.web3forms.com/submit"
-      class="grid content-start gap-2 md:mt-[38px] md:max-w-[560px] md:gap-[clamp(12px,2.2vh,22px)]"
+      class="grid content-start gap-1 md:mt-[38px] md:max-w-[560px] md:gap-[clamp(12px,2.2vh,22px)]"
     >
       <input type="hidden" name="access_key" value="7ca9e87d-718a-4615-9228-af3c22de6727" />
       <input type="hidden" name="subject" value="tquilo.com - upit s weba" />
@@ -86,7 +90,7 @@ const alt = t(altLang(lang));
             name="name"
             required
             autocomplete="name"
-            class="w-full border border-trench bg-transparent px-4 py-[11px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+            class="w-full border border-trench bg-transparent px-4 py-[9px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
           />
         </label>
         <label class="grid gap-1.5 md:gap-2">
@@ -103,7 +107,7 @@ const alt = t(altLang(lang));
             spellcheck="false"
             autocapitalize="none"
             pattern="[^@\s]+@[^@\s]+\.[A-Za-z]{2,}"
-            class="w-full border border-trench bg-transparent px-4 py-[11px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
+            class="w-full border border-trench bg-transparent px-4 py-[9px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne"
           />
         </label>
       </div>
@@ -114,26 +118,27 @@ const alt = t(altLang(lang));
           name="message"
           rows="2"
           required
-          class="w-full resize-none border border-trench bg-transparent px-4 py-[11px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne md:min-h-[116px]"
+          class="w-full resize-none border border-trench bg-transparent px-4 py-[9px] text-[15px] text-salt md:py-[14px] transition-colors duration-[90ms] outline-none focus-visible:border-champagne md:min-h-[116px]"
         ></textarea>
       </label>
 
-      {/* hCaptcha, nevidljiva izvedba: widget ne zauzima prostor i izazov se
-          pojavi samo kad ga hCaptcha zatraži. Namjerno BEZ klase `h-captcha` -
-          tako se ne renderira sam pri učitavanju skripte, nego ga `contact.ts`
-          renderira eksplicitno, tek kad posjetitelj dotakne formu. Do tada se
-          s hcaptcha.com ne povlači ništa. */}
-      <div data-captcha-host></div>
+      {/* hCaptcha, vidljivi checkbox. Namjerno BEZ klase `h-captcha` - ona bi
+          ga renderirala sama čim se skripta učita; ovako ga `contact.ts`
+          renderira eksplicitno, tek kad posjetitelj dotakne formu, pa se do
+          tada s hcaptcha.com ne povlači ništa.
 
-      <div class="flex items-end justify-between gap-4">
-        {/* Nevidljiva izvedba nema vidljivi bedž, pa hCaptchini uvjeti traže
-            ovu napomenu uz formu. */}
-        <span class="text-[11px] leading-[1.5] text-mist/70 [&_a]:underline [&_a]:underline-offset-2">
-          {c.fCaptcha}
-          <a href="https://hcaptcha.com/privacy" target="_blank" rel="noopener noreferrer">{c.fCaptchaPriv}</a>
-          ·
-          <a href="https://hcaptcha.com/terms" target="_blank" rel="noopener noreferrer">{c.fCaptchaTerms}</a>
-        </span>
+          Visina je rezervirana unaprijed, inače bi widget pri pojavljivanju
+          gurnuo gumb prema dolje usred tipkanja.
+
+          Widget je nepromjenjivih 303 x 78 px. Na 320 px ekranu uz margine
+          ostaje 282 px, pa bi se probio van i stvorio vodoravni scroll - zato
+          `scale(0.8)` na mobitelu. Transform ne mijenja visinu okvira, pa je
+          vanjski div taj koji drži stvarnu visinu. */}
+      <div class="h-[62px] md:h-[78px]">
+        <div data-captcha-host class="origin-top-left scale-[0.8] md:scale-100"></div>
+      </div>
+
+      <div class="flex items-center justify-end gap-4">
         <button
           type="submit"
           class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-3 text-[15px] whitespace-nowrap md:py-[14px] tracking-[0.04em] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px"
@@ -148,7 +153,7 @@ const alt = t(altLang(lang));
         data-form-status
         role="status"
         aria-live="polite"
-        class="m-0 min-h-[26px] text-[14px] leading-[1.5] md:min-h-[64px]"
+        class="m-0 min-h-[22px] text-[13px] leading-[1.45] md:min-h-[64px] md:text-[14px] md:leading-[1.5]"
       >
       </p>
     </form>

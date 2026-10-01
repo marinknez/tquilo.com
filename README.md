@@ -301,14 +301,31 @@ nudi - reCaptcha i Cloudflare Turnstile su Pro.
 - **Sitekey `50b2fe65-b00b-4b9e-ad62-3ba471098be2`** je Web3Formsov ključ za
   besplatni plan, iz njihove dokumentacije. Koristi se *manual setup*, pa se
   **ne** učitava `web3forms.com/client/script.js` - jedna vanjska skripta manje.
-- **Nevidljiva izvedba** (`size: 'invisible'`): ne zauzima prostor u rasporedu
-  - Kontakt je najtjesnji ekran na mobitelu - i izazov se pojavi samo kad ga
-  hCaptcha zatraži.
+- **Vidljivi checkbox, ne nevidljiva izvedba.** Prva verzija bila je
+  `size: 'invisible'` + `hcaptcha.execute()` na slanje i **pala je u praksi**:
+  posjetitelj pritisne „Pošalji upit", a zagonetka iskoči niotkuda; ako je
+  zatvori, `execute()` odbije obećanje i poruka je neuspjelo slanje - a na
+  ekranu nema ničega što bi se dalo ispraviti. Gore: ako se izazov ne uspije
+  prikazati, obećanje se ne razriješi **nikad** i forma zauvijek stoji na
+  „Šaljem…". Checkbox se rješava prije slanja i ima vidljivo stanje.
 - **Učitava se tek na prvi fokus u formi**, ne pri učitavanju stranice. Zato
   element nema klasu `h-captcha` (ona bi ga renderirala sama) nego se koristi
-  `render=explicit` i `hcaptcha.render()` iz `contact.ts`.
-- **Token je jednokratan**, pa se traži pri svakom slanju i resetira u
+  `render=explicit` i `hcaptcha.render()` iz `contact.ts`. Visina je
+  rezervirana unaprijed da widget ne gurne gumb usred tipkanja.
+- **Widget je nepromjenjivih 303 x 78 px.** Na 320 px ekranu uz margine ostaje
+  282 px, pa bi se probio van i stvorio vodoravni scroll - zato `scale(0.8)`
+  na mobitelu, s vanjskim okvirom koji drži stvarnu visinu (transform ne
+  mijenja visinu okvira).
+- **Token je jednokratan**, pa se čita pri svakom slanju i resetira u
   `finally`. Bez reseta drugo slanje pada.
+- **Greške hCaptche nisu `Error` nego obični nizovi** (`challenge-closed`,
+  `network-error`). Prva verzija ih je provjeravala s `instanceof Error`, pa
+  je svaki pad captche završio kao generičko „Slanje nije uspjelo". Sada se
+  razlikuju: „niste označili kvadratić" nije isto što i „provjera je pala",
+  a stvarni razlog ide u `console.warn`.
+- **Kontakt na mobitelu** je morao ustupiti 62 px captchi. Pravna crta više
+  nije `absolute` uz donju traku nego teče iza forme (`max-md:contents` na
+  lijevom stupcu + `order-last`) - inače joj je status slanja ulazio u red.
 - ⚠ **Slanje bez JS-a više ne prolazi.** Web3Forms odbija zahtjev bez
   `h-captcha-response`, a taj token može proizvesti samo skripta. To vrijedi
   za svaku izvedbu captche, nije propust ove.

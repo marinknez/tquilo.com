@@ -15,9 +15,17 @@
  * u formi. Koristi se `render=explicit` i element BEZ klase `h-captcha`, pa
  * se ništa ne renderira samo od sebe - widget nastaje kad ga pozovemo.
  *
- * Izvedba je nevidljiva (`size: 'invisible'`): ne zauzima prostor u rasporedu
- * - a Kontakt je najtjesnji ekran na mobitelu - i izazov se pojavi samo kad
- * ga hCaptcha zatraži.
+ * ZAŠTO VIDLJIVI CHECKBOX, A NE NEVIDLJIVA IZVEDBA
+ * Prva verzija bila je `size: 'invisible'` i `hcaptcha.execute()` na slanje.
+ * To je palo u praksi: posjetitelj pritisne „Pošalji upit", a zagonetka mu
+ * iskoči niotkuda. Ako je zatvori ili ne riješi, `execute()` odbije obećanje
+ * i poruka je neuspjelo slanje - a posjetitelj nema što poduzeti jer na
+ * ekranu nema ničega što bi mogao ispraviti. Gore: ako se izazov ne uspije
+ * prikazati, obećanje se ne razriješi nikad i forma zauvijek stoji na
+ * „Šaljem…".
+ *
+ * Vidljivi checkbox rješava se PRIJE slanja, vidi mu se stanje, i do trenutka
+ * pritiska na gumb token ili postoji ili ne postoji - nema trećeg ishoda.
  */
 
 /** Web3Forms sitekey za besplatni plan (iz njihove dokumentacije). */
@@ -36,20 +44,22 @@ const MSG = {
     fail: 'Slanje nije uspjelo. Pokušajte ponovno ili nam pišite izravno.',
     sending: 'Šaljem…',
     badMail: 'Provjerite e-mail adresu - nedostaje domena, npr. ime@tvrtka.hr',
-    captcha: 'Provjera protiv robota nije prošla. Pokušajte ponovno.',
+    captchaTodo: 'Potvrdite kvadratić „nisam robot" iznad gumba.',
+    captchaFail: 'Provjera protiv robota nije prošla. Pokušajte ponovno.',
   },
   en: {
     ok: 'Enquiry sent. We’ll be in touch soon.',
     fail: 'Sending failed. Please try again, or write to us directly.',
     sending: 'Sending…',
     badMail: 'Check the email address - the domain is missing, e.g. name@company.com',
-    captcha: 'The bot check did not pass. Please try again.',
+    captchaTodo: 'Please tick the “I am human” box above the button.',
+    captchaFail: 'The bot check did not pass. Please try again.',
   },
 } as const;
 
 type HCaptcha = {
   render(el: HTMLElement, opts: { sitekey: string; size: string; theme?: string }): string;
-  execute(id: string, opts: { async: true }): Promise<{ response: string }>;
+  getResponse(id?: string): string;
   reset(id?: string): void;
 };
 
@@ -97,7 +107,7 @@ export function initContactForm(root: ParentNode = document) {
       s.src = `https://js.hcaptcha.com/1/api.js?render=explicit&hl=${lang}`;
       s.addEventListener('load', () => {
         const h = hcaptcha();
-        resolve(h ? h.render(host, { sitekey: SITEKEY, size: 'invisible', theme: 'dark' }) : null);
+        resolve(h ? h.render(host, { sitekey: SITEKEY, size: 'normal', theme: 'dark' }) : null);
       });
       // Blokiran skriptom za blokiranje oglasa ili mrežom - šalje se bez
       // tokena, pa Web3Forms odbije i posjetitelj dobije jasnu poruku.
@@ -122,21 +132,25 @@ export function initContactForm(root: ParentNode = document) {
     clearTimeout(timer);
     say(m.sending, 'idle');
 
-    let id: string | null = null;
+    const id = (await loadCaptcha()) ?? null;
+    const h = hcaptcha();
+    // Token postoji samo ako je posjetitelj označio kvadratić. Provjerava se
+    // PRIJE slanja, da poruka govori što treba učiniti, a ne da je nešto palo.
+    const token = id && h ? h.getResponse(id) : '';
+    if (!token) {
+      say(id ? m.captchaTodo : m.captchaFail, 'fail');
+      if (button) button.disabled = false;
+      clearTimeout(timer);
+      timer = setTimeout(() => say('', 'idle'), 8000);
+      return;
+    }
+
     try {
-      id = (await loadCaptcha()) ?? null;
-      const h = hcaptcha();
-      if (!id || !h) throw new Error('captcha');
-
-      // Token je jednokratan i vrijedi kratko, pa se traži ovdje, a ne ranije.
-      const { response } = await h.execute(id, { async: true });
-      if (!response) throw new Error('captcha');
-
       // Web3Forms prima i JSON i multipart; JSON je ovdje jednostavniji jer
       // odgovor uvijek dolazi kao { success, message }.
       const data = Object.fromEntries(new FormData(form).entries());
       data.email = String(data.email ?? '').trim();
-      data['h-captcha-response'] = response;
+      data['h-captcha-response'] = token;
 
       const res = await fetch(form.action, {
         method: 'POST',
@@ -148,9 +162,13 @@ export function initContactForm(root: ParentNode = document) {
       form.reset();
       say(m.ok, 'ok');
     } catch (err) {
-      say(err instanceof Error && err.message === 'captcha' ? m.captcha : m.fail, 'fail');
+      // Posjetitelju ide pitka poruka, a stvarni razlog u konzolu - inače se
+      // kvar na Web3Forms strani ne može razlikovati od pada mreže.
+      console.warn('[kontakt]', err);
+      const reason = err instanceof Error ? err.message : String(err);
+      say(/captcha/i.test(reason) ? m.captchaFail : m.fail, 'fail');
     } finally {
-      // Token se troši pri svakom pokušaju - bez reseta sljedeće slanje pada.
+      // Token je jednokratan - bez reseta bi drugo slanje uvijek palo.
       if (id) hcaptcha()?.reset(id);
       if (button) button.disabled = false;
       timer = setTimeout(() => say('', 'idle'), 8000);

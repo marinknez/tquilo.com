@@ -260,11 +260,19 @@ const fills = FILL;---
               <span class="text-[17px] font-medium">{lang === 'hr' ? 'Tikovina (pod + stol)' : 'Teak (deck + table)'}</span>
               <span data-value class="text-[14px] text-mist"></span>
             </p>
+            {/* `grid content-start` na gumbu nije ukras: <button> po zadanom
+                centrira svoj sadržaj po visini. Ćelije u retku su jednako
+                visoke, pa je naziv u dva retka („Collection Multi Bright")
+                podizao svoju mrlju, a susjednima s jednorednim nazivom je
+                spuštao - uzorci u istom retku nisu stajali na istoj liniji.
+
+                `min-h` na nazivu rezervira dva retka, pa su i svi REDOVI
+                mreže jednako visoki, a ne samo ćelije unutar jednog retka. */}
             <div class="mt-4 grid grid-cols-[repeat(auto-fill,minmax(104px,1fr))] gap-3">
               {teakDecors.map((d) => (
-                <button type="button" data-pick={d.hex} data-name={d.name} aria-pressed="false" class="border border-trench p-2 text-left transition-colors duration-[90ms] hover:border-champagne aria-[pressed=true]:border-champagne">
+                <button type="button" data-pick={d.hex} data-name={d.name} aria-pressed="false" class="grid content-start border border-trench p-2 text-left transition-colors duration-[90ms] hover:border-champagne aria-[pressed=true]:border-champagne">
                   <span data-swatch={d.hex} class="block h-[26px] w-full"></span>
-                  <span class="mt-2 block text-[13px] text-mist">{d.name}</span>
+                  <span class="mt-2 block min-h-[38px] text-[13px] leading-[1.45] text-mist">{d.name}</span>
                 </button>
               ))}
             </div>
@@ -289,12 +297,17 @@ const fills = FILL;---
             <h2 class="m-0 font-display text-[24px] font-normal">{L.summary}</h2>
             <dl data-summary class="mt-4 grid gap-3 text-[14px]"></dl>
 
-            <p class="mt-8 mb-0 flex flex-wrap gap-3">
-              <a href={`${localePath(lang)}${sceneHash(lang, 'kontakt')}`} class="inline-flex items-center gap-3 border-2 border-salt bg-salt px-6 py-[14px] text-[15px] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px">
+            {/* Na mobitelu puna širina, jedan ispod drugoga: `flex-wrap` je
+                dvama gumbima različite duljine davao čas dva reda različite
+                širine (EN), čas jedan red nejednakih gumba (HR) - ovisno samo
+                o duljini natpisa. Od `sm` nadalje stanu u red i vrijedi
+                prirodna širina. */}
+            <p class="mt-8 mb-0 grid grid-cols-1 gap-3 sm:flex sm:flex-wrap">
+              <a href={`${localePath(lang)}${sceneHash(lang, 'kontakt')}`} class="inline-flex items-center justify-center gap-3 border-2 border-salt bg-salt px-6 py-[14px] text-[15px] text-abyss transition-colors duration-[90ms] hover:border-champagne hover:bg-champagne active:translate-y-px sm:justify-start">
                 {L.send}
                 <Icon name="arrow-right" size={20} />
               </a>
-              <button type="button" data-pdf class="inline-flex items-center gap-3 border-2 border-trench px-6 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] hover:border-champagne active:translate-y-px">
+              <button type="button" data-pdf class="inline-flex items-center justify-center gap-3 border-2 border-trench px-6 py-[14px] text-[15px] text-salt transition-colors duration-[90ms] hover:border-champagne active:translate-y-px sm:justify-start">
                 <Icon name="download" size={20} />
                 {L.pdf}
               </button>

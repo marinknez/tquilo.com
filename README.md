@@ -218,7 +218,7 @@ Astro iz commitanih izvora gradi AVIF u četiri širine.
 | --- | --- | --- |
 | naslovnica | `/` | `/hr` |
 | konfigurator | `/configurator` | `/hr/konfigurator` |
-| privatnost | `/privacy` | `/hr/privatnost` |
+| privatnost | `/privacy-policy` | `/hr/politika-privatnosti` |
 
 Odlučuje **jedno mjesto** - `localePath()` u `src/i18n/index.ts`. Rute,
 `hreflang`, canonical, sitemap, prekidač jezika i sve poveznice čitaju odande;
@@ -242,9 +242,9 @@ svaka jezična ruta je tanka datoteka od tri retka:
 src/components/pages/ConfiguratorPage.astro   sadržaj
 src/components/pages/PrivacyPage.astro        sadržaj
 src/pages/configurator.astro                  <ConfiguratorPage lang="en" />
-src/pages/privacy.astro                       <PrivacyPage lang="en" />
+src/pages/privacy-policy.astro                <PrivacyPage lang="en" />
 src/pages/hr/konfigurator.astro               <ConfiguratorPage lang="hr" />
-src/pages/hr/privatnost.astro                 <PrivacyPage lang="hr" />
+src/pages/hr/politika-privatnosti.astro       <PrivacyPage lang="hr" />
 ```
 
 ⚠ Putanja datoteke mora odgovarati onome što `localePath()` vrati. Dodaje li
@@ -339,7 +339,7 @@ bila pristanak nego kulisa.
 
 ### Politika privatnosti
 
-`src/components/pages/PrivacyPage.astro` -> `/privacy` i `/hr/privatnost`. Namjerno
+`src/components/pages/PrivacyPage.astro` -> `/privacy-policy` i `/hr/politika-privatnosti`. Namjerno
 kratka: svaka stavka odgovara nečemu što u kodu postoji. **Ako se doda nova
 vanjska usluga, dodaje se i odlomak ondje.**
 

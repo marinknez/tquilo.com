@@ -33,8 +33,11 @@ export const PAGE_KEYS = ['konfigurator', 'privacy'] as const;
 export type PageKey = (typeof PAGE_KEYS)[number];
 
 const PAGE_SLUGS: Record<Lang, Record<PageKey, string>> = {
-  hr: { konfigurator: 'konfigurator', privacy: 'privatnost' },
-  en: { konfigurator: 'configurator', privacy: 'privacy' },
+  hr: { konfigurator: 'konfigurator', privacy: 'politika-privatnosti' },
+  // `privacy-policy`, ne `privacy`: ekran Privatnost u prezentaciji već nosi
+  // sidro `#privacy`, pa bi `/privacy` i `/#privacy` bile dvije različite
+  // stvari pod istim imenom.
+  en: { konfigurator: 'configurator', privacy: 'privacy-policy' },
 };
 
 /** Slug podstranice za dani jezik - treba datotekama u `src/pages/`. */
@@ -44,8 +47,8 @@ export const pageSlug = (lang: Lang, page: PageKey): string => PAGE_SLUGS[lang][
  * Putanja stranice za dani jezik.
  *
  * PRIMARNI JEZIK NEMA PREFIKS, a slug je na jeziku stranice:
- *   EN  `/`   `/configurator`      `/privacy`
- *   HR  `/hr` `/hr/konfigurator`   `/hr/privatnost`
+ *   EN  `/`   `/configurator`      `/privacy-policy`
+ *   HR  `/hr` `/hr/konfigurator`   `/hr/politika-privatnosti`
  *
  * Jedno mjesto odlučuje - rute, hreflang, sitemap, prekidač jezika i sve
  * poveznice čitaju odavde.

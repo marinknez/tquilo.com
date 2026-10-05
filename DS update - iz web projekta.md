@@ -436,24 +436,22 @@ Prezentacija ima **devet ekrana, ne osam**. Novi je **treći**, između Vode i K
 | izbornik | Privatnost | Privacy |
 | sidro | `#privatnost` | `#privacy` |
 | naslov | Samo za vas dvoje. | Just the two of you. |
-| podnaslov | Vaš mali svijet na vodi. | Your own little world on water. |
+| oznaka | VAŠ MALI SVIJET NA VODI | YOUR OWN LITTLE WORLD ON WATER |
 | tekst | Navucite zavjese i ostavite ostatak svijeta s druge strane. Za razgovore koji ostaju među vama i tišinu koju je lijepo dijeliti. | Draw the curtains and leave the rest of the world outside. For conversations kept between you and silence worth sharing. |
 
 Prijelomi na mobitelu (tri retka u oba jezika): `Samo / za vas / dvoje` ·
 `Just / the two / of you`.
 
-**Raspored legende je kao Fjakin, ne kao Vodin:** podnaslov krupnije u `salt`
-(`clamp(18px, 1.55vw, 24px)`), tekst sitnije u `mist`. Nema oznake u verzalu - ovaj
-ekran nema opreme za nabrojati, nosi ga rečenica. Skupina naslova je `a`, kao Voda,
-Kvaliteta i Fjaka.
+**Raspored legende je kao Vodin i Kvalitetin:** podnaslov je **oznaka u verzalu**
+(12 px, `champagne`, tracking 0,16 em), tekst ispod u `mist`. Oznaka **nema točku** -
+nijedna druga na siteu je nema. Skupina naslova je `a`, kao Voda, Kvaliteta i Fjaka.
 
 **Fotografija:** platforma sama u uvali, zavjese navučene, snimljeno iz zraka. Isti
 karakter kao `voda-aerial` - oštro, prozirno more, platforma sama u kadru.
 
-⚠ **EN sidro `#privacy` sudara se po imenu s politikom privatnosti na `/privacy`.**
-Tehnički se ne sukobljavaju (jedno je fragment, drugo putanja), ali čovjeku su dvije
-različite stvari pod istim imenom. Ako smeta, EN sidro i naziv u izborniku mogu biti
-`Seclusion` / `#seclusion`; hrvatska strana ostaje `Privatnost` / `#privatnost`.
+Sudar imena s politikom privatnosti **riješen je preimenovanjem stranice**, ne sidra:
+politika je sada `/privacy-policy` i `/hr/politika-privatnosti`, pa `#privacy` ostaje
+ekranu. Sidro i putanja više ne dijele ime.
 
 ### 9.10 Tradicija i iskustvo (mijenja §1.4)
 
@@ -533,7 +531,7 @@ Novi UI obrazac, dodati u §5 UI kit.
 
 ## 11. Novo: politika privatnosti
 
-Zasebna stranica, `/privacy` i `/hr/privatnost`.
+Zasebna stranica, `/privacy-policy` i `/hr/politika-privatnosti`.
 
 - **Jedina poveznica na nju je u traci za pristanak** - ne ide u navigaciju ni u podnožje.
 - Namjerno kratka: svaki odlomak odgovara nečemu što stvarno postoji. Odlomci: voditelj obrade, kontakt forma, analitika, lokalna pohrana, hosting i zapisi, prava, izmjene.
@@ -600,7 +598,7 @@ A4, light tema, nastaje iz ispisa - nije zaseban dokument.
 |---|---|---|
 | naslovnica | `/` | `/hr` |
 | konfigurator | `/configurator` | `/hr/konfigurator` |
-| privatnost | `/privacy` | `/hr/privatnost` |
+| privatnost | `/privacy-policy` | `/hr/politika-privatnosti` |
 
 **I slug je na jeziku stranice.** Engleska verzija ne nosi hrvatske riječi u adresi.
 

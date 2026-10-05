@@ -471,17 +471,15 @@ obrisana (`src/pages/index.astro`), korijen je EN verzija.
   Permissions-Policy, Referrer-Policy. Brotli uključen.
 - Rute: svih 6 stranica 200 na **točno onoj adresi koju tvrdi canonical**.
   `/en/...` 301, `/hr/` 301, `www` i `http` 301. Nema petlji.
-- Keš: hashirani assetovi `immutable, 1 g`; HTML `max-age=0, must-revalidate`.
+- Keš: hashirani assetovi `immutable, 1 g`; HTML `max-age=0, must-revalidate`;
+  slike 7 dana; **PDF-ovi 1 dan** - nemaju hash u nazivu, a ispravljena verzija
+  ide pod istim imenom, pa dulji keš zadrži staru.
 - GA se ne učitava bez pristanka (0 zahtjeva prema Googleu).
 - 404 vraća status 404, nosi `noindex`.
 - Naslovnica: 12 zahtjeva, DOMContentLoaded ~0,21 s, load ~0,35 s.
 
 ### Još otvoreno
 
-- [ ] **PDF specifikacije** (`SPEC_PDF` u `src/data/site.ts`). Dok je `null`,
-      stavka „Specifikacija (PDF)" na ekranu 04 stoji **posivljena i nije
-      poveznica** - `<span>`, ne `<a href="#">`. Kad dokument nastane:
-      datoteka u `public/`, putanja u `SPEC_PDF`, poveznica se vrati sama.
 - [ ] Web3Forms: poslati jedan testni upit sa živog sitea.
 - [ ] **Tuđe oznake s fotografija**: narančasti vanbrodski motor na
       `fjaka-detail-3.jpg` i `partneri.jpg`. Brand pravila to traže.

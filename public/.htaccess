@@ -127,6 +127,13 @@ ErrorDocument 404 /404.html
   <FilesMatch "\.(png|jpg|jpeg|webp|avif|svg|ico)$">
     Header set Cache-Control "public, max-age=604800"
   </FilesMatch>
+
+  # Dokumenti (specifikacija) nemaju hash u nazivu, a ispravljena verzija ide
+  # pod istim imenom. Jedan dan: dovoljno da se ne dohvaća pri svakom kliku,
+  # dovoljno kratko da ispravak stigne isti dan.
+  <FilesMatch "\.pdf$">
+    Header set Cache-Control "public, max-age=86400"
+  </FilesMatch>
 </IfModule>
 
 <IfModule mod_expires.c>

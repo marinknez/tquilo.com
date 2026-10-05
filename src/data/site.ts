@@ -78,18 +78,6 @@ export const SITE = {
  */
 export const LAUNCHED = true;
 
-/**
- * Specifikacija u PDF-u.
- *
- * `null` dok dokument ne postoji - poveznica se tada uopće ne renderira.
- * Ranije je stajala s `href="#"`: izgledala je kao poveznica, a klik nije
- * vodio nikamo, što je gore od toga da je nema.
- *
- * Kad dokument nastane: datoteka u `public/`, putanja ovdje (npr.
- * `'/dokumenti/tquilo-specifikacija.pdf'`) i poveznica se vrati sama.
- */
-export const SPEC_PDF: string | null = null;
-
 export const LANGS = ['hr', 'en'] as const;
 export type Lang = (typeof LANGS)[number];
 
@@ -99,6 +87,20 @@ export type Lang = (typeof LANGS)[number];
  * u putanji dobiva EN, a HR bira sam.
  */
 export const DEFAULT_LANG: Lang = 'en';
+
+/**
+ * Specifikacija u PDF-u, **zaseban dokument po jeziku**.
+ *
+ * `null` znači da za taj jezik dokumenta nema - stavka tada stoji posivljena
+ * i NIJE poveznica (v. `PartneriBody.astro`). Mrtva poveznica izgleda kao
+ * živa, prima fokus i klik ne vodi nikamo; to je gore od toga da je nema.
+ *
+ * Dodavanje jezika: datoteka u `public/dokumenti/`, putanja ovdje.
+ */
+export const SPEC_PDF: Record<Lang, string | null> = {
+  hr: '/dokumenti/tquilo-specifikacija.pdf',
+  en: '/dokumenti/tquilo-specification.pdf',
+};
 
 export const OG_LOCALE: Record<Lang, string> = {
   hr: 'hr_HR',

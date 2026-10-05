@@ -4,6 +4,11 @@ import { localePath, sceneHash, type Lang } from '../../i18n';
 import { SPEC_PDF } from '../../data/site';
 import type { Copy } from '../../i18n';
 const { c, lang } = Astro.props as { c: Copy; lang: Lang };
+
+const spec = SPEC_PDF[lang];
+// Otvara se u novoj kartici: PDF u istoj kartici odvede posjetitelja s
+// vodoravne prezentacije. Čitačima ekrana se to i kaže.
+const specLabel = `${c.spec} - ${lang === 'hr' ? 'otvara se u novoj kartici' : 'opens in a new tab'}`;
 ---
 <div class="flex flex-wrap items-start gap-x-[56px] gap-y-4">
   <div class="grid max-w-[480px] gap-[10px]">
@@ -22,9 +27,12 @@ const { c, lang } = Astro.props as { c: Copy; lang: Lang };
         posivljena i NIJE poveznica - `<span>`, ne `<a href="#">`. Mrtva
         poveznica izgleda kao živa, prima fokus i klik ne vodi nikamo; ovako
         se odmah vidi da stavka postoji, ali još nije dostupna. */}
-    {SPEC_PDF ? (
+    {spec ? (
       <a
-        href={SPEC_PDF}
+        href={spec}
+        target="_blank"
+        rel="noopener"
+        aria-label={specLabel}
         class="flex items-center justify-self-start gap-2 border-b border-shell pb-[2px] text-abyss transition-colors duration-[90ms] hover:text-brass-ink"
       >
         <Icon name="download" size={20} />

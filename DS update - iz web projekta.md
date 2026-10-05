@@ -426,7 +426,30 @@ Tokeni tipografije s weba:
 --fs-lede:    clamp(15px, min(4.5vw, 2.6dvh), 20px);
 ```
 
-### 9.10 RAL vrijednosti trupa (nije bilo u dijelu A)
+### 9.10 Tradicija i iskustvo (mijenja §1.4)
+
+Brojka je **30+, ne 20+**, i uz nju ide dokaz o broju isporučenih plovila.
+
+| | Staro (dio A) | **Novo (vrijedi)** |
+|---|---|---|
+| label HR | 20+ godina iskustva | **30+ godina iskustva** |
+| label EN | 20+ years of experience | **30+ years of experience** |
+| copy HR | Iza T'quila stoji više od dvadeset godina tradicije i iskustva u brodogradnji. | **Iza T'quila stoji više od trideset godina tradicije i iskustva u brodogradnji te preko tisuću prodanih brodova.** |
+| copy EN | Behind T'quilo stand more than twenty years of boatbuilding tradition and experience. | **Behind T'quilo stand more than thirty years of boatbuilding tradition and experience, and over a thousand boats sold.** |
+
+⚠ **Pravilo „nije brod" treba precizirati.** Dio A (§3.7) kaže da riječi „plovilo",
+„brod" i „charter" ostaju zabranjene. Taj se zabran odnosi na **T'quilo**, ne na
+brodogradilište: „preko tisuću prodanih brodova" govori o proizvođaču i njegov je
+najjači dokaz vjerodostojnosti. U DS-u pravilo zapisati kao: *T'quilo se nikad ne
+opisuje kao brod ili plovilo; brodogradnja i brodovi se spominju samo kao podrijetlo
+i iskustvo proizvođača.*
+
+Tvrdnja „sukladan svim pomorskim normama" (`q3`) i dalje **se ne koristi** - postoji u
+rječniku, ali se ne prikazuje.
+
+---
+
+### 9.11 RAL vrijednosti trupa (nije bilo u dijelu A)
 
 Dvije vrijednosti iz handoffa bile su neispravne i ispravljene su:
 
@@ -658,6 +681,7 @@ Nastavlja numeraciju iz §8.
 
 12. §1.5 Pravni potpis: nova dvoretčana forma, „za proizvodnju i trgovinu" briše se.
 13. §3.7: EN naslov Brendiranja dobiva apostrof.
+13a. §1.4 Tradicija: 20+ → **30+ godina**, uz dokaz **preko tisuću prodanih brodova**; precizirati pravilo „nije brod" tako da se odnosi na T'quilo, ne na brodogradilište.
 14. §4.3 Dekori tikovine: zamijeniti 11 vrijednosti; ispuna i zaštita ruba u cijelosti; tokeni za zavjese se brišu.
 15. §4.3: dodati ispravljene RAL vrijednosti trupa i bilješku zašto RAL 5004 nije `#1F3A5F`.
 16. §5.1/§5.2 Ikone: set je zatvoren na 13; maknuti `share-network` i `check`; alias `curtains` nije uveden.

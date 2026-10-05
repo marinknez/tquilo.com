@@ -402,7 +402,7 @@ Umjesto toga **tri skupine**; unutar skupine je veličina jednaka, pa naslov ne 
 | Skupina | Ekrani | Zašto |
 |---|---|---|
 | `hero` | Naslovnica | Sama u skupini. Prvo što se vidi i mora dominirati. |
-| `a` | Voda, Kvaliteta, Fjaka | Naslov je glavni element ekrana. |
+| `a` | Voda, **Privatnost**, Kvaliteta, Fjaka | Naslov je glavni element ekrana. |
 | `b` | Za partnere, Boje, Izvedbe, Kontakt | Naslov je naslov sekcije; sadržaj nosi ekran. |
 
 Prijelomi redaka na mobitelu (zadani ručno, isti broj redaka u oba jezika):
@@ -411,6 +411,7 @@ Prijelomi redaka na mobitelu (zadani ručno, isti broj redaka u oba jezika):
 |---|---|---|
 | Naslovnica | Vaših / par / kvadrata / mira | Your / tranquilo / place on / water |
 | Voda | Gužva / ostaje na / obali | The crowd / stays / ashore |
+| Privatnost | Samo / za vas / dvoje | Just / the two / of you |
 | Kvaliteta | Mirna / voda, / čvrsta / gradnja | Calm / water, / solid / build |
 | Partneri | Za one koji / nude mir / na vodi | For those who / offer calm / on water |
 | Brendiranje | U bojama / vašeg / brenda. | In your / brand's / colours. |
@@ -425,6 +426,34 @@ Tokeni tipografije s weba:
 --fs-display: clamp(30px, min(11.7vw, 10.6dvh), 96px);
 --fs-lede:    clamp(15px, min(4.5vw, 2.6dvh), 20px);
 ```
+
+### 9.9b Novi ekran: Privatnost (mijenja §3.7 i §7.2)
+
+Prezentacija ima **devet ekrana, ne osam**. Novi je **treći**, između Vode i Kvalitete.
+
+| | HR | EN |
+|---|---|---|
+| izbornik | Privatnost | Privacy |
+| sidro | `#privatnost` | `#privacy` |
+| naslov | Samo za vas dvoje. | Just the two of you. |
+| podnaslov | Vaš mali svijet na vodi. | Your own little world on water. |
+| tekst | Navucite zavjese i ostavite ostatak svijeta s druge strane. Za razgovore koji ostaju među vama i tišinu koju je lijepo dijeliti. | Draw the curtains and leave the rest of the world outside. For conversations kept between you and silence worth sharing. |
+
+Prijelomi na mobitelu (tri retka u oba jezika): `Samo / za vas / dvoje` ·
+`Just / the two / of you`.
+
+**Raspored legende je kao Fjakin, ne kao Vodin:** podnaslov krupnije u `salt`
+(`clamp(18px, 1.55vw, 24px)`), tekst sitnije u `mist`. Nema oznake u verzalu - ovaj
+ekran nema opreme za nabrojati, nosi ga rečenica. Skupina naslova je `a`, kao Voda,
+Kvaliteta i Fjaka.
+
+**Fotografija:** platforma sama u uvali, zavjese navučene, snimljeno iz zraka. Isti
+karakter kao `voda-aerial` - oštro, prozirno more, platforma sama u kadru.
+
+⚠ **EN sidro `#privacy` sudara se po imenu s politikom privatnosti na `/privacy`.**
+Tehnički se ne sukobljavaju (jedno je fragment, drugo putanja), ali čovjeku su dvije
+različite stvari pod istim imenom. Ako smeta, EN sidro i naziv u izborniku mogu biti
+`Seclusion` / `#seclusion`; hrvatska strana ostaje `Privatnost` / `#privatnost`.
 
 ### 9.10 Tradicija i iskustvo (mijenja §1.4)
 
@@ -581,6 +610,7 @@ A4, light tema, nastaje iz ispisa - nije zaseban dokument.
 |---|---|
 | `#mir` | `#quiet` |
 | `#voda` | `#water` |
+| `#privatnost` | `#privacy` |
 | `#kvaliteta` | `#quality` |
 | `#partneri` | `#partners` |
 | `#boje` | `#colours` |
@@ -681,6 +711,7 @@ Nastavlja numeraciju iz §8.
 
 12. §1.5 Pravni potpis: nova dvoretčana forma, „za proizvodnju i trgovinu" briše se.
 13. §3.7: EN naslov Brendiranja dobiva apostrof.
+12a. §3.7 / §7.2: **novi ekran Privatnost** kao treći; prezentacija ima devet ekrana. Brojač u donjoj traci čita ukupan broj iz popisa, ne iz konstante.
 13a. §1.4 Tradicija: 20+ → **30+ godina**, uz dokaz **preko tisuću prodanih brodova**; precizirati pravilo „nije brod" tako da se odnosi na T'quilo, ne na brodogradilište.
 14. §4.3 Dekori tikovine: zamijeniti 11 vrijednosti; ispuna i zaštita ruba u cijelosti; tokeni za zavjese se brišu.
 15. §4.3: dodati ispravljene RAL vrijednosti trupa i bilješku zašto RAL 5004 nije `#1F3A5F`.

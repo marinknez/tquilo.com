@@ -522,7 +522,12 @@ export function initStage(root: ParentNode = document) {
     active = active % (n || 1);
     if (active !== sc) {
       sc = active;
-      if (numEl) numEl.textContent = String(sc + 1).padStart(2, '0') + ' / 08';
+      // Ukupan broj se čita iz popisa ekrana, ne iz ukucane konstante:
+      // dodavanje ekrana inače tiho ostavi „08" u brojaču.
+      if (numEl) {
+        numEl.textContent =
+          String(sc + 1).padStart(2, '0') + ' / ' + String(sceneIds.length).padStart(2, '0');
+      }
       if (nameEl) nameEl.textContent = sceneNames[sc] || '';
 
       const id = sceneIds[sc];

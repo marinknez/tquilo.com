@@ -69,6 +69,7 @@ export const localePath = (lang: Lang, page?: PageKey): string => {
 export const SCENE_KEYS = [
   'mir',
   'voda',
+  'privatnost',
   'kvaliteta',
   'partneri',
   'boje',
@@ -83,6 +84,7 @@ const SCENE_SLUGS: Record<Lang, Record<SceneKey, string>> = {
   hr: {
     mir: 'mir',
     voda: 'voda',
+    privatnost: 'privatnost',
     kvaliteta: 'kvaliteta',
     partneri: 'partneri',
     boje: 'boje',
@@ -93,6 +95,7 @@ const SCENE_SLUGS: Record<Lang, Record<SceneKey, string>> = {
   en: {
     mir: 'quiet',
     voda: 'water',
+    privatnost: 'privacy',
     kvaliteta: 'quality',
     partneri: 'partners',
     boje: 'colours',

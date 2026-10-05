@@ -2,6 +2,7 @@
   "scenes": [
     "Mir",
     "Voda",
+    "Privatnost",
     "Kvaliteta",
     "Za partnere",
     "Boje",
@@ -96,6 +97,10 @@
   "g1": "Tihi električni motor i jednostavno upravljanje. Isplovite kad želite, stanite gdje je najmirnije.",
   "g2label": "Na dohvat ruke",
   "g2": "Piće iz hladnjaka, tuš nakon kupanja, hlad ispod tende i vaša glazba.",
+  "pHeadA": "Samo za vas",
+  "pHeadB": "dvoje",
+  "pSub": "Vaš mali svijet na vodi.",
+  "pBody": "Navucite zavjese i ostavite ostatak svijeta s druge strane. Za razgovore koji ostaju među vama i tišinu koju je lijepo dijeliti.",
   "fjakaPos": "",
   "fjakaDef": "Fjaka je dalmatinsko stanje opuštenog ništaneradenja, lagane dosade i bezvoljnosti, ali bez stresa. To je meditativni odmor od obaveza u kojem samo „bivaš“ i promatraš svijet oko sebe, uz more, sunce i polagani ritam obale.",
   "g3": "Vrijeme koje nitko ne mjeri. A kad se vratite na obalu, već ćete htjeti natrag.",
@@ -131,6 +136,11 @@
       "Gužva",
       "ostaje na",
       "obali"
+    ],
+    "pHead": [
+      "Samo",
+      "za vas",
+      "dvoje"
     ],
     "lq": [
       "Mirna",

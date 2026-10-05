@@ -2,6 +2,7 @@
   "scenes": [
     "Quiet",
     "Water",
+    "Privacy",
     "Quality",
     "For partners",
     "Colours",
@@ -96,6 +97,10 @@
   "g1": "A quiet electric motor and simple controls. Head out when you like, stop where it’s calmest.",
   "g2label": "Within reach",
   "g2": "A cold drink from the fridge, a shower after the swim, shade under the awning and your own music.",
+  "pHeadA": "Just the two of",
+  "pHeadB": "you",
+  "pSub": "Your own little world on water.",
+  "pBody": "Draw the curtains and leave the rest of the world outside. For conversations kept between you and silence worth sharing.",
   "fjakaPos": "",
   "fjakaDef": "Fjaka is a Dalmatian state of relaxed doing-nothing, a gentle boredom and lack of motivation, but without stress. It is a meditative break from obligations in which you simply “be” and watch the world around you, accompanied by the sea, the sun, and the slow rhythm of coastal life.",
   "g3": "Time nobody measures. And back on shore, you’ll already want to return.",
@@ -131,6 +136,11 @@
       "The crowd",
       "stays",
       "ashore"
+    ],
+    "pHead": [
+      "Just",
+      "the two",
+      "of you"
     ],
     "lq": [
       "Calm",

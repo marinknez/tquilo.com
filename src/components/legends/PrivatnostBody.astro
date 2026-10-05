@@ -1,0 +1,16 @@
+---
+/**
+ * Legenda ekrana Privatnost.
+ *
+ * Isti raspored kao Fjaka: podnaslov krupnije u `salt`, tekst sitnije u
+ * `mist`. Ovaj ekran nema oznaku u verzalu jer nema opreme za nabrojati -
+ * nosi ga rečenica, ne popis.
+ */
+import type { Copy } from '../../i18n';
+const { c } = Astro.props as { c: Copy };
+---
+
+<div class="grid max-w-[560px] gap-[10px]">
+  <span class="text-[clamp(18px,1.55vw,24px)] leading-[1.5] text-salt text-pretty">{c.pSub}</span>
+  <span class="text-[15px] leading-[1.6] text-mist text-pretty">{c.pBody}</span>
+</div>

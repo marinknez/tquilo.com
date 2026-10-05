@@ -5,9 +5,9 @@
 
 Dvije stvari u jednom repozitoriju:
 
-1. **Coming soon** stranica na korijenu - trenutno jedino što je javno.
-2. **Puni site** na `/hr` i `/en`: vodoravna prezentacija od osam ekrana +
-   konfigurator boja s 3D modelom. Izgrađen, ali još ne javan.
+1. **Puni site** na `/` (EN) i `/hr`: vodoravna prezentacija od **devet ekrana** +
+   konfigurator boja s 3D modelom.
+2. **Podstranice** - konfigurator i politika privatnosti, slug na jeziku stranice.
 
 ---
 
@@ -15,16 +15,15 @@ Dvije stvari u jednom repozitoriju:
 
 ```ts
 // src/data/site.ts
-export const LAUNCHED = false;
+export const LAUNCHED = true;
 ```
 
-| | `false` (sada) | `true` |
+| | `false` | `true` (sada) |
 | --- | --- | --- |
-| `/` | coming soon | puni site |
-| `/hr`, `/en` | grade se, ali `noindex, nofollow` | u indeksu |
-| `sitemap.xml` | samo `/` | sve rute |
-| `robots.txt` | `Disallow: /hr` i `/en` | sve dopušteno |
-| `llms.txt` | opisuje coming soon | popisuje stranice |
+| meta robots | `noindex, nofollow` na svemu | `index, follow` |
+| `sitemap-index.xml` | prazan | sve rute |
+| `robots.txt` | `Disallow: /` | sve dopušteno osim `/pregled/` |
+| `llms.txt` | „site nije javan" | popisuje stranice |
 
 Mijenja se **samo ta jedna varijabla**. Sve ostalo je prati.
 
@@ -48,12 +47,11 @@ npm run assets:web   # samo fotografije, video, ikone, logotipi
 | `src/data/palette.ts` | boje proizvoda: segmenti, linije, partnerske sheme |
 | `src/data/ral.ts` | RAL Classic → hex (213 kodova) + najbliži RAL |
 | `src/i18n/hr.json` · `en.json` | sav copy, uključujući mobilne prijelome (`mh`) |
-| `src/pages/index.astro` | coming soon |
-| `src/pages/[lang]/index.astro` | puni site, osam ekrana |
-| `src/pages/[lang]/konfigurator.astro` | konfigurator boja |
+| `src/pages/[...lang]/index.astro` | puni site, devet ekrana |
+| `src/components/pages/ConfiguratorPage.astro` | konfigurator boja (rute su tanke datoteke) |
 | `src/scripts/stage.ts` | engine vodoravne prezentacije |
 | `src/scripts/configurator/` | logika konfiguratora + 3D model |
-| `src/components/scenes/` | osam ekrana |
+| `src/components/scenes/` | devet ekrana |
 | `src/components/Knockout.astro` | naslov kao prozor na fotografiju |
 | `brand/` · `images/` · `_design/` | izvorni materijali (`_design` je u gitignoreu) |
 | `src/scripts/contact.ts` | slanje kontakt forme na Web3Forms |
@@ -254,7 +252,7 @@ se jezik ili stranica, mijenjaju se **oba** - inače poveznice vode u 404.
 
 ### Sidra ekrana
 
-Vodoravna prezentacija ima osam ekrana i svaki ima svoje sidro u adresi.
+Vodoravna prezentacija ima devet ekrana i svaki ima svoje sidro u adresi.
 **Sidra su na jeziku stranice** - `/#water` na engleskoj, `/#voda` na
 hrvatskoj. Prije su obje verzije imale hrvatska sidra, pa je adresna traka na
 engleskoj stranici govorila hrvatski.
@@ -267,6 +265,11 @@ Razlikuju se dvije stvari i ne smiju se pobrkati:
 
 Oboje je u `src/i18n/index.ts`; `sceneHash(lang, 'kontakt')` je jedini način
 na koji se u markupu piše sidro.
+
+⚠ **Broj ekrana nije ukucan nigdje osim u popisu.** Brojač u donjoj traci
+(`03 / 09`) čita ukupan broj iz `SCENE_KEYS`; dodavanje ekrana traži unos u
+`SCENE_KEYS`, `SCENE_SLUGS`, `scenes` u oba rječnika i komponentu u
+`index.astro` - ništa drugo.
 
 **Gola adresa ostaje gola.** Sidro se u adresu upisuje tek kad posjetitelj
 ode s prvog ekrana - ili ako ga je donio sam. Prije se već na prvom kadru
@@ -336,7 +339,7 @@ bila pristanak nego kulisa.
 
 ### Politika privatnosti
 
-`src/pages/[lang]/privacy.astro` -> `/hr/privacy` i `/en/privacy`. Namjerno
+`src/components/pages/PrivacyPage.astro` -> `/privacy` i `/hr/privatnost`. Namjerno
 kratka: svaka stavka odgovara nečemu što u kodu postoji. **Ako se doda nova
 vanjska usluga, dodaje se i odlomak ondje.**
 

@@ -48,6 +48,7 @@ const PHOTOS = [
   { from: src('design/assets/photography/fjaka-detail-1.jpg'), to: 'fjaka-detail-1.jpg', w: 900 },
   { from: src('design/assets/photography/fjaka-detail-2.jpg'), to: 'fjaka-detail-2.jpg', w: 900 },
   { from: src('design/assets/photography/fjaka-detail-3.jpg'), to: 'fjaka-detail-3.jpg', w: 900 },
+  { from: photos('tquilo-privatnost.webp'), to: 'privatnost.jpg', w: 2560 },
   // Referenca za konfigurator i OG varijante
   { from: photos('DJI_0996.JPG'), to: 'platforma-more.jpg', w: 2560 },
 ];

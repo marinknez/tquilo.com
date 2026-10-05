@@ -130,7 +130,7 @@ const SCENE_SLUGS_BY_LANG = sceneSlugsByLang();
       <div data-progress class="absolute -top-px left-0 h-px bg-champagne" aria-hidden="true"></div>
       <div class="flex h-full items-center justify-between">
         <p class="flex items-center gap-3 pl-[6vw] text-label tracking-[0.16em] uppercase tabular-nums md:pl-[clamp(20px,3vw,48px)]">
-          <span data-scene-num class="text-salt">01 / 08</span>
+          <span data-scene-num class="text-salt">01 / {String(SCENE_IDS.length).padStart(2, '0')}</span>
           <span data-scene-name class="text-mist">{c.scenes[0]}</span>
         </p>
         <p class="flex h-full items-stretch">
